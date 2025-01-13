@@ -23,32 +23,46 @@ function createWindow() {
 }
 
 // Insert student to the database
-ipcMain.handle("insert-student", (event, student) => { 
-    try {
-        const result = dbHandler.insertStudent(student);
-    
-        if (!result.success) {
-          throw new Error(result.message);
-        }
-        return result;
-      } catch (error) {
-        return { success: false, message: error.message };
-      }
+ipcMain.handle("insert-student", (event, student) => {
+  try {
+    const result = dbHandler.insertStudent(student);
+
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// get all students
+ipcMain.handle("get-all-students", async () => {
+  try {
+    const result = dbHandler.getAllStudents();
+
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 });
 
 // app.whenReady().then(createWindow);
 app.whenReady().then(() => {
-    try {
-        dbHandler = new DatabaseHandler();
-        createWindow();
-      } catch (error) {
-        console.error(error.message);
-        dialog.showErrorBox(
-          "Database Error",
-          `An error occurred while initializing the database:\n\n${error.message}`
-        );
-        app.quit();
-      }
+  try {
+    dbHandler = new DatabaseHandler();
+    createWindow();
+  } catch (error) {
+    console.error(error.message);
+    dialog.showErrorBox(
+      "Database Error",
+      `An error occurred while initializing the database:\n\n${error.message}`
+    );
+    app.quit();
+  }
 });
 
 app.on("window-all-closed", () => {

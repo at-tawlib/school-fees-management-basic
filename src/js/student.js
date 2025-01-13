@@ -40,8 +40,35 @@ document
     if (result.success) {
       showToast(result.message, "success");
       addStudentModal.style.display = "none";
+      displayStudents();
       return;
     }
 
     showToast(result.message, "error");
   });
+
+async function displayStudents() {
+  const response = await window.api.getAllStudents();
+  const studentsTableBody = document.getElementById("studentsTableBody");
+  studentsTableBody.innerHTML = "";
+
+  if(!response.success) {
+    showToast(`An error occurred ${response.message}`)
+    return;
+  }
+
+  response.data.forEach((student) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+        <td>${student.id}</td>
+        <td>${student.first_name}</td>
+        <td>${student.last_name}</td>
+        <td>${student.other_names}</td>
+        <td><button>Edit</button></td>
+      `;
+    studentsTableBody.appendChild(row);
+  });
+}
+
+
+window.onload = displayStudents;
