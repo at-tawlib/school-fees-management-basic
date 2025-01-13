@@ -1,3 +1,5 @@
+import { showToast } from "./utils/toast.js";
+
 const addStudentModal = document.getElementById("addStudentModal");
 
 document.getElementById("addStudentBtn").addEventListener("click", function () {
@@ -24,6 +26,22 @@ document
     const lastName = document.getElementById("studentLastNameInput").value;
     const otherNames = document.getElementById("studentOtherNameInput").value;
 
-    const result = await window.api.insertStudent({ firstName, lastName, otherNames });
-    addStudentModal.style.display = "none";
+    if (!firstName || !lastName) {
+      showToast("Please provide the student's first and last name.", "error");
+      return;
+    }
+
+    const result = await window.api.insertStudent({
+      firstName,
+      lastName,
+      otherNames,
+    });
+
+    if (result.success) {
+      showToast(result.message, "success");
+      addStudentModal.style.display = "none";
+      return;
+    }
+
+    showToast(result.message, "error");
   });
