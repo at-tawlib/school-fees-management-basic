@@ -1,0 +1,270 @@
+/* Define color variables in the :root */
+:root {
+  --color-red: #cc0000;
+  --color-red-light: #ff0000;
+  --color-red-dark: #660000;
+  --color-blue: #3498db;
+  --color-green: #38761d;
+  --color-white: #f4f4f4;
+  --text-color: #2c3e50; /* Dark Blue/Grey (same as secondary) */
+  --highlight-color: #e74c3c;
+  --neutral-color: #bdc3c7;
+  --color-yellow: #fc8c05;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+/* Usage
+    background-color: var(--background-color);
+   */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Base page styles */
+body,
+html {
+  height: 100%;
+  overflow: hidden;
+  scroll-behavior: smooth;
+  list-style-type: none;
+}
+
+button,
+input,
+select {
+  font-family: inherit;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+input,
+select,
+button {
+  box-sizing: border-box;
+  display: block;
+  padding: 0.5rem;
+  border-radius: 0.35rem;
+}
+
+input::placeholder,
+textarea::placeholder {
+  opacity: 1;
+  color: #9ca3af;
+}
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+  background-image: none;
+}
+
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+td,
+th {
+  padding: 8px;
+  text-align: left;
+  border: 0.1rem solid var(--text-color);
+}
+
+th {
+  background-color: var(--color-blue);
+  color: white;
+  font-size: larger;
+}
+
+/* ************************ DISPLAY CSS ********************* */
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 2rem;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.flex-2 {
+  flex: 2;
+}
+
+.flex-3 {
+  flex: 3;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.justify-space-between {
+  justify-content: space-between;
+}
+
+.mt-1 {
+  margin-top: 1rem;
+}
+
+header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 3.5rem;
+  background-color: white;
+}
+
+nav {
+  display: flex;
+  flex-direction: row;
+  margin: 0 1rem;
+}
+
+nav ul {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+nav ul li:hover {
+  color: blue;
+  cursor: pointer;
+}
+
+/* ****************** MAIN CONTENT *************************** */
+main {
+  margin: 2rem 4rem;
+}
+
+/* *************** MODAL CSS *********************** */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+}
+
+/* Modal content box */
+.modal-container {
+  margin: 15% auto;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  width: 40rem;
+  text-align: start;
+  animation: fadeIn 0.5s forwards;
+  position: relative;
+  background-color: white;
+}
+
+.modal-header {
+  text-align: center;
+}
+
+.modal-content p {
+  padding: 0.8rem;
+}
+
+.modal-btn-group {
+  display: flex;
+  margin-top: 1rem;
+  gap: 2rem;
+}
+
+/* Close button (X) */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Animation for fading in and out */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+.white-text {
+  color: white;
+}
+
+#addStudentForm {
+  display: block;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  text-align: start;
+  animation: fadeIn 0.5s forwards;
+  position: relative;
+  padding: 1rem;
+}
+
+.form-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.form-item label {
+  width: 30%;
+  font-size: large;
+}
+
+.form-item input {
+  width: 60%;
+}
+
+.form-item select {
+  width: 60%;
+}
