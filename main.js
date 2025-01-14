@@ -36,6 +36,20 @@ ipcMain.handle("insert-student", (event, student) => {
   }
 });
 
+// Update student
+ipcMain.handle("update-student", (event, student) => {
+    try {
+      const result = dbHandler.updateStudent(student);
+  
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+      return result;
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  });
+
 // get all students
 ipcMain.handle("get-all-students", async () => {
   try {

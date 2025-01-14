@@ -91,6 +91,28 @@ class DatabaseHandler {
     }
   }
 
+  updateStudent(student) {
+    try {
+      const stmt = this.db.prepare(`
+            UPDATE students SET first_name = ?, last_name = ?, other_names = ? WHERE id = ?
+            `);
+      stmt.run(
+        student.firstName,
+        student.lastName,
+        student.otherNames,
+        student.id
+      );
+      return {
+        success: true,
+        message: "Student updated successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      // TODO: log error here
+      return { success: false, message: error.message };
+    }
+  }
+
   // Close the database connection
   close() {
     this.db.close();
