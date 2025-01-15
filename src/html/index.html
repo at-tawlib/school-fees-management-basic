@@ -6,8 +6,15 @@
     <title>School Fees Tracker</title>
     <link rel="stylesheet" href="../css/index.css" />
 
+    <!-- Fontawesome files -->
+    <link href="../assets/fontawesome/css/fontawesome.css" rel="stylesheet" />
+    <link href="../assets/fontawesome/css/brands.css" rel="stylesheet" />
+    <link href="../assets/fontawesome/css/solid.css" rel="stylesheet" />
+
     <script type="module" src="../js/index.js" defer></script>
     <script type="module" src="../js/student.js" defer></script>
+    <script type="module" src="../js/class.js" defer></script>
+    <script type="module" src="../js/add-class.js" defer></script>
   </head>
   <body>
     <header>
@@ -23,8 +30,8 @@
     </header>
 
     <main>
-      <!-- STUDENTS -->
-      <section id="students">
+      <!-------------- STUDENTS ----------------------->
+      <section id="studentsView" style="display: none">
         <div class="flex-row">
           <h2>Students</h2>
           <button id="addStudentBtn" class="bg-blue">Add Student</button>
@@ -35,7 +42,7 @@
           placeholder="Search by name..."
         />
         <div>
-          <table  id="studentsTable">
+          <table id="studentsTable">
             <thead>
               <tr>
                 <th>Student ID</th>
@@ -46,9 +53,149 @@
               </tr>
             </thead>
             <tbody id="studentsTableBody">
-            <!-- Load data from the css -->
+              <!-- Load data from the css -->
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <section id="classesView" class="flex-row">
+        <div class="sideMenuContainer flex-1">
+          <button id="newClassButton">Add student to class</button>
+          <br />
+          <br />
+          <button>Class One</button>
+          <button>Class Two</button>
+          <button>Class Three</button>
+          <button>Class Four</button>
+          <button>Class Five</button>
+          <button>Class Six</button>
+        </div>
+
+        <!-------------- ADD CLASS  FORM --------------------->
+        <div class="flex-3 addClassContainer">
+          <h2 style="text-align: center">Add Class</h2>
+          <hr style="margin: 1rem 0rem" />
+
+          <div>
+            <!-- ------ Select class, academic year and fees ---- -->
+            <div class="flex-row align-center">
+              <label for="addClassFormClass"><h3>Select Class:</h3></label>
+              <select name="addClassFormClass" id="addClassFormClass" required>
+                <option value="" disabled selected>Select Class</option>
+                <option value="1">Class 1</option>
+                <option value="2">Class 2</option>
+                <option value="3">Class 3</option>
+                <option value="4">Class 4</option>
+                <option value="5">Class 5</option>
+                <option value="6">Class 6</option>
+              </select>
+
+              <label for="addClassFormYear"><h3>Academic year:</h3></label>
+              <input
+                type="number"
+                id="addClassFormYear"
+                name="addClassFormYear"
+                placeholder="Enter Year"
+                required
+              />
+
+              <button id="setClassButton">Set Class</button>
+              <button id="setChangeClassButton" style="display: none">
+                Change Class
+              </button>
+            </div>
+
+            <div id="addClassTables" style="display: none">
+              <div class="flex-80">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Student ID</th>
+                      <th>Name</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="addStudentClassForm">
+                    <!-- Students List -->
+                  </tbody>
+                </table>
+
+                <div class="flex-row">
+                  <button id="addOneStudentRow" title="Add Row">
+                    <i class="fa-solid fa-plus"></i> Add Row
+                  </button>
+
+                  <button id="addTwoStudentRows" title="Add 2 Rows">
+                    <i class="fa-solid fa-plus"></i> Add 2 Rows
+                  </button>
+
+                  <button id="addFiveStudentRows" title="Add 5 Rows">
+                    <i class="fa-solid fa-plus"></i> Add 5 Rows
+                  </button>
+                  <br />
+                </div>
+
+                <hr
+                  style="
+                    border: none;
+                    border-top: 2px solid #ccc;
+                    margin: 20px 0;
+                  "
+                />
+
+                <div class="flex-row">
+                  <button id="addStudentsSaveBtn" class="bg-green" title="Save records" type="submit">
+                    <i class="fa-solid fa-save"></i> Save Records
+                  </button>
+                  <button class="bg-yellow" title="Clear All" type="submit">
+                    <i class="fa-solid fa-eraser"></i> Clear
+                  </button>
+                  <button class="bg-red" title="Close" type="submit">
+                    <i class="fa-solid fa-close"></i> Close
+                  </button>
+                </div>
+              </div>
+
+              <!-- Student lists table -->
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                  </tr>
+                </thead>
+                <tbody id="studentsListTableBody">
+                  <!-- Students List -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: none">
+          <div class="flex-row">
+            <h2>Class One</h2>
+            <button id="addClassBtn" class="bg-blue">
+              Add Student to class
+            </button>
+          </div>
+
+          <div class="flex-row align-center">
+            <label for="filterByTerm">Filter by Term:</label>
+            <select id="filterByTermSelect">
+              <option value="all">All</option>
+              <option value="1">First Term</option>
+              <option value="2">Second Term</option>
+              <option value="3">Third Term</option>
+            </select>
+
+            <input
+              type="text"
+              id="searchStudentInput"
+              placeholder="Search by name..."
+            />
+          </div>
         </div>
       </section>
     </main>

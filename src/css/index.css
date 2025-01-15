@@ -53,6 +53,10 @@ select {
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
+select {
+  background-color: white;
+}
+
 input::placeholder,
 textarea::placeholder {
   opacity: 1;
@@ -116,6 +120,10 @@ th {
   flex: 3;
 }
 
+.flex-80 {
+  flex: 0 0 75%;
+}
+
 .align-center {
   align-items: center;
 }
@@ -157,6 +165,58 @@ nav ul li:hover {
 /* ****************** MAIN CONTENT *************************** */
 main {
   margin: 2rem 4rem;
+  height: 90vh;
+  overflow-y: auto;
+}
+
+.sideMenuContainer {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.8);
+}
+
+.sideMenuContainer button {
+  width: 100%;
+  margin: 0;
+  padding: 1rem;
+  border: none;
+  border-radius: 0;
+  border-bottom: #2c3e50 1px solid;
+  background-color: white;
+  text-align: left;
+}
+
+.sideMenuContainer button:hover {
+  background-color: #f4f4f4;
+}
+
+/* ********************** ADD CLASS CSS *********************** */
+.addClassContainer {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 0.35rem;
+  box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
+  margin-bottom: 2rem;
+}
+
+#addClassTables {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+#addClassTables input{
+  width: 100%;
+}
+
+.suggestion-list {
+  background-color: white;
+  position: absolute;
+  z-index: 200;
+}
+
+.suggestion-list li:hover {
+  background-color: #f4f4f4;
 }
 
 /* *************** MODAL CSS *********************** */
