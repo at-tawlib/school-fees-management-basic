@@ -65,6 +65,7 @@ changeClassButton.addEventListener("click", function () {
 document
   .getElementById("newClassButton")
   .addEventListener("click", function () {
+    document.getElementById("studentClassContainer").style.display = "none";
     document.getElementById("addClassFormContainer").style.display = "block";
     resetAddStudentForm();
   });

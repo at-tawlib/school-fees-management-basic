@@ -16,6 +16,7 @@
     <script type="module" src="../js/class.js" defer></script>
     <script type="module" src="../js/add-class.js" defer></script>
     <script type="module" src="../js/student-class.js" defer></script>
+    <script type="module" src="../js/modals/add-fees-modal.js" defer></script>
   </head>
   <body>
     <header>
@@ -65,6 +66,8 @@
           <button id="newClassButton">Add student to class</button>
           <br />
           <br />
+          <button id="addFeesButton">Add Fees</button>
+          <button id="viewFeesButton">View Fees</button>
           <button>Class One</button>
           <button>Class Two</button>
           <button>Class Three</button>
@@ -298,6 +301,66 @@
               Save
             </button>
             <button id="cancelStudentModalBtn" type="button" class="bg-red">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Add Fees Modal -->
+    <div id="addFeesModal" class="modal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h2>Add Fees</h2>
+          <span id="addFeesCloseXBtn" class="close-btn">&times;</span>
+        </div>
+
+        <form>
+          <div class="form-item">
+            <label for="feesClassSelect">Class</label>
+            <select id="feesClassSelect">
+              <option value="Class One">Class One</option>
+              <option value="Class Two">Class Two</option>
+              <option value="Class Three">Class Three</option>
+              <option value="Class Four">Class Four</option>
+            </select>
+          </div>
+
+          <div class="form-item">
+            <label for="feesAcademicYear">Academic Year</label>
+            <select id="feesAcademicYear">
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+            </select>
+          </div>
+
+          <div class="form-item">
+            <label for="feesTerm">Term</label>
+            <select id="feesTerm">
+              <option value="first">First</option>
+              <option value="second">Second</option>
+              <option value="third">Third</option>
+            </select>
+          </div>
+
+          <div class="form-item">
+            <label for="feesAmount">Fees</label>
+            <input
+              type="number"
+              id="feesAmount"
+              name="feesAmount"
+              placeholder="Enter amount"
+              required
+            />
+          </div>
+
+          <div class="flex-row">
+            <button id="setFeesBtn" type="button" title="Set Fees">
+              Set Fees
+            </button>
+            <button id="cancelFeesModalBtn" type="button" class="btn">
               Cancel
             </button>
           </div>

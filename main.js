@@ -106,6 +106,19 @@ ipcMain.handle("get-all-classes-students", () => {
   }
 });
 
+// Add fees
+ipcMain.handle("add-fees", async (_, data) => {
+  try {
+    const result = await dbHandler.addFees(data);
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // app.whenReady().then(createWindow);
 app.whenReady().then(() => {
   try {
