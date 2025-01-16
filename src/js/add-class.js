@@ -63,6 +63,13 @@ changeClassButton.addEventListener("click", function () {
 });
 
 document
+  .getElementById("newClassButton")
+  .addEventListener("click", function () {
+    document.getElementById("addClassFormContainer").style.display = "block";
+    resetAddStudentForm();
+  });
+
+document
   .getElementById("addOneStudentRow")
   .addEventListener("click", () => addClassRowToForm(1));
 document

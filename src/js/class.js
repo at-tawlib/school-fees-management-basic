@@ -1,11 +1,5 @@
 const studentClassTableBody = document.getElementById("studentClassTableBody");
 
-document
-  .getElementById("newClassButton")
-  .addEventListener("click", function () {
-    displayStudentsList();
-  });
-
 function addStudentRow(rowCount) {
   // Create and insert an editable row
   const row = document.createElement("tr");
