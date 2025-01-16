@@ -32,7 +32,7 @@
     </header>
 
     <main>
-      <!-------------- STUDENTS ----------------------->
+      <!-------------- STUDENTS  SECTION ----------------------->
       <section id="studentsView" style="display: none">
         <div class="flex-row">
           <h2>Students</h2>
@@ -61,9 +61,11 @@
         </div>
       </section>
 
+      <!-- ---------------- FEES SECTION ------------- -->
       <section id="classesView" class="flex-row">
         <div class="sideMenuContainer flex-1">
           <button id="newClassButton">Add student to class</button>
+          <button id="viewClassesButton">View Classes</button>
           <br />
           <br />
           <button id="addFeesButton">Add Fees</button>
@@ -74,6 +76,42 @@
           <button>Class Four</button>
           <button>Class Five</button>
           <button>Class Six</button>
+        </div>
+
+        <div id="feesTableContainer" class="flex-3 sectionContainer">
+          <div class="flex-row align-center">
+            <div class="flex-row align-center">
+              <label for="filterFeesByClassSelect">Class:</label>
+              <select id="filterFeesByClassSelect">
+                <option value="all">All</option>
+                <option value="Class One">Class One</option>
+                <option value="Form 1">Form 1</option>
+                <option value="Form 2">Form 2</option>
+                <option value="Form 3">Form 3</option>
+                <option value="Form 4">Form 4</option>
+              </select>
+            </div>
+
+            <div class="flex-row align-center">
+              <label for="filterFeesByAcademicYear">Academic Year:</label>
+              <select id="filterFeesByAcademicYear">
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+              </select>
+            </div>
+
+            <div class="flex-row align-center">
+              <label for="filterFeesByTerm">Term:</label>
+              <select id="filterFeesByTerm">
+                <option value="first">first</option>
+                <option value="second">second</option>
+                <option value="third">third</option>
+              </select>
+            </div>
+
+            <button id="searchFeesButton">Search</button>
+          </div>
         </div>
 
         <!-------------- ADD CLASS  FORM --------------------->
@@ -197,7 +235,11 @@
         </div>
 
         <!-- ------------ SHOW STUDENT AND CLASS LISTS -->
-        <div id="studentClassContainer" class="flex-3 sectionContainer">
+        <div
+          id="studentClassContainer"
+          class="flex-3 sectionContainer"
+          style="display: none"
+        >
           <h2 style="text-align: center">Students Class</h2>
           <hr style="margin: 1rem 0rem" />
 

@@ -1,3 +1,5 @@
+import { CONTAINERS } from "./constants/constants.js";
+import { showHideFeesContainer } from "./utils/show-fees-container.js";
 import { showToast } from "./utils/toast.js";
 
 const addClassTables = document.getElementById("addClassTables");
@@ -65,8 +67,7 @@ changeClassButton.addEventListener("click", function () {
 document
   .getElementById("newClassButton")
   .addEventListener("click", function () {
-    document.getElementById("studentClassContainer").style.display = "none";
-    document.getElementById("addClassFormContainer").style.display = "block";
+    showHideFeesContainer(CONTAINERS.CLASS_FORM);
     resetAddStudentForm();
   });
 

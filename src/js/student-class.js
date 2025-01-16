@@ -1,8 +1,14 @@
+import { CONTAINERS } from "./constants/constants.js";
+import { showHideFeesContainer } from "./utils/show-fees-container.js";
+
 const studentClassTableBody = document.getElementById("studentClassTableBody");
 const studentsClass = document.getElementById("filterByClassSelect");
 const term = document.getElementById("filterByTErmSelect");
 const academicYear = document.getElementById("academicYearFilter");
 
+document.getElementById("viewClassesButton").addEventListener("click", function () {
+    showHideFeesContainer(CONTAINERS.STUDENT_CLASS);
+});
 
 document
   .getElementById("studentClassGoBtn")
