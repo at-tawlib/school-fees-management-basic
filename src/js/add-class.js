@@ -32,7 +32,7 @@ setClassButton.addEventListener("click", async function () {
     className: addClassFormClass.value,
     academicYear: addClassFormYear.value,
   });
-  console.log("resp: ", resp);
+
   if (!resp.success) {
     showToast(resp.message, "error");
     return;
@@ -59,11 +59,7 @@ setClassButton.addEventListener("click", async function () {
 });
 
 changeClassButton.addEventListener("click", function () {
-  addClassFormClass.disabled = false;
-  addClassFormYear.disabled = false;
-  setClassButton.style.display = "block";
-  changeClassButton.style.display = "none";
-  addClassTables.style.display = "none";
+  resetAddStudentForm();
 });
 
 document
@@ -114,31 +110,21 @@ document
     }
 
     showToast("Records saved successfully", "success");
-    clearInput(addClassFormClass);
-    clearInput(addClassFormYear);
-    setClassButton.style.display = "block";
-    changeClassButton.style.display = "none";
+    resetAddStudentForm();
+  });
+
+document
+  .getElementById("clearAddStudentsForm")
+  .addEventListener("click", () => {
     addStudentClassForm.innerHTML = "";
     addClassRowToForm(5);
   });
 
-document.getElementById("clearAddStudentsForm").addEventListener("click", () => {
-  clearInput(addClassFormClass);
-  clearInput(addClassFormYear);
-  addStudentClassForm.innerHTML = "";
-  addClassRowToForm(5);
-});
-
-document.getElementById("cancelAddStudentsForm").addEventListener("click", () => {
-  clearInput(addClassFormClass);
-  clearInput(addClassFormYear);
-  addStudentClassForm.innerHTML = "";
-  addClassFormClass.disabled = false;
-  addClassFormYear.disabled = false;
-  setClassButton.style.display = "block";
-  changeClassButton.style.display = "none";
-  addClassTables.style.display = "none";
-});
+document
+  .getElementById("cancelAddStudentsForm")
+  .addEventListener("click", () => {
+    resetAddStudentForm();
+  });
 
 function addClassRowToForm(rowCount) {
   for (let i = 0; i < rowCount; i++) {
@@ -239,8 +225,6 @@ function attachAutoSuggestEventListeners(
       return fullName.toLowerCase().includes(query);
     });
 
-    console.log("matches: ", matches);
-
     // Display suggestions
     suggestionList.innerHTML = "";
     if (matches.length > 0) {
@@ -289,4 +273,15 @@ function clearInputStyles(input) {
 function clearInput(input) {
   input.value = "";
   input.disabled = false;
+}
+
+function resetAddStudentForm() {
+  addClassFormClass.disabled = false;
+  addClassFormYear.disabled = false;
+  clearInput(addClassFormClass);
+  clearInput(addClassFormYear);
+  setClassButton.style.display = "block";
+  changeClassButton.style.display = "none";
+  addClassTables.style.display = "none";
+  addStudentClassForm.innerHTML = "";
 }
