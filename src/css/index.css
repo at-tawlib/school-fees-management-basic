@@ -191,7 +191,7 @@ main {
 }
 
 /* ********************** ADD CLASS CSS *********************** */
-.addClassContainer {
+.sectionContainer {
   background-color: white;
   padding: 1.5rem;
   border-radius: 0.35rem;

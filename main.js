@@ -92,6 +92,20 @@ ipcMain.handle("check-class-exists", (event, data) => {
   }
 });
 
+// Get all classes students
+ipcMain.handle("get-all-classes-students", () => {
+  try {
+    const result = dbHandler.getAllClassesStudents();
+    if (!result.success) {
+      throw new Error(result.error); // Rethrow the error for consistent error propagation
+    }
+    return result; // Send success response to the UI
+  } catch (error) {
+    console.error("Main Process Error: ", error);
+    return { success: false, error: error.message };
+  }
+});
+
 // app.whenReady().then(createWindow);
 app.whenReady().then(() => {
   try {

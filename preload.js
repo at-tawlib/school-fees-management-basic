@@ -6,4 +6,5 @@ contextBridge.exposeInMainWorld("api", {
   updateStudent: (student) => ipcRenderer.invoke("update-student", student),
   addStudentToClass: (data) => ipcRenderer.invoke("add-student-to-class", data),
   checkClassExists: (data) => ipcRenderer.invoke("check-class-exists", data),
+  getAllClassesStudents: () => ipcRenderer.invoke("get-all-classes-students"),
 });

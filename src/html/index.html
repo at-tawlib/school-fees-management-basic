@@ -15,6 +15,7 @@
     <script type="module" src="../js/student.js" defer></script>
     <script type="module" src="../js/class.js" defer></script>
     <script type="module" src="../js/add-class.js" defer></script>
+    <script type="module" src="../js/student-class.js" defer></script>
   </head>
   <body>
     <header>
@@ -73,7 +74,11 @@
         </div>
 
         <!-------------- ADD CLASS  FORM --------------------->
-        <div id="addClassFormContainer" class="flex-3 addClassContainer" style="display: none;">
+        <div
+          id="addClassFormContainer"
+          class="flex-3 sectionContainer"
+          style="display: none"
+        >
           <h2 style="text-align: center">Add Class</h2>
           <hr style="margin: 1rem 0rem" />
 
@@ -145,13 +150,28 @@
                 />
 
                 <div class="flex-row">
-                  <button id="addStudentsSaveBtn" class="bg-green" title="Save records" type="submit">
+                  <button
+                    id="addStudentsSaveBtn"
+                    class="bg-green"
+                    title="Save records"
+                    type="submit"
+                  >
                     <i class="fa-solid fa-save"></i> Save Records
                   </button>
-                  <button id="clearAddStudentsForm" class="bg-yellow" title="Clear All" type="submit">
+                  <button
+                    id="clearAddStudentsForm"
+                    class="bg-yellow"
+                    title="Clear All"
+                    type="submit"
+                  >
                     <i class="fa-solid fa-eraser"></i> Clear
                   </button>
-                  <button id="cancelAddStudentsForm" class="bg-red" title="Cancel" type="submit">
+                  <button
+                    id="cancelAddStudentsForm"
+                    class="bg-red"
+                    title="Cancel"
+                    type="submit"
+                  >
                     <i class="fa-solid fa-close"></i> Cancel
                   </button>
                 </div>
@@ -173,28 +193,57 @@
           </div>
         </div>
 
-        <div style="display: none">
-          <div class="flex-row">
-            <h2>Class One</h2>
-            <button id="addClassBtn" class="bg-blue">
-              Add Student to class
-            </button>
-          </div>
+        <!-- ------------ SHOW STUDENT AND CLASS LISTS -->
+        <div id="studentClassContainer" class="flex-3 sectionContainer">
+          <h2 style="text-align: center">Students Class</h2>
+          <hr style="margin: 1rem 0rem" />
 
           <div class="flex-row align-center">
-            <label for="filterByTerm">Filter by Term:</label>
-            <select id="filterByTermSelect">
+            <label for="filterByClass">Class:</label>
+            <select id="filterByClassSelect">
+              <option value="all">All</option>
+              <option value="1">Class 1</option>
+              <option value="2">Class 2</option>
+              <option value="3">Class 3</option>
+              <option value="4">Class 4</option>
+              <option value="5">Class 5</option>
+              <option value="6">Class 6</option>
+            </select>
+
+            <label for="filterByTerrm">Term:</label>
+            <select id="filterByTErmSelect">
               <option value="all">All</option>
               <option value="1">First Term</option>
               <option value="2">Second Term</option>
               <option value="3">Third Term</option>
             </select>
 
+            <label for="filterByTErm">Year:</label>
             <input
-              type="text"
-              id="searchStudentInput"
-              placeholder="Search by name..."
+              id="academicYearFilter"
+              placeholder="Enter academic year..."
+              type="number"
+              required
             />
+
+            <button id="studentClassGoBtn">Go</button>
+          </div>
+
+          <div id="studentClassTableContainer">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Class</th>
+                  <th>Year</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="studentClassTableBody">
+                <!-- Students Class List -->
+              </tbody>
+            </table>
           </div>
         </div>
       </section>

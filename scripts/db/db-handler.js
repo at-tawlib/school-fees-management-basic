@@ -157,6 +157,22 @@ class DatabaseHandler {
     }
   }
 
+  getAllClassesStudents() {
+    try {
+      const stmt = this.db.prepare(`
+          SELECT s.id AS student_id, s.first_name, s.last_name, s.other_names, c.class_name, c.academic_year
+          FROM  students s
+          JOIN classes c
+          ON s.id = c.student_id
+        `);
+      const records = stmt.all();
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   checkClassExists(filter) {
     try {
       const stmt = this.db.prepare(`
@@ -167,7 +183,7 @@ class DatabaseHandler {
         ) AS data_exists;
       `);
       const result = stmt.get(filter.className, filter.academicYear);
-      return { success: true, exists: !!result.data_exists }
+      return { success: true, exists: !!result.data_exists };
     } catch (error) {
       console.error("Database Error: ", error);
       return { success: false, error: error.message };
