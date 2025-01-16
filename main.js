@@ -38,17 +38,17 @@ ipcMain.handle("insert-student", (event, student) => {
 
 // Update student
 ipcMain.handle("update-student", (event, student) => {
-    try {
-      const result = dbHandler.updateStudent(student);
-  
-      if (!result.success) {
-        throw new Error(result.message);
-      }
-      return result;
-    } catch (error) {
-      return { success: false, message: error.message };
+  try {
+    const result = dbHandler.updateStudent(student);
+
+    if (!result.success) {
+      throw new Error(result.message);
     }
-  });
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
 
 // get all students
 ipcMain.handle("get-all-students", async () => {
@@ -61,6 +61,34 @@ ipcMain.handle("get-all-students", async () => {
     return result;
   } catch (error) {
     return { success: false, message: error.message };
+  }
+});
+
+// Add student to class
+ipcMain.handle("add-student-to-class", (event, data) => {
+  try {
+    const result = dbHandler.addStudentToClass(data);
+
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// Check if class exists
+ipcMain.handle("check-class-exists", (event, data) => {
+  try {
+    const result = dbHandler.checkClassExists(data);
+    if (!result.success) {
+      throw new Error(result.error); // Rethrow the error for consistent error propagation
+    }
+    return result; // Send success response to the UI
+  } catch (error) {
+    console.error("Main Process Error: ", error);
+    return { success: false, error: error.message };
   }
 });
 

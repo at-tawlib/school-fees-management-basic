@@ -28,6 +28,24 @@ setClassButton.addEventListener("click", async function () {
     return;
   }
 
+  const resp = await window.api.checkClassExists({
+    className: addClassFormClass.value,
+    academicYear: addClassFormYear.value,
+  });
+  console.log("resp: ", resp);
+  if (!resp.success) {
+    showToast(resp.message, "error");
+    return;
+  }
+
+  if (resp.success && resp.exists) {
+    showToast(
+      resp.message || "Class already exists for the academic year",
+      "error"
+    );
+    return;
+  }
+
   await setStudentsData();
   displayStudentsList();
   addStudentClassForm.innerHTML = "";
@@ -66,17 +84,61 @@ document
     const academicYear = addClassFormYear.value;
     const rows = addStudentClassForm.getElementsByTagName("tr");
 
-    console.log(studentClass, academicYear);
     for (let row of rows) {
+      row.style.background = "transparent";
       const studentId = row.querySelector("input[name=studentId]").value;
+      const studentName = row.querySelector("input[name=studentName]").value;
 
-      if (studentId) {
-        records.push(studentId);
+      if (!row || !studentId || !studentName) {
+        row.style.background = "red";
+        showToast("Please select a student", "error");
+        return;
+      }
+
+      if (studentId) records.push(studentId);
+    }
+
+    for (const record of records) {
+      const response = await window.api.addStudentToClass({
+        studentId: record,
+        className: studentClass,
+        academicYear: academicYear,
+      });
+      if (!response.success) {
+        showToast(
+          response.message || "An error occurred while saving records",
+          "error"
+        );
+        return;
       }
     }
 
-    console.log(records);
+    showToast("Records saved successfully", "success");
+    clearInput(addClassFormClass);
+    clearInput(addClassFormYear);
+    setClassButton.style.display = "block";
+    changeClassButton.style.display = "none";
+    addStudentClassForm.innerHTML = "";
+    addClassRowToForm(5);
   });
+
+document.getElementById("clearAddStudentsForm").addEventListener("click", () => {
+  clearInput(addClassFormClass);
+  clearInput(addClassFormYear);
+  addStudentClassForm.innerHTML = "";
+  addClassRowToForm(5);
+});
+
+document.getElementById("cancelAddStudentsForm").addEventListener("click", () => {
+  clearInput(addClassFormClass);
+  clearInput(addClassFormYear);
+  addStudentClassForm.innerHTML = "";
+  addClassFormClass.disabled = false;
+  addClassFormYear.disabled = false;
+  setClassButton.style.display = "block";
+  changeClassButton.style.display = "none";
+  addClassTables.style.display = "none";
+});
 
 function addClassRowToForm(rowCount) {
   for (let i = 0; i < rowCount; i++) {
@@ -89,11 +151,16 @@ function addClassRowToForm(rowCount) {
                 <ul class="suggestion-list"></ul>
             </td>
             <td>
-                <button class="btn-delete" type="button" tabindex="-1" title="Remove row" onclick="removeRow(this)">
+                <button class="btn-delete" type="button" tabindex="-1" title="Remove row">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </td>
             `;
+
+    const deleteButton = row.querySelector("button");
+    deleteButton.addEventListener("click", function () {
+      removeStudentRow(deleteButton);
+    });
     addStudentClassForm.appendChild(row);
 
     // Add event listener to the input element for auto-suggestions
@@ -106,6 +173,19 @@ function addClassRowToForm(rowCount) {
       suggestionList,
       studentsData
     );
+  }
+}
+
+function removeStudentRow(button) {
+  const row = button.closest("tr");
+  row.remove();
+  resetAddStudentsFormRowNumbers();
+}
+
+function resetAddStudentsFormRowNumbers() {
+  const rows = addStudentClassForm.getElementsByTagName("tr");
+  for (let i = 0; i < rows.length; i++) {
+    rows[i].cells[0].textContent = i + 1;
   }
 }
 
@@ -203,4 +283,10 @@ function attachAutoSuggestEventListeners(
 function clearInputStyles(input) {
   input.style.border = "1px solid #ccc";
   input.style.backgroundColor = "white";
+}
+
+// TODO: move to utils
+function clearInput(input) {
+  input.value = "";
+  input.disabled = false;
 }

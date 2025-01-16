@@ -5,7 +5,7 @@ const Database = require("better-sqlite3");
 const dbPath = require("../file-paths").getDbPath();
 
 //  Required tables for validation
-const requiredTables = ["students"];
+const requiredTables = ["students", "classes"];
 
 class DatabaseHandler {
   constructor() {
@@ -110,6 +110,67 @@ class DatabaseHandler {
       console.error("Database Error: ", error);
       // TODO: log error here
       return { success: false, message: error.message };
+    }
+  }
+
+  addStudentToClass(data) {
+    try {
+      // Check if the record already exists
+      const checkStmt = this.db.prepare(`
+        SELECT 1 FROM classes 
+        WHERE student_id = ? AND class_name = ? AND academic_year = ?
+      `);
+      const exists = checkStmt.get(
+        data.studentId,
+        data.className,
+        data.academicYear
+      );
+
+      if (exists) {
+        return {
+          success: false,
+          message:
+            "Student is already assigned to this class for the academic year.",
+        };
+      }
+
+      // If not, insert the new record
+      const insertStmt = this.db.prepare(`
+        INSERT INTO classes ( student_id, class_name, academic_year, created_at )
+        VALUES ( ?, ?, ?, ? )
+      `);
+      insertStmt.run(
+        data.studentId,
+        data.className,
+        data.academicYear,
+        new Date().toISOString()
+      );
+
+      return {
+        success: true,
+        message: "Student added to class.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      // TODO: log error here
+      return { success: false, message: error.message };
+    }
+  }
+
+  checkClassExists(filter) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM classes 
+          WHERE class_name = ? AND academic_year = ?
+        ) AS data_exists;
+      `);
+      const result = stmt.get(filter.className, filter.academicYear);
+      return { success: true, exists: !!result.data_exists }
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, error: error.message };
     }
   }
 
