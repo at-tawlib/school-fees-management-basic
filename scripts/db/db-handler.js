@@ -231,6 +231,17 @@ class DatabaseHandler {
     }
   }
 
+  getAllFees() {
+    try {
+      const stmt = this.db.prepare(`SELECT * FROM fees`);
+      const records = stmt.all();
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   // Close the database connection
   close() {
     this.db.close();
