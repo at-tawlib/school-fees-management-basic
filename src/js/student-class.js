@@ -26,7 +26,7 @@ document
     displayStudentsClass(response.data);
   });
 
-async function displayStudentsClass(data) {
+function displayStudentsClass(data) {
     studentClassTableBody.innerHTML = "";
     data.forEach((student, index) => {
         studentClassTableBody.innerHTML += `

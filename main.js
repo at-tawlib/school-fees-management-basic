@@ -106,6 +106,20 @@ ipcMain.handle("get-all-classes-students", () => {
   }
 });
 
+// Filter all classes students
+ipcMain.handle("filter-all-classes-students", async (_, filter) => {
+  try {
+    const result = dbHandler.filterAllClassesStudents(filter);
+
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // Add fees
 ipcMain.handle("add-fees", async (_, data) => {
   try {
@@ -129,6 +143,20 @@ ipcMain.handle("get-all-fees", async () => {
     }
     return result;
   } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// Bill student
+ipcMain.handle("bill-student", async (_, data) => {
+  try {
+    const result = await dbHandler.billStudent(data);
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    console.log(error.message);
     return { success: false, message: error.message };
   }
 });

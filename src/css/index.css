@@ -205,7 +205,7 @@ main {
   gap: 1rem;
 }
 
-#addClassTables input{
+#addClassTables input {
   width: 100%;
 }
 
@@ -222,7 +222,6 @@ main {
   display: none;
 }
 
-
 /* .suggestion-list {
   background-color: white;
   position: absolute;
@@ -231,6 +230,11 @@ main {
 
 .suggestion-list li:hover {
   background-color: #f4f4f4;
+}
+
+/* ********************** BILL CSS *********************** */
+#billClassContainer select, #billClassContainer input {
+  width: 100%;
 }
 
 /* *************** MODAL CSS *********************** */

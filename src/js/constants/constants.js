@@ -1,5 +1,6 @@
 export const CONTAINERS = {
-  FEES_TABLE: "FEES_TABLE",
-  CLASS_FORM: "CLASS_FORM",
-  STUDENT_CLASS: "STUDENT_CLASS",
+  FEES_TABLE: "feesTable",
+  CLASS_FORM: "classForm",
+  STUDENT_CLASS: "studentClass",
+  BILL_CLASS: "billClass",
 };

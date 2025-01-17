@@ -9,4 +9,6 @@ contextBridge.exposeInMainWorld("api", {
   getAllClassesStudents: () => ipcRenderer.invoke("get-all-classes-students"),
   addFees: (data) => ipcRenderer.invoke("add-fees", data),
   getAllFees: (data) => ipcRenderer.invoke("get-all-fees", data),
+  billStudent: (data) => ipcRenderer.invoke("bill-student", data),
+  filterAllClassesStudents: (data) => ipcRenderer.invoke("filter-all-classes-students", data)
 });
