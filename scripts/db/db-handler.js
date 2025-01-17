@@ -207,6 +207,7 @@ class DatabaseHandler {
     }
   }
 
+  // TODO: not used anywhere remove
   feeExists(fee) {
     const stmt = this.db.prepare(`
         SELECT 1 FROM fees
@@ -218,10 +219,45 @@ class DatabaseHandler {
     return result !== undefined; // Return true if a record exists
   }
 
+  getSingleFee(fee) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT * FROM fees
+        WHERE class = ? AND term = ? AND academic_year = ?
+        LIMIT 1
+      `);
+
+      const result = stmt.get(fee.class, fee.term, fee.academicYear);
+      if (!result) {
+        return { success: false, message: "Fee not found." };
+      }
+
+      return { success: true, data: result };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getAllFees() {
+    try {
+      const stmt = this.db.prepare(`SELECT * FROM fees`);
+      const records = stmt.all();
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   addFees(data) {
     try {
       // Checks if fees exist for the class, term and academic year before adding
-      if (this.feeExists(data)) {
+      const isFeesExists = this.getSingleFee(data);
+      if (isFeesExists.success === true && isFeesExists.data) {
+        console.log(
+          "Fees already exists for the specified class, term, and academic year."
+        );
         return {
           success: false,
           message:
@@ -248,33 +284,22 @@ class DatabaseHandler {
     }
   }
 
-  getAllFees() {
-    try {
-      const stmt = this.db.prepare(`SELECT * FROM fees`);
-      const records = stmt.all();
-      return { success: true, data: records };
-    } catch (error) {
-      console.error("Database Error: ", error);
-      return { success: false, message: error.message };
-    }
-  }
-
   // Check whether student has already been billed with the fees in question
-  studentBillExist(data) {
+  studentBillExist(studentId, feesId) {
     const stmt = this.db.prepare(`
         SELECT 1 FROM bills
         WHERE student_id = ? AND fees_id = ? 
         LIMIT 1
     `);
 
-    const result = stmt.get(data.studentId, data.feesId);
+    const result = stmt.get(studentId, feesId);
     return result !== undefined; // Return true if a record exists
   }
 
   billStudent(data) {
     try {
       // check if student already billed
-      if (this.studentBillExist(data)) {
+      if (this.studentBillExist(data.studentId, data.feesId)) {
         return {
           success: false,
           message: "Student has already been billed with this fees",
@@ -289,6 +314,43 @@ class DatabaseHandler {
         success: true,
         message: "Fees attached to student successfully.",
       };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  // Bill multiple students for fees
+  billClassStudents(idsArray, feesId) {
+    try {
+      const transaction = this.db.transaction(() => {
+        const inserted = [];
+        const skipped = [];
+
+        const insertStmt = this.db.prepare(`
+        INSERT INTO bills (student_id, fees_id, created_at)
+        VALUES (?, ?, ?)
+      `);
+
+        idsArray.forEach((studentId) => {
+          // Check if the student is already billed
+          if (this.studentBillExist(studentId, feesId)) {
+            skipped.push(studentId);
+          } else {
+            // Insert the new bill into the bills table
+            insertStmt.run(studentId, feesId, new Date().toISOString());
+            inserted.push(studentId);
+          }
+        });
+
+        // message: "Fees attached to student successfully.",
+        // message: "Student has already been billed with this fee.",
+
+        return { inserted, skipped };
+      });
+      const result = transaction();
+      console.log("Transaction Result: ", result);
+      return { success: true, data: result };
     } catch (error) {
       console.error("Database Error: ", error);
       return { success: false, message: error.message };

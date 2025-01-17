@@ -322,11 +322,12 @@
           <hr style="margin: 1rem 0rem" />
 
           <div class="flex-row">
+            <!-- Bill options (class, academic year, term) -->
             <div class="flex-column flex-1">
               <div class="flex-row align-center">
                 <label for="billByClassSelect">Class:</label>
                 <select id="billByClassSelect">
-                  <option value="all">All</option>
+                  <option value="" disabled selected>Select class</option>
                   <option value="1">Class 1</option>
                   <option value="2">Class 2</option>
                   <option value="3">Class 3</option>
@@ -351,10 +352,10 @@
               <div class="flex-row align-center">
                 <label for="billByTermSelect">Term:</label>
                 <select id="billByTermSelect">
-                  <option value="all">All</option>
-                  <option value="1">First Term</option>
-                  <option value="2">Second Term</option>
-                  <option value="3">Third Term</option>
+                  <option value="" disabled selected>Select Term</option>
+                  <option value="first">First Term</option>
+                  <option value="second">Second Term</option>
+                  <option value="third">Third Term</option>
                 </select>
               </div>
               <br />
@@ -362,53 +363,71 @@
               <button id="billClassOkBtn">Ok</button>
             </div>
 
-            <div id="billClassTableContainer" class="flex-3">
-              <table id="billClassTable" style="display: none">
-                <thead>
-                  <tr>
-                    <th
-                      id="billClassTitle"
-                      colspan="4"
-                      style="text-align: center"
-                    ></th>
-                  </tr>
-                </thead>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="billClassTableBody">
-                  <!-- bills Class List -->
-                </tbody>
-              </table>
+            <!-- Bill Table Container -->
+            <div class="flex-3">
+              <h2 id="billDetailsText"></h2>
+              <p id="billFeesId"  style="display: none;"></p>
+              <div id="billClassTableContainer" style="display: none;">
 
-              <div class="flex-row">
-                <button id="billSelectAllStudents" title="Select All Students">
-                  <i class="fa-solid fa-save"></i> Select All
-                </button>
-                <button id="billClearSelection" class="bg-yellow" title="Clear Selection">
-                  <i class="fa-solid fa-eraser"></i> Clear Selection
-                </button>
-              </div>
+                <!-- students class bill table -->
+                <table id="billClassTable">
+                  <thead>
+                    <tr>
+                      <th
+                        id="billClassTitle"
+                        colspan="4"
+                        style="text-align: center"
+                      ></th>
+                    </tr>
+                  </thead>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="billClassTableBody">
+                    <!-- bills Class List -->
+                  </tbody>
+                </table>
 
-              <hr
-                style="border: none; border-top: 2px solid #ccc; margin: 20px 0"
-              />
-              <div class="flex-row">
-                <button
-                  id="billStudentsSubmitButton"
-                  class="bg-green"
-                  title="Bill Students"
-                >
-                  <i class="fa-solid fa-save"></i> Bill Students
-                </button>
-                <button class="bg-red" title="Cancel">
-                  <i class="fa-solid fa-close"></i> Cancel
-                </button>
+                <div class="flex-row">
+                  <button
+                    id="billSelectAllStudents"
+                    title="Select All Students"
+                  >
+                    <i class="fa-solid fa-save"></i> Select All
+                  </button>
+                  <button
+                    id="billClearSelection"
+                    class="bg-yellow"
+                    title="Clear Selection"
+                  >
+                    <i class="fa-solid fa-eraser"></i> Clear Selection
+                  </button>
+                </div>
+
+                <hr
+                  style="
+                    border: none;
+                    border-top: 2px solid #ccc;
+                    margin: 20px 0;
+                  "
+                />
+                <div class="flex-row">
+                  <button
+                    id="billStudentsSubmitButton"
+                    class="bg-green"
+                    title="Bill Students"
+                  >
+                    <i class="fa-solid fa-save"></i> Bill Students
+                  </button>
+                  <button class="bg-red" title="Cancel">
+                    <i class="fa-solid fa-close"></i> Cancel
+                  </button>
+                </div>
               </div>
             </div>
           </div>

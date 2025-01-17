@@ -133,11 +133,38 @@ ipcMain.handle("add-fees", async (_, data) => {
   }
 });
 
+// Bill class students
+ipcMain.handle("bill-class-students", async (_, dataArray, feesId) => {
+  console.log("In main process: ", dataArray, feesId);
+  try {
+    const result = await dbHandler.billClassStudents(dataArray, feesId);
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // get all student fees
 ipcMain.handle("get-all-fees", async () => {
   try {
     const result = dbHandler.getAllFees();
 
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// get single fee
+ipcMain.handle("get-single-fee", async (_, data) => {
+  try {
+    const result = dbHandler.getSingleFee(data);
     if (!result.success) {
       throw new Error(result.message);
     }

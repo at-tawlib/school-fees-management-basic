@@ -11,6 +11,8 @@ const billClassTitle = document.getElementById("billClassTitle");
 const billByClassSelect = document.getElementById("billByClassSelect");
 const billAcademicYearInput = document.getElementById("billAcademicYearInput");
 const billByTermSelect = document.getElementById("billByTermSelect");
+const billDetailsText = document.getElementById("billDetailsText");
+const billFeesId = document.getElementById("billFeesId");
 
 document
   .getElementById("billClassButton")
@@ -46,22 +48,76 @@ document
     const className = billByClassSelect.value;
     const academicYear = billAcademicYearInput.value;
     const term = billByTermSelect.value;
+    billDetailsText.textContent = "";
+    billFeesId.textContent = "";
+
+    clearInputsStyles([
+      billByClassSelect,
+      billAcademicYearInput,
+      billByTermSelect,
+      billDetailsText,
+    ]);
+
+    if (!className) {
+      billByClassSelect.style.backgroundColor = "red";
+      billByClassSelect.style.color = "white";
+      showToast("Select a class", "error");
+      return;
+    }
+
+    if (!academicYear) {
+      showToast("Select an academic year", "error");
+      billAcademicYearInput.style.backgroundColor = "red";
+      billAcademicYearInput.style.color = "white";
+      return;
+    }
+
+    if (!term) {
+      billByTermSelect.style.backgroundColor = "red";
+      billByTermSelect.style.color = "white";
+      showToast("Select a term", "error");
+      return;
+    }
 
     const response = await window.api.filterAllClassesStudents({
       className,
       academicYear,
     });
+    console.log("Response: ", response);
 
     if (!response.success) {
       showToast(response.message || "An error occurred", "error");
       return;
     }
 
-    billClassTable.style.display = "table";
+    if (response.data.length === 0) {
+      billClassTableContainer.style.display = "none";
+      billDetailsText.textContent = `No students found for Class ${className} for ${academicYear} academic year.`;
+      billFeesId.textContent = "";
+      showToast("No students found for this class", "error");
+      return;
+    }
 
-    console.log(response);
-
+    billClassTableContainer.style.display = "block";
     displayBillStudents(response.data);
+
+    const feesResp = await window.api.getSingleFee({
+      class: className,
+      term,
+      academicYear,
+    });
+
+    const feeText = feesResp.data;
+    if (feesResp.success === false) {
+      billDetailsText.textContent = `No fees found for class ${className}, ${academicYear}(${term} term).`;
+      billDetailsText.style.color = "red";
+      billFeesId.textContent = "";
+      return;
+    }
+
+    billDetailsText.textContent = `Billing students for Class ${feeText.class}, ${feeText.academic_year}(${feeText.term} term) - GH.${feeText.amount}.`;
+    billDetailsText.style.color = "green";
+    billFeesId.textContent = feeText.id;
   });
 
 document
@@ -72,6 +128,7 @@ document
       checkbox.checked = true;
     });
   });
+
 document.getElementById("billClearSelection").addEventListener("click", () => {
   const checkBoxes = document.querySelectorAll(".student-checkbox");
   checkBoxes.forEach((checkbox) => {
@@ -86,16 +143,32 @@ document
       document.querySelectorAll(".student-checkbox:checked")
     ).map((checkbox) => checkbox.value);
 
-    console.log("Selected Student IDs:", selectedIds);
+    if (selectedIds.length === 0) {
+      showToast("Select students to bill", "error");
+      return;
+    }
+
+    const resp = await window.api.billClassStudents(selectedIds, billFeesId.textContent);
+    console.log("Response: ", resp);
+    if(resp.success === false) {
+      showToast(resp.message || "An error occurred", "error");
+      return;
+    }
+
+    showToast("Students billed successfully", "success");
+    billFeesId.textContent = "";
+
   });
 
 function displayBillStudents(data) {
   const selectedClass = billByClassSelect.value;
   const academicYear = billAcademicYearInput.value;
+  const term = billByTermSelect.value;
 
   billClassTitle.innerHTML = "";
-  billClassTitle.innerHTML = `Class ${selectedClass} - ${academicYear}`;
+  billClassTitle.innerHTML = `Class ${selectedClass} - ${academicYear} (${term} term)`;
 
+  billClassTableContainer.style.display = "block";
   billClassTableBody.innerHTML = "";
   data.forEach((student, index) => {
     billClassTableBody.innerHTML += `
@@ -111,5 +184,32 @@ function displayBillStudents(data) {
             <td></td>
         </tr>
         `;
+  });
+}
+
+// TODO: this function may be needed at other places
+async function setUpFeesSelect(feesSelect) {
+  const response = await window.api.getAllFees();
+  if (!response.success) {
+    showToast("Error occurred", "error");
+    return;
+  }
+
+  console.log("fees:  ", response);
+
+  feesSelect.innerHTML = "";
+  response.data.forEach((fee) => {
+    const option = document.createElement("option");
+    option.value = fee.fee_id;
+    option.innerHTML = `${fee.class} - ${fee.term} - ${fee.academic_year} - ${fee.amount}`;
+    feesSelect.appendChild(option);
+  });
+}
+
+// TODO: this function may be needed at other places
+function clearInputsStyles(inputs) {
+  inputs.forEach((input) => {
+    input.style.backgroundColor = "";
+    input.style.color = "";
   });
 }
