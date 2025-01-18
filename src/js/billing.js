@@ -83,7 +83,6 @@ document
       className,
       academicYear,
     });
-    console.log("Response: ", response);
 
     if (!response.success) {
       showToast(response.message || "An error occurred", "error");
@@ -149,7 +148,6 @@ document
     }
 
     const resp = await window.api.billClassStudents(selectedIds, billFeesId.textContent);
-    console.log("Response: ", resp);
     if(resp.success === false) {
       showToast(resp.message || "An error occurred", "error");
       return;
@@ -184,25 +182,6 @@ function displayBillStudents(data) {
             <td></td>
         </tr>
         `;
-  });
-}
-
-// TODO: this function may be needed at other places
-async function setUpFeesSelect(feesSelect) {
-  const response = await window.api.getAllFees();
-  if (!response.success) {
-    showToast("Error occurred", "error");
-    return;
-  }
-
-  console.log("fees:  ", response);
-
-  feesSelect.innerHTML = "";
-  response.data.forEach((fee) => {
-    const option = document.createElement("option");
-    option.value = fee.fee_id;
-    option.innerHTML = `${fee.class} - ${fee.term} - ${fee.academic_year} - ${fee.amount}`;
-    feesSelect.appendChild(option);
   });
 }
 
