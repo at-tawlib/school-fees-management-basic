@@ -1,6 +1,7 @@
 import { CONTAINERS } from "./constants/constants.js";
 import { showToast } from "./utils/toast.js";
 import { showHideFeesContainer } from "./utils/show-fees-container.js";
+import { clearInputsStyles } from "./utils/clear-input-styles.js";
 
 const billClassTableContainer = document.getElementById("billClassTableContainer");
 const billClassTableBody = document.getElementById("billClassTableBody");
@@ -161,13 +162,5 @@ function displayBillStudents(data) {
             <td></td>
         </tr>
         `;
-  });
-}
-
-// TODO: this function may be needed at other places
-function clearInputsStyles(inputs) {
-  inputs.forEach((input) => {
-    input.style.backgroundColor = "";
-    input.style.color = "";
   });
 }
