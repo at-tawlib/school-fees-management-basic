@@ -19,6 +19,7 @@
     <script type="module" src="../js/modals/add-fees-modal.js" defer></script>
     <script type="module" src="../js/view-fees.js" defer></script>
     <script type="module" src="../js/billing.js" defer></script>
+    <script type="module" src="../js/view-bills.js" defer></script>
   </head>
   <body>
     <header>
@@ -40,11 +41,7 @@
           <h2>Students</h2>
           <button id="addStudentBtn" class="bg-blue">Add Student</button>
         </div>
-        <input
-          type="text"
-          id="searchStudentInput"
-          placeholder="Search by name..."
-        />
+        <input type="text" id="searchStudentInput" placeholder="Search by name..." />
         <div>
           <table id="studentsTable">
             <thead>
@@ -73,7 +70,7 @@
           <button id="addFeesButton">Add Fees</button>
           <button id="viewFeesButton">View Fees</button>
           <button id="billClassButton">Bill Class</button>
-          <button>Class One</button>
+          <button id="viewBillsButton">View Student Bills</button>
           <button>Class Two</button>
           <button>Class Three</button>
           <button>Class Four</button>
@@ -81,12 +78,8 @@
           <button>Class Six</button>
         </div>
 
-        <!-- -------------- VIEW FEES ------------------- -->
-        <div
-          id="feesTableContainer"
-          class="flex-3 sectionContainer"
-          style="display: none"
-        >
+        <!-- -------------- VIEW FEES ----------------------- -->
+        <div id="feesTableContainer" class="flex-3 sectionContainer" style="display: none">
           <h2 style="text-align: center">School Fees</h2>
           <hr style="margin: 1rem 0rem" />
 
@@ -138,12 +131,8 @@
           </table>
         </div>
 
-        <!-------------- ADD CLASS  FORM --------------------->
-        <div
-          id="addClassFormContainer"
-          class="flex-3 sectionContainer"
-          style="display: none"
-        >
+        <!-------------- ADD CLASS  FORM ----------------------->
+        <div id="addClassFormContainer" class="flex-3 sectionContainer" style="display: none">
           <h2 style="text-align: center">Add Class</h2>
           <hr style="margin: 1rem 0rem" />
 
@@ -171,9 +160,7 @@
               />
 
               <button id="setClassButton">Set Class</button>
-              <button id="setChangeClassButton" style="display: none">
-                Change Class
-              </button>
+              <button id="setChangeClassButton" style="display: none">Change Class</button>
             </div>
 
             <div id="addClassTables" style="display: none">
@@ -206,13 +193,7 @@
                   <br />
                 </div>
 
-                <hr
-                  style="
-                    border: none;
-                    border-top: 2px solid #ccc;
-                    margin: 20px 0;
-                  "
-                />
+                <hr style="border: none; border-top: 2px solid #ccc; margin: 20px 0" />
 
                 <div class="flex-row">
                   <button
@@ -231,12 +212,7 @@
                   >
                     <i class="fa-solid fa-eraser"></i> Clear
                   </button>
-                  <button
-                    id="cancelAddStudentsForm"
-                    class="bg-red"
-                    title="Cancel"
-                    type="submit"
-                  >
+                  <button id="cancelAddStudentsForm" class="bg-red" title="Cancel" type="submit">
                     <i class="fa-solid fa-close"></i> Cancel
                   </button>
                 </div>
@@ -259,11 +235,7 @@
         </div>
 
         <!-- ------------ SHOW STUDENT AND CLASS LISTS ------------ -->
-        <div
-          id="studentClassContainer"
-          class="flex-3 sectionContainer"
-          style="display: none"
-        >
+        <div id="studentClassContainer" class="flex-3 sectionContainer" style="display: none">
           <h2 style="text-align: center">Students Class</h2>
           <hr style="margin: 1rem 0rem" />
 
@@ -316,8 +288,8 @@
           </div>
         </div>
 
-        <!-- ------------ BILL STUDENTS--------------- -->
-        <div id="billClassContainer" class="flex-3 sectionContainer">
+        <!-- ------------ BILL STUDENTS --------------------- -->
+        <div id="billClassContainer" class="flex-3 sectionContainer" style="display: none">
           <h2 style="text-align: center">Bills</h2>
           <hr style="margin: 1rem 0rem" />
 
@@ -366,18 +338,13 @@
             <!-- Bill Table Container -->
             <div class="flex-3">
               <h2 id="billDetailsText"></h2>
-              <p id="billFeesId"  style="display: none;"></p>
-              <div id="billClassTableContainer" style="display: none;">
-
+              <p id="billFeesId" style="display: none"></p>
+              <div id="billClassTableContainer" style="display: none">
                 <!-- students class bill table -->
                 <table id="billClassTable">
                   <thead>
                     <tr>
-                      <th
-                        id="billClassTitle"
-                        colspan="4"
-                        style="text-align: center"
-                      ></th>
+                      <th id="billClassTitle" colspan="4" style="text-align: center"></th>
                     </tr>
                   </thead>
                   <thead>
@@ -394,40 +361,103 @@
                 </table>
 
                 <div class="flex-row">
-                  <button
-                    id="billSelectAllStudents"
-                    title="Select All Students"
-                  >
+                  <button id="billSelectAllStudents" title="Select All Students">
                     <i class="fa-solid fa-save"></i> Select All
                   </button>
-                  <button
-                    id="billClearSelection"
-                    class="bg-yellow"
-                    title="Clear Selection"
-                  >
+                  <button id="billClearSelection" class="bg-yellow" title="Clear Selection">
                     <i class="fa-solid fa-eraser"></i> Clear Selection
                   </button>
                 </div>
 
-                <hr
-                  style="
-                    border: none;
-                    border-top: 2px solid #ccc;
-                    margin: 20px 0;
-                  "
-                />
+                <hr style="border: none; border-top: 2px solid #ccc; margin: 20px 0" />
                 <div class="flex-row">
-                  <button
-                    id="billStudentsSubmitButton"
-                    class="bg-green"
-                    title="Bill Students"
-                  >
+                  <button id="billStudentsSubmitButton" class="bg-green" title="Bill Students">
                     <i class="fa-solid fa-save"></i> Bill Students
                   </button>
                   <button class="bg-red" title="Cancel">
                     <i class="fa-solid fa-close"></i> Cancel
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ------------- VIEW CLASS BILLS ---------------------- -->
+        <div id="viewClassBillsContainer" class="flex-3 sectionContainer">
+          <h2 style="text-align: center">Class Bills</h2>
+          <hr style="margin: 1rem 0rem" />
+
+          <div class="flex-row">
+            <!-- Bill options (class, academic year, term) -->
+            <div class="flex-column flex-1">
+              <div class="flex-row align-center">
+                <label for="viewBillClassSelect">Class:</label>
+                <select id="viewBillClassSelect">
+                  <option value="" disabled selected>Select class</option>
+                  <option value="1">Class 1</option>
+                  <option value="2">Class 2</option>
+                  <option value="3">Class 3</option>
+                  <option value="4">Class 4</option>
+                  <option value="5">Class 5</option>
+                  <option value="6">Class 6</option>
+                </select>
+              </div>
+              <br />
+
+              <div class="flex-row align-center">
+                <label for="viewBillAcademicYear">Year:</label>
+                <input
+                  id="viewBillAcademicYear"
+                  placeholder="Enter academic year..."
+                  type="number"
+                  required
+                />
+              </div>
+              <br />
+
+              <div class="flex-row align-center">
+                <label for="viewBillTermSelect">Term:</label>
+                <select id="viewBillTermSelect">
+                  <option value="" disabled selected>Select Term</option>
+                  <option value="first">First Term</option>
+                  <option value="second">Second Term</option>
+                  <option value="third">Third Term</option>
+                </select>
+              </div>
+              <br />
+
+              <button id="viewBillOkButton">Ok</button>
+            </div>
+
+            <!-- Bill Table Container -->
+            <div class="flex-3">
+              <h2 id="viewBillDetailsText"></h2>
+              <div id="viewBillClassTableContainer" style="display: none">
+                <!-- students class bill table -->
+                <table id="viewBillClassTable">
+                  <thead>
+                    <tr>
+                      <th id="viewBillClassTitle" colspan="9" style="text-align: center"></th>
+                    </tr>
+                  </thead>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>Class</th>      
+                      <th>Year</th>      
+                      <th>Term</th>
+                      <th>Fees</th>
+                      <th>Paid</th>
+                      <th>Balance</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="viewBillClassTableBody">
+                    <!-- bills Class List -->
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -480,12 +510,8 @@
           </div>
 
           <div class="flex-row">
-            <button id="addStudentModalBtn" type="button" class="bg-green">
-              Save
-            </button>
-            <button id="cancelStudentModalBtn" type="button" class="bg-red">
-              Cancel
-            </button>
+            <button id="addStudentModalBtn" type="button" class="bg-green">Save</button>
+            <button id="cancelStudentModalBtn" type="button" class="bg-red">Cancel</button>
           </div>
         </form>
       </div>
@@ -540,12 +566,8 @@
           </div>
 
           <div class="flex-row">
-            <button id="setFeesBtn" type="button" title="Set Fees">
-              Set Fees
-            </button>
-            <button id="cancelFeesModalBtn" type="button" class="btn">
-              Cancel
-            </button>
+            <button id="setFeesBtn" type="button" title="Set Fees">Set Fees</button>
+            <button id="cancelFeesModalBtn" type="button" class="btn">Cancel</button>
           </div>
         </form>
       </div>

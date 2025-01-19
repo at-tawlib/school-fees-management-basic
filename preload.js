@@ -10,8 +10,8 @@ contextBridge.exposeInMainWorld("api", {
   addFees: (data) => ipcRenderer.invoke("add-fees", data),
   getAllFees: (data) => ipcRenderer.invoke("get-all-fees", data),
   billStudent: (data) => ipcRenderer.invoke("bill-student", data),
-  filterAllClassesStudents: (data) =>
-    ipcRenderer.invoke("filter-all-classes-students", data),
+  filterAllClassesStudents: (data) => ipcRenderer.invoke("filter-all-classes-students", data),
   billClassStudents: (data, feesId) => ipcRenderer.invoke("bill-class-students", data, feesId),
   getSingleFee: (data) => ipcRenderer.invoke("get-single-fee", data),
+  getBillByClassYear: (data) => ipcRenderer.invoke("get-bill-by-class-year", data),
 });

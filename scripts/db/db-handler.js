@@ -23,25 +23,17 @@ class DatabaseHandler {
     // **Step 1: Check Database Integrity**
     const integrityCheck = this.db.pragma("integrity_check");
     if (integrityCheck[0].integrity_check !== "ok") {
-      throw new Error(
-        "Database integrity check failed. The database is corrupted."
-      );
+      throw new Error("Database integrity check failed. The database is corrupted.");
     }
 
     console.log("Database integrity check passed.");
 
     // **Step 2: Validate Required Tables**
     const existingTables = this.getExistingTables();
-    const missingTables = requiredTables.filter(
-      (table) => !existingTables.includes(table)
-    );
+    const missingTables = requiredTables.filter((table) => !existingTables.includes(table));
 
     if (missingTables.length > 0) {
-      throw new Error(
-        `The following required tables are missing: ${missingTables.join(
-          ", "
-        )}.`
-      );
+      throw new Error(`The following required tables are missing: ${missingTables.join(", ")}.`);
     }
     console.log("All required tables are present.");
   }
@@ -63,12 +55,7 @@ class DatabaseHandler {
             INSERT INTO students ( first_name, last_name, other_names, created_at)
             VALUES (?, ?, ?, ? )
           `);
-      stmt.run(
-        student.firstName,
-        student.lastName,
-        student.otherNames,
-        new Date().toISOString()
-      );
+      stmt.run(student.firstName, student.lastName, student.otherNames, new Date().toISOString());
       return {
         success: true,
         message: "Student added successfully.",
@@ -96,12 +83,7 @@ class DatabaseHandler {
       const stmt = this.db.prepare(`
             UPDATE students SET first_name = ?, last_name = ?, other_names = ? WHERE id = ?
             `);
-      stmt.run(
-        student.firstName,
-        student.lastName,
-        student.otherNames,
-        student.id
-      );
+      stmt.run(student.firstName, student.lastName, student.otherNames, student.id);
       return {
         success: true,
         message: "Student updated successfully.",
@@ -120,17 +102,12 @@ class DatabaseHandler {
         SELECT 1 FROM classes 
         WHERE student_id = ? AND class_name = ? AND academic_year = ?
       `);
-      const exists = checkStmt.get(
-        data.studentId,
-        data.className,
-        data.academicYear
-      );
+      const exists = checkStmt.get(data.studentId, data.className, data.academicYear);
 
       if (exists) {
         return {
           success: false,
-          message:
-            "Student is already assigned to this class for the academic year.",
+          message: "Student is already assigned to this class for the academic year.",
         };
       }
 
@@ -139,12 +116,7 @@ class DatabaseHandler {
         INSERT INTO classes ( student_id, class_name, academic_year, created_at )
         VALUES ( ?, ?, ?, ? )
       `);
-      insertStmt.run(
-        data.studentId,
-        data.className,
-        data.academicYear,
-        new Date().toISOString()
-      );
+      insertStmt.run(data.studentId, data.className, data.academicYear, new Date().toISOString());
 
       return {
         success: true,
@@ -255,25 +227,16 @@ class DatabaseHandler {
       // Checks if fees exist for the class, term and academic year before adding
       const isFeesExists = this.getSingleFee(data);
       if (isFeesExists.success === true && isFeesExists.data) {
-        console.log(
-          "Fees already exists for the specified class, term, and academic year."
-        );
+        console.log("Fees already exists for the specified class, term, and academic year.");
         return {
           success: false,
-          message:
-            "Fee already exists for the specified class, term, and academic year.",
+          message: "Fee already exists for the specified class, term, and academic year.",
         };
       }
       const stmt = this.db.prepare(`
           INSERT INTO fees (class, academic_year, term, amount, created_at) VALUES (?, ?, ?, ?, ?)
         `);
-      stmt.run(
-        data.class,
-        data.academicYear,
-        data.term,
-        data.amount,
-        new Date().toISOString()
-      );
+      stmt.run(data.class, data.academicYear, data.term, data.amount, new Date().toISOString());
       return {
         success: true,
         message: "Fees added successfully.",
@@ -351,6 +314,29 @@ class DatabaseHandler {
       const result = transaction();
       console.log("Transaction Result: ", result);
       return { success: true, data: result };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getBillByClassYear(filter) {
+    try {
+      const stmt = this.db.prepare(`
+          SELECT s.id AS student_id,
+            s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
+            c.class_name, c.academic_year,
+            f.term, f.amount AS fees_amount,
+            b.id AS bill_id,
+            b.created_at AS bill_date
+          FROM students s
+          JOIN classes c ON s.id = c.student_id
+          LEFT JOIN bills b ON s.id = b.student_id
+          LEFT JOIN fees f ON b.fees_id = f.id
+          WHERE c.class_name = ? AND c.academic_year = ?
+        `);
+      const records = stmt.all(filter.className, filter.academicYear);
+      return { success: true, data: records };
     } catch (error) {
       console.error("Database Error: ", error);
       return { success: false, message: error.message };
