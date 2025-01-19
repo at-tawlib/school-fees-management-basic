@@ -200,6 +200,20 @@ ipcMain.handle("bill-student", async (_, data) => {
   }
 });
 
+// Make payment
+ipcMain.handle("make-payment", async (_, data) => {
+  try {
+    const result = await dbHandler.makePayment(data);
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
 // app.whenReady().then(createWindow);
 app.whenReady().then(() => {
   try {

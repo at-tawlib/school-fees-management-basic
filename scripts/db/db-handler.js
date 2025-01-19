@@ -343,6 +343,23 @@ class DatabaseHandler {
     }
   }
 
+  makePayment(data) {
+    try {
+      const stmt = this.db.prepare(`
+          INSERT INTO payments (student_id, bill_id, amount, payment_mode, payment_details, date_paid)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `);
+      stmt.run(data.studentId, data.billId, data.amount, data.paymentMode, data.paymentDetails, new Date().toISOString());
+      return {
+        success: true,
+        message: "Payment made successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   // Close the database connection
   close() {
     this.db.close();

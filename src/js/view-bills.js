@@ -2,6 +2,7 @@ import { CONTAINERS } from "./constants/constants.js";
 import { showToast } from "./utils/toast.js";
 import { showHideFeesContainer } from "./utils/show-fees-container.js";
 import { clearInputsStyles } from "./utils/clear-input-styles.js";
+import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
 
 const classSelect = document.getElementById("viewBillClassSelect");
 const academicYearInput = document.getElementById("viewBillAcademicYear");
@@ -74,8 +75,20 @@ function displayViewBillTable(data) {
         <td>${item.fees_amount}</td>
         <td>0</td>
         <td>${item.fees_amount}</td>
-        <td>Make payment</td>
+        <td>
+          <button id="btnPayFees"  title="Pay school fees">
+            <i class="fa-solid fa-edit"></i>
+            Pay fees
+          </button>
+        </td>
     `;
+
+    row.querySelector("#btnPayFees").addEventListener("click", () => {
+      // currentStudent = student;
+      // openStudentPaymentModal(student);
+      openStudentPaymentModal(item);
+    });
+
     billClassTableBody.appendChild(row);
   });
 }
