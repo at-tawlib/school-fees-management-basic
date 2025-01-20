@@ -214,6 +214,20 @@ ipcMain.handle("make-payment", async (_, data) => {
   }
 });
 
+// Get students bill summary
+ipcMain.handle("get-students-bill-summary", async (_, data) => {
+  try {
+    const result = await dbHandler.getStudentsBillSummary(data);
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
 // app.whenReady().then(createWindow);
 app.whenReady().then(() => {
   try {

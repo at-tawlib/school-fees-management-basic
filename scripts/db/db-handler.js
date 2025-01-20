@@ -349,11 +349,44 @@ class DatabaseHandler {
           INSERT INTO payments (student_id, bill_id, amount, payment_mode, payment_details, date_paid)
           VALUES (?, ?, ?, ?, ?, ?)
         `);
-      stmt.run(data.studentId, data.billId, data.amount, data.paymentMode, data.paymentDetails, new Date().toISOString());
+      stmt.run(
+        data.studentId,
+        data.billId,
+        data.amount,
+        data.paymentMode,
+        data.paymentDetails,
+        new Date().toISOString()
+      );
       return {
         success: true,
         message: "Payment made successfully.",
       };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getStudentsBillSummary(filter) {
+    try {
+      const stmt = this.db.prepare(`
+          SELECT s.id AS student_id,
+            s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
+            c.class_name, c.academic_year,
+            f.id AS fees_id, f.term, f.amount AS fee_amount,
+            b.id AS bill_id, COUNT(b.id) AS is_billed,
+            IFNULL(SUM(p.amount), 0) AS total_payments
+          FROM students s
+          JOIN classes c ON s.id = c.student_id
+          LEFT JOIN fees f ON c.class_name = f.class AND c.academic_year = f.academic_year
+          LEFT JOIN bills b ON s.id = b.student_id AND b.fees_id = f.id
+          LEFT JOIN payments p ON b.id = p.bill_id
+          WHERE c.class_name = ? AND c.academic_year = ? AND f.term = ?
+          GROUP BY s.id, s.first_name, s.last_name, s.other_names, c.class_name, c.academic_year, f.term, f.amount
+          ORDER BY s.first_name, s.last_name;
+    `);
+      const records = stmt.all(filter.className, filter.academicYear, filter.term);
+      return { success: true, data: records };
     } catch (error) {
       console.error("Database Error: ", error);
       return { success: false, message: error.message };

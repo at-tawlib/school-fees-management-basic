@@ -13,6 +13,10 @@ const billClassTable = document.getElementById("viewBillClassTable");
 const billTableHeader = document.getElementById("viewBillClassTitle");
 const billClassTableBody = document.getElementById("viewBillClassTableBody");
 
+document.getElementById("viewBillsButton").addEventListener("click", async () => {
+  showHideFeesContainer(CONTAINERS.VIEW_BILLS);
+});
+
 document.getElementById("viewBillOkButton").addEventListener("click", async () => {
   const className = classSelect.value;
   const academicYear = academicYearInput.value;
@@ -34,7 +38,8 @@ document.getElementById("viewBillOkButton").addEventListener("click", async () =
     return;
   }
 
-  const response = await window.api.getBillByClassYear({ className, academicYear });
+  // const response = await window.api.getBillByClassYear({ className, academicYear });
+  const response = await window.api.getStudentsBillSummary({ className, academicYear, term });
   console.log(response);
 
   if (!response.success) {
@@ -57,6 +62,7 @@ function displayViewBillTable(data) {
   const className = classSelect.value;
   const academicYear = academicYearInput.value;
   const term = termSelect.value;
+  billDetailsText.textContent = "";
 
   billClassTableContainer.style.display = "block";
   billTableHeader.textContent = `Class ${className} for ${academicYear} ${term} term`;
@@ -68,13 +74,12 @@ function displayViewBillTable(data) {
         <td>${index + 1}</td>
         <td style="display:none">${item.student_id}</td>
         <td style="display:none">${item.bill_id}</td>
+        <td style="display:none">${item.fees_id}</td>
         <td>${item.student_name}</td>
-        <td>${item.class_name}</td>
-        <td>${item.academic_year}</td>
-        <td>${item.term}</td>
-        <td>${item.fees_amount}</td>
-        <td>0</td>
-        <td>${item.fees_amount}</td>
+        <td>${item?.bill_id ? "Billed" : "Not Billed"}</td>
+        <td>${item.fee_amount}</td>
+        <td>${item.total_payments}</td>
+        <td>${(item.fee_amount - item.total_payments)}</td>
         <td>
           <button id="btnPayFees"  title="Pay school fees">
             <i class="fa-solid fa-edit"></i>
@@ -84,8 +89,6 @@ function displayViewBillTable(data) {
     `;
 
     row.querySelector("#btnPayFees").addEventListener("click", () => {
-      // currentStudent = student;
-      // openStudentPaymentModal(student);
       openStudentPaymentModal(item);
     });
 

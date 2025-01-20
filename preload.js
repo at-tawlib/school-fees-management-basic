@@ -15,4 +15,5 @@ contextBridge.exposeInMainWorld("api", {
   getSingleFee: (data) => ipcRenderer.invoke("get-single-fee", data),
   getBillByClassYear: (data) => ipcRenderer.invoke("get-bill-by-class-year", data),
   makePayment: (data) => ipcRenderer.invoke("make-payment", data),
+  getStudentsBillSummary: (data) => ipcRenderer.invoke("get-students-bill-summary", data),
 });
