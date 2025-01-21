@@ -393,6 +393,26 @@ class DatabaseHandler {
     }
   }
 
+  getAllPayments() {
+    try {
+      const stmt = this.db.prepare(`
+          SELECT p.id AS payment_id, p.bill_id, p.amount AS payment_amount, p.payment_mode, p.payment_details, p.date_paid,
+            b.fees_id, s.id AS student_id, s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
+            f.class AS class_name, f.academic_year, f.term, f.amount AS fee_amount
+          FROM payments p
+          JOIN bills b ON p.bill_id = b.id
+          JOIN fees f ON b.fees_id = f.id
+          JOIN students s ON b.student_id = s.id
+          ORDER BY p.date_paid DESC, s.first_name, s.last_name;
+    `);
+      const records = stmt.all();
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   // Close the database connection
   close() {
     this.db.close();
