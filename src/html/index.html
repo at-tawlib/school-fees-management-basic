@@ -11,10 +11,9 @@
     <link href="../assets/fontawesome/css/brands.css" rel="stylesheet" />
     <link href="../assets/fontawesome/css/solid.css" rel="stylesheet" />
 
-    <script type="module" src="../js/student.js" defer></script>
     <script type="module" src="../js/index.js" defer></script>
     <!--     
-      <script type="module" src="../js/modals/add-fees-modal.js" defer></script> 
+    <script type="module" src="../js/student.js" defer></script>
     <script type="module" src="../js/student-class.js" defer></script>
     <script type="module" src="../js/add-class.js" defer></script>
     <script type="module" src="../js/billing.js" defer></script>
@@ -73,11 +72,14 @@
 
         <!-- -------------- VIEW FEES ----------------------- -->
         <section id="viewFeesSection">
-          <h2 style="text-align: center">School Fees</h2>
+          <div class="flex-row align-center justify-space-between">
+            <h2 style="text-align: center">School Fees</h2>
+            <button id="btnAddFees" class="bg-secondary">
+              <i class="fa-solid fa-plus"></i> Add fees
+            </button>
+          </div>
+
           <hr style="margin: 1rem 0rem" />
-
-          <button id="btnAddFees">Add fees</button>
-
           <div class="flex-row align-center">
             <div class="flex-row align-center">
               <label for="filterFeesByClassSelect">Class:</label>
@@ -174,10 +176,10 @@
 
           <div class="flex-row">
             <button id="addStudentModalBtn" type="button" class="bg-green">
-              <i class="fa-solid fa-save"></i>  Save
+              <i class="fa-solid fa-save"></i> Save
             </button>
             <button id="cancelStudentModalBtn" type="button" class="bg-red">
-              <i class="fa-solid fa-close"></i>  Cancel
+              <i class="fa-solid fa-close"></i> Cancel
             </button>
           </div>
         </form>
@@ -233,8 +235,12 @@
           </div>
 
           <div class="flex-row">
-            <button id="setFeesBtn" type="button" title="Set Fees">Set Fees</button>
-            <button id="cancelFeesModalBtn" type="button" class="btn">Cancel</button>
+            <button id="setFeesBtn" type="button" title="Set Fees" class="outlined-button">
+              <i class="fa-regular fa-circle-check"></i> Set Fees
+            </button>
+            <button id="cancelFeesModalBtn" type="button" class="bg-red">
+              <i class="fa-solid fa-xmark"></i> Cancel
+            </button>
           </div>
         </form>
       </div>

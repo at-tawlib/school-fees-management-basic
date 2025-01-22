@@ -377,6 +377,11 @@ main {
 }
 
 /* ************** COLOURS & BACKGROUND COLOURS ********************/
+.bg-secondary {
+  background-color: var(--color-secondary);
+  color: white;
+}
+
 .bg-red {
   background-color: var(--color-red);
   color: white;
