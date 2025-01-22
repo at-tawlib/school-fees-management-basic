@@ -64,12 +64,6 @@ changeClassButton.addEventListener("click", function () {
   resetAddStudentForm();
 });
 
-document
-  .getElementById("newClassButton")
-  .addEventListener("click", function () {
-    showHideFeesContainer(CONTAINERS.CLASS_FORM);
-    resetAddStudentForm();
-  });
 
 document
   .getElementById("addOneStudentRow")
@@ -284,7 +278,7 @@ function clearInput(input) {
   input.disabled = false;
 }
 
-function resetAddStudentForm() {
+export function resetAddStudentForm() {
   addClassFormClass.disabled = false;
   addClassFormYear.disabled = false;
   clearInput(addClassFormClass);

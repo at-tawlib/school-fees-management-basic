@@ -1,4 +1,6 @@
+import { resetAddStudentForm } from "./add-class.js";
 import { CONTAINERS } from "./constants/constants.js";
+import { displayStudentsClass } from "./student-class.js";
 import { displayStudents } from "./student.js";
 import { showHideFeesContainer } from "./utils/show-fees-container.js";
 import { displayFeesTable } from "./view-fees.js";
@@ -12,3 +14,13 @@ document.getElementById("navViewFees").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.VIEW_FEES);
   displayFeesTable();
 });
+
+document.getElementById("navAddClass").addEventListener("click", function() {
+  showHideFeesContainer(CONTAINERS.ADD_CLASS);
+  resetAddStudentForm();
+})
+
+document.getElementById("navClasses").addEventListener("click", function() {
+  showHideFeesContainer(CONTAINERS.STUDENT_CLASS);
+  displayStudentsClass();
+})

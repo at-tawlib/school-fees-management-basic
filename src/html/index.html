@@ -13,9 +13,9 @@
 
     <script type="module" src="../js/index.js" defer></script>
     <!--     
-    <script type="module" src="../js/student.js" defer></script>
+      <script type="module" src="../js/student.js" defer></script>
+      <script type="module" src="../js/add-class.js" defer></script>
     <script type="module" src="../js/student-class.js" defer></script>
-    <script type="module" src="../js/add-class.js" defer></script>
     <script type="module" src="../js/billing.js" defer></script>
     <script type="module" src="../js/class.js" defer></script>
     <script type="module" src="../js/payments.js" defer></script>
@@ -30,6 +30,8 @@
           <li>Dashboard</li>
           <li id="navStudents">Students</li>
           <li id="navViewFees">View Fees</li>
+          <li id="navAddClass">Add Class</li>
+          <li id="navClasses">Classes</li>
           <li>Payments</li>
           <li>Settings</li>
         </ul>
@@ -71,7 +73,7 @@
         </section>
 
         <!-- -------------- VIEW FEES ----------------------- -->
-        <section id="viewFeesSection">
+        <section id="viewFeesSection" style="display: none">
           <div class="flex-row align-center justify-space-between">
             <h2 style="text-align: center">School Fees</h2>
             <button id="btnAddFees" class="bg-secondary">
@@ -126,6 +128,163 @@
             </thead>
             <tbody id="feesTableBody"></tbody>
           </table>
+        </section>
+
+        <!-------------- ADD CLASS  FORM ----------------------->
+        <section id="addClassSection" style="display: none">
+          <h2 style="text-align: center">Add Class</h2>
+          <hr style="margin: 1rem 0rem" />
+
+          <div class="sectionContainer">
+            <!-- ------ Select class, academic year and fees ---- -->
+            <div class="flex-row align-center">
+              <label for="addClassFormClass"><h3>Select Class:</h3></label>
+              <select name="addClassFormClass" id="addClassFormClass" required>
+                <option value="" disabled selected>Select Class</option>
+                <option value="1">Class 1</option>
+                <option value="2">Class 2</option>
+                <option value="3">Class 3</option>
+                <option value="4">Class 4</option>
+                <option value="5">Class 5</option>
+                <option value="6">Class 6</option>
+              </select>
+
+              <label for="addClassFormYear"><h3>Academic year:</h3></label>
+              <input
+                type="number"
+                id="addClassFormYear"
+                name="addClassFormYear"
+                placeholder="Enter Year"
+                required
+              />
+
+              <button id="setClassButton">Set Class</button>
+              <button id="setChangeClassButton" style="display: none">Change Class</button>
+            </div>
+
+            <div id="addClassTables" style="display: none">
+              <div class="flex-80">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Student ID</th>
+                      <th>Name</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="addStudentClassForm">
+                    <!-- Students List -->
+                  </tbody>
+                </table>
+
+                <div class="flex-row">
+                  <button id="addOneStudentRow" title="Add Row">
+                    <i class="fa-solid fa-plus"></i> Add Row
+                  </button>
+
+                  <button id="addTwoStudentRows" title="Add 2 Rows">
+                    <i class="fa-solid fa-plus"></i> Add 2 Rows
+                  </button>
+
+                  <button id="addFiveStudentRows" title="Add 5 Rows">
+                    <i class="fa-solid fa-plus"></i> Add 5 Rows
+                  </button>
+                  <br />
+                </div>
+
+                <hr style="border: none; border-top: 2px solid #ccc; margin: 20px 0" />
+
+                <div class="flex-row">
+                  <button
+                    id="addStudentsSaveBtn"
+                    class="bg-green"
+                    title="Save records"
+                    type="submit"
+                  >
+                    <i class="fa-solid fa-save"></i> Save Records
+                  </button>
+                  <button
+                    id="clearAddStudentsForm"
+                    class="bg-yellow"
+                    title="Clear All"
+                    type="submit"
+                  >
+                    <i class="fa-solid fa-eraser"></i> Clear
+                  </button>
+                  <button id="cancelAddStudentsForm" class="bg-red" title="Cancel" type="submit">
+                    <i class="fa-solid fa-close"></i> Cancel
+                  </button>
+                </div>
+              </div>
+
+              <!-- Student lists table -->
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                  </tr>
+                </thead>
+                <tbody id="studentsListTableBody">
+                  <!-- Students List -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ------------ CLASSES / STUDENT CLASS SECTION ------------ -->
+        <section id="studentClassSection">
+          <h2 style="text-align: center">Students Class</h2>
+          <hr style="margin: 1rem 0rem" />
+
+          <div class="sectionContainer">
+            <div class="flex-row align-center">
+              <label for="filterByClass">Class:</label>
+              <select id="filterByClassSelect">
+                <option value="all">All</option>
+                <option value="1">Class 1</option>
+                <option value="2">Class 2</option>
+                <option value="3">Class 3</option>
+                <option value="4">Class 4</option>
+                <option value="5">Class 5</option>
+                <option value="6">Class 6</option>
+              </select>
+
+              <label for="filterByTerrm">Term:</label>
+              <select id="filterByTErmSelect">
+                <option value="all">All</option>
+                <option value="1">First Term</option>
+                <option value="2">Second Term</option>
+                <option value="3">Third Term</option>
+              </select>
+
+              <label for="filterByTErm">Year:</label>
+              <input
+                id="academicYearFilter"
+                placeholder="Enter academic year..."
+                type="number"
+                required
+              />
+
+              <button id="studentClassGoBtn">Go</button>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Class</th>
+                  <th>Year</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="studentClassTableBody">
+                <!-- Students Class List -->
+              </tbody>
+            </table>
+          </div>
         </section>
       </main>
     </div>
