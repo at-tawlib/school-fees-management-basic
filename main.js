@@ -22,6 +22,59 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, "src/html/index.html"));
 }
 
+// Add class
+ipcMain.handle("add-class", (event, data) => {
+  try {
+    const result = dbHandler.addClass(data);
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// Get all classes
+ipcMain.handle("get-all-classes", () => {
+  try {
+    const result = dbHandler.getAllClasses();
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// Add academic year
+ipcMain.handle("add-academic-year", (event, data) => {
+  try {
+    const result = dbHandler.addAcademicYear(data);
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+
+// Get all academic years
+ipcMain.handle("get-all-academic-years", () => {
+  try {
+    const result = dbHandler.getAllAcademicYears();
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // Insert student to the database
 ipcMain.handle("insert-student", (event, student) => {
   try {
