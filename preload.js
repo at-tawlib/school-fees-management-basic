@@ -22,3 +22,19 @@ contextBridge.exposeInMainWorld("api", {
   addAcademicYear: (data) => ipcRenderer.invoke("add-academic-year", data),
   getAllAcademicYears: () => ipcRenderer.invoke("get-all-academic-years"),
 });
+
+contextBridge.exposeInMainWorld("store", {
+  // TODO: remove this it is not needed
+  getInitialData: async () => {
+    return await ipcRenderer.invoke("get-initial-data");
+  },
+  getStoreClasses: async () => {
+    return await ipcRenderer.invoke("get-store-classes");
+  },
+  getStoreAcademicYears: async () => {
+    return await ipcRenderer.invoke("get-store-years");
+  },
+  getStoreTerms: async () => {
+    return await ipcRenderer.invoke("get-store-terms");
+  },
+});

@@ -5,6 +5,14 @@ const DatabaseHandler = require("./scripts/db/db-handler");
 let mainWindow;
 let dbHandler;
 
+let store; // Declare `store` at the top for global access
+
+// Dynamically load `electron-store`
+async function loadStore() {
+  const { default: Store } = await import("electron-store");
+  store = new Store();
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     title: "School Fees Tracker",
@@ -21,6 +29,48 @@ function createWindow() {
 
   mainWindow.loadFile(path.join(__dirname, "src/html/index.html"));
 }
+
+// Get all classes, academic years and terms from the database and save to local storage
+async function loadInitialData() {
+  try {
+    await loadStore();
+    const classes = await dbHandler.getAllClasses();
+    const academicYears = await dbHandler.getAllAcademicYears();
+    const terms = await dbHandler.getAllTerms();
+
+    // Save data in electron-store
+    store.set("classes", classes.data);
+    store.set("academicYears", academicYears.data);
+    store.set("terms", terms.data);
+
+    console.log("Data loaded into local storage");
+    console.log("classes: ", store.get("classes"));
+    console.log("academic years: ", store.get("academicYears"));
+    console.log("terms: ", store.get("terms"));
+  } catch (error) {
+    console.error("Failed to load initial data:", error);
+  }
+}
+
+ipcMain.handle("get-initial-data", (_) => {
+  return {
+    classes: store.get("classes") || [],
+    academicYears: store.get("academicYears") || [],
+    terms: store.get("terms") || [],
+  };
+});
+
+ipcMain.handle("get-store-classes", (_) => {
+  return store.get("classes") || [];
+});
+
+ipcMain.handle("get-store-years", (_) => {
+  return store.get("academicYears") || [];
+});
+
+ipcMain.handle("get-store-terms", (_) => {
+  return store.get("terms") || [];
+});
 
 // Add class
 ipcMain.handle("add-class", (event, data) => {
@@ -60,7 +110,6 @@ ipcMain.handle("add-academic-year", (event, data) => {
     return { success: false, message: error.message };
   }
 });
-
 
 // Get all academic years
 ipcMain.handle("get-all-academic-years", () => {
@@ -296,9 +345,10 @@ ipcMain.handle("get-all-payments", async () => {
 });
 
 // app.whenReady().then(createWindow);
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   try {
     dbHandler = new DatabaseHandler();
+    await loadInitialData();
     createWindow();
   } catch (error) {
     console.error(error.message);

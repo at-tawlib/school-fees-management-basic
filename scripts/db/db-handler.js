@@ -103,6 +103,17 @@ class DatabaseHandler {
     }
   }
 
+  getAllTerms() {
+    try {
+      const stmt = this.db.prepare(`SELECT * FROM terms`);
+      const records = stmt.all();
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   insertStudent(student) {
     try {
       const stmt = this.db.prepare(`
