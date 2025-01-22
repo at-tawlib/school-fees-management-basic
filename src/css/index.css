@@ -139,8 +139,8 @@ th {
   justify-content: space-between;
 }
 
-.mt-1 {
-  margin-top: 1rem;
+.full-width {
+  width: 100%
 }
 
 /* ****************** CONTAINER CSS *************************** */
@@ -395,4 +395,56 @@ main {
 .bg-blue {
   background-color: var(--color-blue);
   color: white;
+}
+
+/* ************** BUTTONS CSS ******************************* */
+.outlined-button {
+  display: inline-block;
+  color: #007BFF; 
+  background-color: transparent;
+  border: 1px solid #007BFF;
+  transition: all 0.3s ease;
+}
+
+.outlined-button:hover {
+  background-color: #007BFF;
+  color: #fff; 
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.outlined-button:active {
+  background-color: #0056b3; /* Darker background when clicked */
+  border-color: #0056b3;
+  box-shadow: none;
+}
+
+.outlined-button:disabled {
+  color: #ccc;
+  border-color: #ccc;
+  cursor: not-allowed;
+  background-color: transparent;
+}
+
+
+.text-button {
+  display: inline-block;
+  color: #007BFF;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.text-button:hover {
+  color: #0056b3; /* Darker colour on hover */
+  text-decoration: underline;
+}
+
+.text-button:active {
+  color: #003f7f; /* Even darker colour on click */
+}
+
+.text-button:disabled {
+  color: #ccc;
+  cursor: not-allowed;
 }

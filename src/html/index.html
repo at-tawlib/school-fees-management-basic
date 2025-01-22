@@ -13,7 +13,8 @@
 
     <script type="module" src="../js/student.js" defer></script>
     <script type="module" src="../js/index.js" defer></script>
-<!--     
+    <!--     
+      <script type="module" src="../js/modals/add-fees-modal.js" defer></script> 
     <script type="module" src="../js/student-class.js" defer></script>
     <script type="module" src="../js/add-class.js" defer></script>
     <script type="module" src="../js/billing.js" defer></script>
@@ -21,7 +22,7 @@
     <script type="module" src="../js/payments.js" defer></script>
     <script type="module" src="../js/view-bills.js" defer></script>
     <script type="module" src="../js/view-fees.js" defer></script>
-    <script type="module" src="../js/modals/add-fees-modal.js" defer></script> -->
+    -->
   </head>
   <body>
     <div class="container">
@@ -29,40 +30,101 @@
         <ul>
           <li>Dashboard</li>
           <li id="navStudents">Students</li>
-          <li>Fees</li>
+          <li id="navViewFees">View Fees</li>
           <li>Payments</li>
           <li>Settings</li>
         </ul>
       </nav>
 
       <main>
-            <!-------------- STUDENTS  SECTION ----------------------->
-      <section id="studentsView">
-        <h2 style="text-align: center"> Students</h2>
-        <hr style="margin: 1rem 0rem" />
-        
-        <div class="flex-row">
-          <h2>Students</h2>
-          <button id="addStudentBtn" class="bg-blue">Add Student</button>
-        </div>
-        <input type="text" id="searchStudentInput" placeholder="Search by name..." />
-        <div>
-          <table id="studentsTable">
-            <thead>
+        <!-------------- STUDENTS  SECTION ----------------------->
+        <section id="studentsView" style="display: none">
+          <div class="flex-row align-center justify-space-between">
+            <h2>Students</h2>
+            <button id="addStudentBtn" class="bg-blue">
+              <i class="fa-solid fa-plus"></i> Add Student
+            </button>
+          </div>
+          <hr style="margin: 1rem 0rem" />
+
+          <input
+            type="text"
+            id="searchStudentInput"
+            class="full-width"
+            placeholder="Search by name..."
+          />
+          <div>
+            <table id="studentsTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Other Names</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="studentsTableBody">
+                <!-- Load data from the css -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- -------------- VIEW FEES ----------------------- -->
+        <section id="viewFeesSection">
+          <h2 style="text-align: center">School Fees</h2>
+          <hr style="margin: 1rem 0rem" />
+
+          <button id="btnAddFees">Add fees</button>
+
+          <div class="flex-row align-center">
+            <div class="flex-row align-center">
+              <label for="filterFeesByClassSelect">Class:</label>
+              <select id="filterFeesByClassSelect">
+                <option value="all">All</option>
+                <option value="Class One">Class One</option>
+                <option value="Form 1">Form 1</option>
+                <option value="Form 2">Form 2</option>
+                <option value="Form 3">Form 3</option>
+                <option value="Form 4">Form 4</option>
+              </select>
+            </div>
+
+            <div class="flex-row align-center">
+              <label for="filterFeesByAcademicYear">Academic Year:</label>
+              <select id="filterFeesByAcademicYear">
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+              </select>
+            </div>
+
+            <div class="flex-row align-center">
+              <label for="filterFeesByTerm">Term:</label>
+              <select id="filterFeesByTerm">
+                <option value="first">first</option>
+                <option value="second">second</option>
+                <option value="third">third</option>
+              </select>
+            </div>
+
+            <button id="searchFeesButton">Search</button>
+          </div>
+
+          <table id="feesTable">
+            <thead id="feesTableHead">
               <tr>
-                <th>Student ID</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Other Names</th>
+                <th>#</th>
+                <th>Class</th>
+                <th>Academic Year</th>
+                <th>Term</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="studentsTableBody">
-              <!-- Load data from the css -->
-            </tbody>
+            <tbody id="feesTableBody"></tbody>
           </table>
-        </div>
-      </section>
+        </section>
       </main>
     </div>
 
@@ -111,8 +173,12 @@
           </div>
 
           <div class="flex-row">
-            <button id="addStudentModalBtn" type="button" class="bg-green">Save</button>
-            <button id="cancelStudentModalBtn" type="button" class="bg-red">Cancel</button>
+            <button id="addStudentModalBtn" type="button" class="bg-green">
+              <i class="fa-solid fa-save"></i>  Save
+            </button>
+            <button id="cancelStudentModalBtn" type="button" class="bg-red">
+              <i class="fa-solid fa-close"></i>  Cancel
+            </button>
           </div>
         </form>
       </div>
