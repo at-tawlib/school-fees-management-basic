@@ -5,7 +5,7 @@ const Database = require("better-sqlite3");
 const dbPath = require("../file-paths").getDbPath();
 
 //  Required tables for validation
-const requiredTables = ["students", "classes", "fees"];
+const requiredTables = ["students", "studentClasses", "fees"];
 
 class DatabaseHandler {
   constructor() {
@@ -99,7 +99,7 @@ class DatabaseHandler {
     try {
       // Check if the record already exists
       const checkStmt = this.db.prepare(`
-        SELECT 1 FROM classes 
+        SELECT 1 FROM studentClasses 
         WHERE student_id = ? AND class_name = ? AND academic_year = ?
       `);
       const exists = checkStmt.get(data.studentId, data.className, data.academicYear);
@@ -113,7 +113,7 @@ class DatabaseHandler {
 
       // If not, insert the new record
       const insertStmt = this.db.prepare(`
-        INSERT INTO classes ( student_id, class_name, academic_year, created_at )
+        INSERT INTO studentClasses ( student_id, class_name, academic_year, created_at )
         VALUES ( ?, ?, ?, ? )
       `);
       insertStmt.run(data.studentId, data.className, data.academicYear, new Date().toISOString());
@@ -134,7 +134,7 @@ class DatabaseHandler {
       const stmt = this.db.prepare(`
           SELECT s.id AS student_id, s.first_name, s.last_name, s.other_names, c.class_name, c.academic_year
           FROM  students s
-          JOIN classes c
+          JOIN studentClasses c
           ON s.id = c.student_id
         `);
       const records = stmt.all();
@@ -150,7 +150,7 @@ class DatabaseHandler {
       const stmt = this.db.prepare(`
           SELECT s.id AS student_id, s.first_name, s.last_name, s.other_names, c.class_name, c.academic_year
           FROM  students s
-          JOIN classes c
+          JOIN studentClasses c
           ON s.id = c.student_id
           WHERE c.class_name = ? AND c.academic_year = ?;
         `);
@@ -167,7 +167,7 @@ class DatabaseHandler {
       const stmt = this.db.prepare(`
         SELECT EXISTS (
           SELECT 1 
-          FROM classes 
+          FROM studentClasses 
           WHERE class_name = ? AND academic_year = ?
         ) AS data_exists;
       `);
@@ -330,7 +330,7 @@ class DatabaseHandler {
             b.id AS bill_id,
             b.created_at AS bill_date
           FROM students s
-          JOIN classes c ON s.id = c.student_id
+          JOIN studentClasses c ON s.id = c.student_id
           LEFT JOIN bills b ON s.id = b.student_id
           LEFT JOIN fees f ON b.fees_id = f.id
           WHERE c.class_name = ? AND c.academic_year = ?
@@ -377,7 +377,7 @@ class DatabaseHandler {
             b.id AS bill_id, COUNT(b.id) AS is_billed,
             IFNULL(SUM(p.amount), 0) AS total_payments
           FROM students s
-          JOIN classes c ON s.id = c.student_id
+          JOIN studentClasses c ON s.id = c.student_id
           LEFT JOIN fees f ON c.class_name = f.class AND c.academic_year = f.academic_year
           LEFT JOIN bills b ON s.id = b.student_id AND b.fees_id = f.id
           LEFT JOIN payments p ON b.id = p.bill_id
