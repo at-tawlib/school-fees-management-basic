@@ -5,7 +5,7 @@ const Database = require("better-sqlite3");
 const dbPath = require("../file-paths").getDbPath();
 
 //  Required tables for validation
-const requiredTables = ["students", "studentClasses", "fees"];
+const requiredTables = ["academicYears", "bills", "classes", "fees", "students", "studentClasses", "terms"];
 
 class DatabaseHandler {
   constructor() {
@@ -47,6 +47,60 @@ class DatabaseHandler {
         `;
     const rows = this.db.prepare(query).all();
     return rows.map((row) => row.name);
+  }
+
+  addClass(className) {
+    try {
+      const stmt = this.db.prepare(`
+            INSERT INTO classes ( class_name, created_at) VALUES (?, ?);
+        `);
+      stmt.run(className, new Date().toISOString());
+      return {
+        success: true,
+        message: "Class added successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getAllClasses() {
+    try {
+      const stmt = this.db.prepare(`SELECT * FROM classes`);
+      const records = stmt.all();
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  addAcademicYear(academicYear) {
+    try {
+      const stmt = this.db.prepare(`
+        INSERT INTO academicYears (year, created_at) VALUES (?, ?);
+      `);
+      stmt.run(academicYear, new Date().toISOString());
+      return {
+        success: true,
+        message: "Academic year added successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getAllAcademicYears() {
+    try {
+      const stmt = this.db.prepare(`SELECT * FROM academicYears`);
+      const records = stmt.all();
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
   }
 
   insertStudent(student) {

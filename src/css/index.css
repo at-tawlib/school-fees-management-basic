@@ -188,6 +188,18 @@ main {
   color: white;
 }
 
+#navSettings {
+  border-radius: 0px;
+  border-bottom: none;
+  text-align: start;
+  color: var(--color-secondary);
+}
+
+#navSettings:hover {
+  background-color: var(--color-secondary);
+  color: white;
+}
+
 /* ********************** ADD CLASS CSS *********************** */
 .sectionContainer {
   background-color: white;
@@ -452,4 +464,40 @@ main {
 .text-button:disabled {
   color: #ccc;
   cursor: not-allowed;
+}
+
+/* ************************ ROUNDED TABLE CSS ****************** */
+.table-rounded {
+  border-collapse: collapse;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: white;
+}
+
+.table-rounded th,
+.table-rounded td {
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.table-rounded th {
+  background-color: var(--color-secondary);
+  font-weight: bold;
+  border-bottom: 1px solid #ccc; /* Only bottom border for the header */
+}
+
+.table-rounded tr:last-child td {
+  border-bottom: none; /* Remove the bottom border for the last row */
+}
+u
+.table-rounded td {
+  border-bottom: 1px solid var(--color-secondary); /* Only bottom border for rows */
+}
+
+/* Remove vertical borders completely */
+.table-rounded td,
+.table-rounded th {
+  border-left: none;
+  border-right: none;
 }

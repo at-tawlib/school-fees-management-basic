@@ -3,8 +3,9 @@ export const CONTAINERS = {
   VIEW_FEES: "viewFeesSection",
   ADD_CLASS: "addClassSection",
   STUDENT_CLASS: "studentClass",
+  BILL_CLASS: "billClass",
+  SETTINGS_VIEW: "settingsView",
   // FEES_TABLE: "feesTable",
   // CLASS_FORM: "classForm",
-  // BILL_CLASS: "billClass",
   // VIEW_BILLS: "viewBills",
 };

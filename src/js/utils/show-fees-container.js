@@ -6,6 +6,8 @@ export function showHideFeesContainer(container) {
   const viewFeesSection = document.getElementById("viewFeesSection");
   const addClassSection = document.getElementById("addClassSection");
   const studentClassSection = document.getElementById("studentClassSection");
+  const billClassSection = document.getElementById("billClassSection");
+  const settingsSection = document.getElementById("settingsSection");
 
   switch (container) {
     case CONTAINERS.STUDENTS_VIEW:
@@ -13,24 +15,48 @@ export function showHideFeesContainer(container) {
       viewFeesSection.style.display = "none";
       addClassSection.style.display = "none";
       studentClassSection.style.display = "none";
+      billClassSection.style.display = "none";
+      settingsSection.style.display = "none";
       break;
     case CONTAINERS.VIEW_FEES:
       studentsView.style.display = "none";
       viewFeesSection.style.display = "block";
       addClassSection.style.display = "none";
       studentClassSection.style.display = "none";
+      billClassSection.style.display = "none";
+      settingsSection.style.display = "none";
       break;
     case CONTAINERS.ADD_CLASS:
       studentsView.style.display = "none";
       viewFeesSection.style.display = "none";
       addClassSection.style.display = "block";
       studentClassSection.style.display = "none";
+      billClassSection.style.display = "none";
+      settingsSection.style.display = "none";
       break;
     case CONTAINERS.STUDENT_CLASS:
       studentsView.style.display = "none";
       viewFeesSection.style.display = "none";
       addClassSection.style.display = "none";
       studentClassSection.style.display = "block";
+      billClassSection.style.display = "none";
+      settingsSection.style.display = "none";
+      break;
+    case CONTAINERS.BILL_CLASS:
+      studentsView.style.display = "none";
+      viewFeesSection.style.display = "none";
+      addClassSection.style.display = "none";
+      studentClassSection.style.display = "none";
+      billClassSection.style.display = "block";
+      settingsSection.style.display = "none";
+      break;
+    case CONTAINERS.SETTINGS_VIEW:
+      studentsView.style.display = "none";
+      viewFeesSection.style.display = "none";
+      addClassSection.style.display = "none";
+      studentClassSection.style.display = "none";
+      billClassSection.style.display = "none";
+      settingsSection.style.display = "block";
       break;
   }
 }
