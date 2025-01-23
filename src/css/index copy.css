@@ -1,8 +1,5 @@
 /* Define color variables in the :root */
 :root {
-  --color-primary: #41d87b;
-  --color-secondary: #ff6425;
-  --color-secondary: #083a3c;
   --color-red: #cc0000;
   --color-red-light: #ff0000;
   --color-red-dark: #660000;
@@ -18,7 +15,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #F3F9F7;
+  background-color: #f4f4f4;
 }
 
 /* Usage
@@ -139,65 +136,62 @@ th {
   justify-content: space-between;
 }
 
-.full-width {
-  width: 100%
+.mt-1 {
+  margin-top: 1rem;
 }
 
-/* ****************** CONTAINER CSS *************************** */
-.container {
+header {
   display: flex;
-  height: 100vh;
+  flex-direction: row;
+  align-items: center;
+  height: 3.5rem;
+  background-color: white;
+}
+
+nav {
+  display: flex;
+  flex-direction: row;
+  margin: 0 1rem;
+}
+
+nav ul {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+nav ul li:hover {
+  color: blue;
+  cursor: pointer;
 }
 
 /* ****************** MAIN CONTENT *************************** */
 main {
-  width: calc(100% - 16rem);
-  margin-left: 16rem;
+  margin: 2rem 4rem;
+  height: 90vh;
   overflow-y: auto;
+}
+
+.sideMenuContainer {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.8);
+}
+
+.sideMenuContainer button {
+  width: 100%;
+  margin: 0;
   padding: 1rem;
-}
-
-/* *********************** SIDEBAR *************************************** */
-.sidebar {
-  width: 16rem;
-  position: fixed;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background-color: var(--color-secondary);
-  color: white;
-  top: 0;
-  bottom: 0;
-  overflow-y: auto; /* Allows sidebar to scroll independently if needed */
-}
-
-.sidebar ul li {
-  padding: 15px;
-  cursor: pointer;
+  border: none;
+  border-radius: 0;
+  border-bottom: #2c3e50 1px solid;
+  background-color: white;
   text-align: left;
-  border-bottom: 1px solid #e0d8d8;
 }
 
-.sidebar ul li:hover {
-  /* background-color: #555; */
-  background-color: var(--color-primary); /
-}
-
-.sidebar li.active {
-  background-color: var(--color-primary); /* Active color */
-  color: white;
-}
-
-#navSettings {
-  border-radius: 0px;
-  border-bottom: none;
-  text-align: start;
-  color: var(--color-secondary);
-}
-
-#navSettings:hover {
-  background-color: var(--color-secondary);
-  color: white;
+.sideMenuContainer button:hover {
+  background-color: #f4f4f4;
 }
 
 /* ********************** ADD CLASS CSS *********************** */
@@ -243,8 +237,7 @@ main {
 }
 
 /* ********************** BILL CSS *********************** */
-#billClassContainer select,
-#billClassContainer input {
+#billClassContainer select, #billClassContainer input {
   width: 100%;
 }
 
@@ -389,11 +382,6 @@ main {
 }
 
 /* ************** COLOURS & BACKGROUND COLOURS ********************/
-.bg-secondary {
-  background-color: var(--color-secondary);
-  color: white;
-}
-
 .bg-red {
   background-color: var(--color-red);
   color: white;
@@ -412,92 +400,4 @@ main {
 .bg-blue {
   background-color: var(--color-blue);
   color: white;
-}
-
-/* ************** BUTTONS CSS ******************************* */
-.outlined-button {
-  display: inline-block;
-  color: #007BFF; 
-  background-color: transparent;
-  border: 1px solid #007BFF;
-  transition: all 0.3s ease;
-}
-
-.outlined-button:hover {
-  background-color: #007BFF;
-  color: #fff; 
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-}
-
-.outlined-button:active {
-  background-color: #0056b3; /* Darker background when clicked */
-  border-color: #0056b3;
-  box-shadow: none;
-}
-
-.outlined-button:disabled {
-  color: #ccc;
-  border-color: #ccc;
-  cursor: not-allowed;
-  background-color: transparent;
-}
-
-
-.text-button {
-  display: inline-block;
-  color: #007BFF;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  transition: color 0.3s ease, text-decoration 0.3s ease;
-}
-
-.text-button:hover {
-  color: #0056b3; /* Darker colour on hover */
-  text-decoration: underline;
-}
-
-.text-button:active {
-  color: #003f7f; /* Even darker colour on click */
-}
-
-.text-button:disabled {
-  color: #ccc;
-  cursor: not-allowed;
-}
-
-/* ************************ ROUNDED TABLE CSS ****************** */
-.table-rounded {
-  border-collapse: collapse;
-  width: 100%;
-  border-radius: 10px;
-  overflow: hidden;
-  background-color: white;
-}
-
-.table-rounded th,
-.table-rounded td {
-  padding: 8px 12px;
-  text-align: left;
-}
-
-.table-rounded th {
-  background-color: var(--color-secondary);
-  font-weight: bold;
-  border-bottom: 1px solid #ccc; /* Only bottom border for the header */
-}
-
-.table-rounded tr:last-child td {
-  border-bottom: none; /* Remove the bottom border for the last row */
-}
-u
-.table-rounded td {
-  border-bottom: 1px solid var(--color-secondary); /* Only bottom border for rows */
-}
-
-/* Remove vertical borders completely */
-.table-rounded td,
-.table-rounded th {
-  border-left: none;
-  border-right: none;
 }

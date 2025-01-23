@@ -11,70 +11,73 @@ document.getElementById("addStudentBtn").addEventListener("click", function () {
   document.getElementById("addStudentForm").reset();
 });
 
-document
-  .getElementById("addStudentCloseX")
-  .addEventListener("click", function () {
-    addStudentModal.style.display = "none";
-    editingStudentId = null;
-  });
+document.getElementById("addStudentCloseX").addEventListener("click", function () {
+  addStudentModal.style.display = "none";
+  editingStudentId = null;
+});
 
-document
-  .getElementById("cancelStudentModalBtn")
-  .addEventListener("click", function () {
-    addStudentModal.style.display = "none";
-    editingStudentId = null;
-  });
+document.getElementById("cancelStudentModalBtn").addEventListener("click", function () {
+  addStudentModal.style.display = "none";
+  editingStudentId = null;
+});
 
-document
-  .getElementById("addStudentModalBtn")
-  .addEventListener("click", async function () {
-    const firstName = document.getElementById("studentFirstNameInput").value;
-    const lastName = document.getElementById("studentLastNameInput").value;
-    const otherNames = document.getElementById("studentOtherNameInput").value;
+document.getElementById("addStudentModalBtn").addEventListener("click", async function () {
+  const firstName = document.getElementById("studentFirstNameInput").value;
+  const lastName = document.getElementById("studentLastNameInput").value;
+  const otherNames = document.getElementById("studentOtherNameInput").value;
 
-    if (!firstName || !lastName) {
-      showToast("Please provide the student's first and last name.", "error");
-      return;
-    }
+  if (!firstName || !lastName) {
+    showToast("Please provide the student's first and last name.", "error");
+    return;
+  }
 
-    if (editingStudentId) {
-      // Update student record
-      const result = await window.api.updateStudent({
-          firstName,
-          lastName,
-          otherNames,
-          id: editingStudentId,
-      });
-
-      if (result.success) {
-        showToast(result.message, "success");
-        editingStudentId = null;
-        addStudentModal.style.display = "none";
-        displayStudents();
-        return;
-      }
-
-      showToast(result.message, "error");
-      return;
-    }
-
-    const result = await window.api.insertStudent({
+  if (editingStudentId) {
+    // Update student record
+    const result = await window.api.updateStudent({
       firstName,
       lastName,
       otherNames,
+      id: editingStudentId,
     });
 
     if (result.success) {
       showToast(result.message, "success");
+      editingStudentId = null;
       addStudentModal.style.display = "none";
       displayStudents();
       return;
     }
 
     showToast(result.message, "error");
+    return;
+  }
+
+  const result = await window.api.insertStudent({
+    firstName,
+    lastName,
+    otherNames,
   });
 
-async function displayStudents() {
+  if (result.success) {
+    showToast(result.message, "success");
+    addStudentModal.style.display = "none";
+    displayStudents();
+    return;
+  }
+
+  showToast(result.message, "error");
+});
+
+function editStudentRecord(student) {
+  addStudentModal.style.display = "block";
+
+  firstNameInput.value = student.first_name;
+  lastNameInput.value = student.last_name;
+  otherNamesInput.value = student.other_names;
+  editingStudentId = student.id;
+}
+
+export async function displayStudents() {
   const response = await window.api.getAllStudents();
   const studentsTableBody = document.getElementById("studentsTableBody");
   studentsTableBody.innerHTML = "";
@@ -97,7 +100,8 @@ async function displayStudents() {
         <td>${student.last_name}</td>
         <td>${student.other_names}</td>
         <td>
-            <button id="btnEditStudent" class="btn-edit-record" title="Edit student">
+            <button id="btnEditStudent" class="text-button" title="Edit student">
+              <i class="fa-solid fa-pen-to-square"></i>
                 Edit
             </button>
         </td>
@@ -109,14 +113,3 @@ async function displayStudents() {
     studentsTableBody.appendChild(row);
   });
 }
-
-function editStudentRecord(student) {
-  addStudentModal.style.display = "block";
-
-  firstNameInput.value = student.first_name;
-  lastNameInput.value = student.last_name;
-  otherNamesInput.value = student.other_names;
-  editingStudentId = student.id;
-}
-
-window.onload = displayStudents;

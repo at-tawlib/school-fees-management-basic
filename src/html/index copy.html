@@ -12,92 +12,101 @@
     <link href="../assets/fontawesome/css/solid.css" rel="stylesheet" />
 
     <script type="module" src="../js/index.js" defer></script>
+    <script type="module" src="../js/add-class.js" defer></script>
     <script type="module" src="../js/billing.js" defer></script>
-    <script type="module" src="../js/settings.js" defer></script>
-    <!--     
-      <script type="module" src="../js/student.js" defer></script>
-      <script type="module" src="../js/add-class.js" defer></script>
-    <script type="module" src="../js/student-class.js" defer></script>
     <script type="module" src="../js/class.js" defer></script>
     <script type="module" src="../js/payments.js" defer></script>
+    <script type="module" src="../js/student.js" defer></script>
+    <script type="module" src="../js/student-class.js" defer></script>
     <script type="module" src="../js/view-bills.js" defer></script>
     <script type="module" src="../js/view-fees.js" defer></script>
-    -->
+    <script type="module" src="../js/modals/add-fees-modal.js" defer></script>
   </head>
   <body>
-    <div class="container">
-      <nav class="sidebar">
+    <header>
+      <nav>
         <ul>
-          <li>Dashboard</li>
-          <li id="navStudents">Students</li>
-          <li id="navViewFees">View Fees</li>
-          <li id="navAddClass">Add Class</li>
-          <li id="navClasses">Classes</li>
-          <li id="navBillStudents">Bill Students</li>
-          <li>Payments</li>
+          <li id="dashboardNav">Dashboard</li>
+          <li id="studentsNav">Students</li>
+          <li id="feesNav">Fees</li>
+          <li id="paymentsNav">Payments</li>
+          <li id="reportsNav">Reports</li>
         </ul>
-        <button id="navSettings"><i class="fa-solid fa-gears"></i> Settings</button>
       </nav>
+      <h3>School Fees Tracker</h3>
+    </header>
 
-      <main>
-        <!-------------- STUDENTS  SECTION ----------------------->
-        <section id="studentsView" style="display: none">
-          <div class="flex-row align-center justify-space-between">
-            <h2>Students</h2>
-            <button id="addStudentBtn" class="bg-blue">
-              <i class="fa-solid fa-plus"></i> Add Student
-            </button>
-          </div>
-          <hr style="margin: 1rem 0rem" />
+    <main>
+      <!-------------- STUDENTS  SECTION ----------------------->
+      <section id="studentsView" style="display: none">
+        <div class="flex-row">
+          <h2>Students</h2>
+          <button id="addStudentBtn" class="bg-blue">Add Student</button>
+        </div>
+        <input type="text" id="searchStudentInput" placeholder="Search by name..." />
+        <div>
+          <table id="studentsTable">
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Other Names</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="studentsTableBody">
+              <!-- Load data from the css -->
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-          <input
-            type="text"
-            id="searchStudentInput"
-            class="full-width"
-            placeholder="Search by name..."
-          />
-          <div>
-            <table id="studentsTable">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Other Names</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="studentsTableBody">
-                <!-- Load data from the css -->
-              </tbody>
-            </table>
-          </div>
-        </section>
+      <!-- ---------------- FEES SECTION ----------------- -->
+      <section id="classesView" class="flex-row align-start" style="display: none">
+        <div class="sideMenuContainer flex-1">
+          <button id="newClassButton">Add student to class</button>
+          <button id="viewClassesButton">View Classes</button>
+          <button id="addFeesButton">Add Fees</button>
+          <button id="viewFeesButton">View Fees</button>
+          <button id="billClassButton">Bill Class</button>
+          <button id="viewBillsButton">View Student Bills</button>
+        </div>
 
         <!-- -------------- VIEW FEES ----------------------- -->
-        <section id="viewFeesSection" style="display: none">
-          <div class="flex-row align-center justify-space-between">
-            <h2 style="text-align: center">School Fees</h2>
-            <button id="btnAddFees" class="bg-secondary">
-              <i class="fa-solid fa-plus"></i> Add fees
-            </button>
-          </div>
-
+        <div id="feesTableContainer" class="flex-3 sectionContainer" style="display: none">
+          <h2 style="text-align: center">School Fees</h2>
           <hr style="margin: 1rem 0rem" />
+
           <div class="flex-row align-center">
             <div class="flex-row align-center">
               <label for="filterFeesByClassSelect">Class:</label>
-              <select id="filterFeesByClassSelect"></select>
+              <select id="filterFeesByClassSelect">
+                <option value="all">All</option>
+                <option value="Class One">Class One</option>
+                <option value="Form 1">Form 1</option>
+                <option value="Form 2">Form 2</option>
+                <option value="Form 3">Form 3</option>
+                <option value="Form 4">Form 4</option>
+              </select>
             </div>
 
             <div class="flex-row align-center">
               <label for="filterFeesByAcademicYear">Academic Year:</label>
-              <select id="filterFeesByAcademicYear"></select>
+              <select id="filterFeesByAcademicYear">
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+              </select>
             </div>
 
             <div class="flex-row align-center">
               <label for="filterFeesByTerm">Term:</label>
-              <select id="filterFeesByTerm"></select>
+              <select id="filterFeesByTerm">
+                <option value="first">first</option>
+                <option value="second">second</option>
+                <option value="third">third</option>
+              </select>
             </div>
 
             <button id="searchFeesButton">Search</button>
@@ -106,7 +115,7 @@
           <table id="feesTable">
             <thead id="feesTableHead">
               <tr>
-                <th>#</th>
+                <th>Number</th>
                 <th>Class</th>
                 <th>Academic Year</th>
                 <th>Term</th>
@@ -115,21 +124,35 @@
             </thead>
             <tbody id="feesTableBody"></tbody>
           </table>
-        </section>
+        </div>
 
         <!-------------- ADD CLASS  FORM ----------------------->
-        <section id="addClassSection" style="display: none">
+        <div id="addClassFormContainer" class="flex-3 sectionContainer" style="display: none">
           <h2 style="text-align: center">Add Class</h2>
           <hr style="margin: 1rem 0rem" />
 
-          <div class="sectionContainer">
+          <div>
             <!-- ------ Select class, academic year and fees ---- -->
             <div class="flex-row align-center">
               <label for="addClassFormClass"><h3>Select Class:</h3></label>
-              <select name="addClassFormClass" id="addClassFormClass" required></select>
+              <select name="addClassFormClass" id="addClassFormClass" required>
+                <option value="" disabled selected>Select Class</option>
+                <option value="1">Class 1</option>
+                <option value="2">Class 2</option>
+                <option value="3">Class 3</option>
+                <option value="4">Class 4</option>
+                <option value="5">Class 5</option>
+                <option value="6">Class 6</option>
+              </select>
 
               <label for="addClassFormYear"><h3>Academic year:</h3></label>
-              <select name="addClassFormYear" id="addClassFormYear" required></select>
+              <input
+                type="number"
+                id="addClassFormYear"
+                name="addClassFormYear"
+                placeholder="Enter Year"
+                required
+              />
 
               <button id="setClassButton">Set Class</button>
               <button id="setChangeClassButton" style="display: none">Change Class</button>
@@ -204,31 +227,49 @@
               </table>
             </div>
           </div>
-        </section>
+        </div>
 
-        <!-- ------------ CLASSES / STUDENT CLASS SECTION ------------ -->
-        <section id="studentClassSection" style="display: none">
+        <!-- ------------ SHOW STUDENT AND CLASS LISTS ------------ -->
+        <div id="studentClassContainer" class="flex-3 sectionContainer" style="display: none">
           <h2 style="text-align: center">Students Class</h2>
           <hr style="margin: 1rem 0rem" />
 
-          <div class="sectionContainer">
-            <div class="flex-row align-center">
-              <label for="filterByClass">Class:</label>
-              <select id="filterByClassSelect"></select>
+          <div class="flex-row align-center">
+            <label for="filterByClass">Class:</label>
+            <select id="filterByClassSelect">
+              <option value="all">All</option>
+              <option value="1">Class 1</option>
+              <option value="2">Class 2</option>
+              <option value="3">Class 3</option>
+              <option value="4">Class 4</option>
+              <option value="5">Class 5</option>
+              <option value="6">Class 6</option>
+            </select>
 
-              <label for="filterByTerm">Term:</label>
-              <select id="filterByTerm"></select>
+            <label for="filterByTerrm">Term:</label>
+            <select id="filterByTErmSelect">
+              <option value="all">All</option>
+              <option value="1">First Term</option>
+              <option value="2">Second Term</option>
+              <option value="3">Third Term</option>
+            </select>
 
-              <label for="academicYearFilter">Year:</label>
-              <select id="academicYearFilter"></select>
+            <label for="filterByTErm">Year:</label>
+            <input
+              id="academicYearFilter"
+              placeholder="Enter academic year..."
+              type="number"
+              required
+            />
 
-              <button id="studentClassGoBtn">Go</button>
-            </div>
+            <button id="studentClassGoBtn">Go</button>
+          </div>
 
+          <div id="studentClassTableContainer">
             <table>
               <thead>
                 <tr>
-                  <th>#</th>
+                  <th>ID</th>
                   <th>Name</th>
                   <th>Class</th>
                   <th>Year</th>
@@ -240,10 +281,10 @@
               </tbody>
             </table>
           </div>
-        </section>
+        </div>
 
         <!-- ------------ BILL STUDENTS --------------------- -->
-        <section id="billClassSection" style="display: none">
+        <div id="billClassContainer" class="flex-3 sectionContainer" style="display: none">
           <h2 style="text-align: center">Bills</h2>
           <hr style="margin: 1rem 0rem" />
 
@@ -252,19 +293,37 @@
             <div class="flex-column flex-1">
               <div class="flex-row align-center">
                 <label for="billByClassSelect">Class:</label>
-                <select id="billByClassSelect"></select>
+                <select id="billByClassSelect">
+                  <option value="" disabled selected>Select class</option>
+                  <option value="1">Class 1</option>
+                  <option value="2">Class 2</option>
+                  <option value="3">Class 3</option>
+                  <option value="4">Class 4</option>
+                  <option value="5">Class 5</option>
+                  <option value="6">Class 6</option>
+                </select>
               </div>
               <br />
 
               <div class="flex-row align-center">
-                <label for="billAcademicYearSelect">Year:</label>
-                <select id="billAcademicYearSelect"></select>
+                <label for="billAcademicYearInput">Year:</label>
+                <input
+                  id="billAcademicYearInput"
+                  placeholder="Enter academic year..."
+                  type="number"
+                  required
+                />
               </div>
               <br />
 
               <div class="flex-row align-center">
                 <label for="billByTermSelect">Term:</label>
-                <select id="billByTermSelect"></select>
+                <select id="billByTermSelect">
+                  <option value="" disabled selected>Select Term</option>
+                  <option value="first">First Term</option>
+                  <option value="second">Second Term</option>
+                  <option value="third">Third Term</option>
+                </select>
               </div>
               <br />
 
@@ -272,7 +331,7 @@
             </div>
 
             <!-- Bill Table Container -->
-            <section class="flex-3">
+            <div class="flex-3">
               <h2 id="billDetailsText"></h2>
               <p id="billFeesId" style="display: none"></p>
               <div id="billClassTableContainer" style="display: none">
@@ -315,108 +374,149 @@
                   </button>
                 </div>
               </div>
-            </section>
+            </div>
           </div>
-        </section>
+        </div>
 
-        <!-- ------------ SETTINGS PAGE --------------------- -->
-        <section id="settingsSection" style="display: none">
-          <h2 style="text-align: center">Settings</h2>
+        <!-- ------------- VIEW CLASS BILLS ---------------------- -->
+        <div id="viewClassBillsContainer" class="flex-3 sectionContainer" style="display: none">
+          <h2 style="text-align: center">Class Bills</h2>
           <hr style="margin: 1rem 0rem" />
 
-          <div class="sectionContainer">
-            <div class="flex-row align-center">
-              <h3>Active Academic Year and Term</h3>
-              <button id="settingsSetAcademicYear" class="text-button">
-                <i class="fa-solid fa-save"></i> Set Academic Year
-              </button>
-            </div>
-            <br />
-            <h4>2024 Academic year, first term</h4>
-            <br />
-            <div class="flex-row align-center" style="display: none">
-              <label for="settingsAcademicYearInput">Academic Year:</label>
-              <input
-                type="number"
-                id="settingsAcademicYearInput"
-                placeholder="Enter academic year..."
-                required
-              />
-
-              <label for="settingsTerm">Term:</label>
-              <select id="settingsTerm">
-                <option value="first">First Term</option>
-                <option value="second">Second Term</option>
-                <option value="third">Third Term</option>
-              </select>
-
-              <button id="settingsSetAcademicYear" class="outlined-button">
-                <i class="fa-solid fa-save"></i> Set Academic Year
-              </button>
-            </div>
-          </div>
-
           <div class="flex-row">
-            <!-- Manage class section -->
-            <div class="flex-1">
-              <h2>Manage Classes</h2>
-              <br />
+            <!-- Bill options (class, academic year, term) -->
+            <div class="flex-column flex-1">
               <div class="flex-row align-center">
-                <div class="flex-row align-center">
-                  <label for="settingsClass">Class: </label>
-                  <input type="text" id="settingsClass" placeholder="Class Name" required />
-                </div>
-                <button id="settingsAddClass" class="outlined-button">
-                  <i class="fa-solid fa-plus"></i> Add Class
-                </button>
+                <label for="viewBillClassSelect">Class:</label>
+                <select id="viewBillClassSelect">
+                  <option value="" disabled selected>Select class</option>
+                  <option value="1">Class 1</option>
+                  <option value="2">Class 2</option>
+                  <option value="3">Class 3</option>
+                  <option value="4">Class 4</option>
+                  <option value="5">Class 5</option>
+                  <option value="6">Class 6</option>
+                </select>
               </div>
+              <br />
 
-              <table class="table-rounded">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Class Name</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="settingsClassTableBody"></tbody>
-              </table>
+              <div class="flex-row align-center">
+                <label for="viewBillAcademicYear">Year:</label>
+                <input
+                  id="viewBillAcademicYear"
+                  placeholder="Enter academic year..."
+                  type="number"
+                  required
+                />
+              </div>
+              <br />
+
+              <div class="flex-row align-center">
+                <label for="viewBillTermSelect">Term:</label>
+                <select id="viewBillTermSelect">
+                  <option value="" disabled selected>Select Term</option>
+                  <option value="first">First Term</option>
+                  <option value="second">Second Term</option>
+                  <option value="third">Third Term</option>
+                </select>
+              </div>
+              <br />
+
+              <button id="viewBillOkButton">Ok</button>
             </div>
 
-            <!-- Manage academic years Section -->
-            <div class="flex-1">
-              <h2>Manage Academic Years</h2>
-              <br />
-              <div class="flex-row align-center">
-                <div class="flex-row align-center">
-                  <label for="settingsAcademicYear">Year: </label>
-                  <input
-                    type="text"
-                    id="settingsAcademicYear"
-                    placeholder="Academic Year"
-                    required
-                  />
-                </div>
-                <button id="settingsAddYears" class="outlined-button">
-                  <i class="fa-solid fa-plus"></i> Add Academic Year
-                </button>
+            <!-- Bill Table Container -->
+            <div class="flex-3">
+              <h2 id="viewBillDetailsText"></h2>
+              <div id="viewBillClassTableContainer" style="display: none">
+                <!-- students class bill table -->
+                <table id="viewBillClassTable">
+                  <thead>
+                    <tr>
+                      <th id="viewBillClassTitle" colspan="9" style="text-align: center"></th>
+                    </tr>
+                  </thead>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>Bill Status</th>
+                      <th>Fees</th>
+                      <th>Paid</th>
+                      <th>Balance</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="viewBillClassTableBody">
+                    <!-- bills Class List -->
+                  </tbody>
+                </table>
               </div>
-
-              <table class="table-rounded">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Academic Year</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="settingsAcademicYearsTableBody"></tbody>
-              </table>
             </div>
           </div>
-        </section>
-      </main>
-    </div>
+        </div>
+      </section>
+
+      <!-------------- PAYMENTS  SECTION ----------------------->
+      <section id="paymentsView">
+        <h2 style="text-align: center">Fees Payments</h2>
+        <hr style="margin: 1rem 0rem" />
+
+        <div>
+          <div class="flex-row align-center">
+            <label for="paymentAcademicYear"><h3>Select Year:</h3></label>
+            <select name="paymentAcademicYear" id="paymentAcademicYear" required>
+              <option value="all">All</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+            </select>
+
+            <label for="paymentClass"><h3>Select Class:</h3></label>
+            <select name="paymentClass" id="paymentClass" required>
+              <option value="all">All</option>
+              <option value="1">Class 1</option>
+              <option value="2">Class 2</option>
+              <option value="3">Class 3</option>
+              <option value="4">Class 4</option>
+              <option value="5">Class 5</option>
+              <option value="6">Class 6</option>
+            </select>
+
+            <label for="paymentTerm"><h3>Select Term:</h3></label>
+            <select name="paymentTerm" id="paymentTerm" required>
+              <option value="all">All</option>
+              <option value="first">First</option>
+              <option value="second">Second</option>
+              <option value="third">Third</option>
+            </select>
+         
+
+            <button id="paymentFilter">Filter</button>
+          </div>
+          <table id="paymentsTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Academic Year</th>
+                <th>Term</th>
+                <th>Fees Amount</th>
+                <th>Paid Amount</th>
+                <th>Payment Mode</th>
+                <th>Payment Details</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="paymentsTableBody">
+              <!-- Load data from the css -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
 
     <!-- Add Student Modal -->
     <div id="addStudentModal" class="modal">
@@ -463,12 +563,8 @@
           </div>
 
           <div class="flex-row">
-            <button id="addStudentModalBtn" type="button" class="bg-green">
-              <i class="fa-solid fa-save"></i> Save
-            </button>
-            <button id="cancelStudentModalBtn" type="button" class="bg-red">
-              <i class="fa-solid fa-close"></i> Cancel
-            </button>
+            <button id="addStudentModalBtn" type="button" class="bg-green">Save</button>
+            <button id="cancelStudentModalBtn" type="button" class="bg-red">Cancel</button>
           </div>
         </form>
       </div>
@@ -485,17 +581,30 @@
         <form>
           <div class="form-item">
             <label for="feesClassSelect">Class</label>
-            <select id="feesClassSelect"></select>
+            <select id="feesClassSelect">
+              <option value="Class One">Class One</option>
+              <option value="Class Two">Class Two</option>
+              <option value="Class Three">Class Three</option>
+              <option value="Class Four">Class Four</option>
+            </select>
           </div>
 
           <div class="form-item">
             <label for="feesAcademicYear">Academic Year</label>
-            <select id="feesAcademicYear"></select>
+            <select id="feesAcademicYear">
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+            </select>
           </div>
 
           <div class="form-item">
             <label for="feesTerm">Term</label>
-            <select id="feesTerm"></select>
+            <select id="feesTerm">
+              <option value="first">First</option>
+              <option value="second">Second</option>
+              <option value="third">Third</option>
+            </select>
           </div>
 
           <div class="form-item">
@@ -510,12 +619,8 @@
           </div>
 
           <div class="flex-row">
-            <button id="setFeesBtn" type="button" title="Set Fees" class="outlined-button">
-              <i class="fa-regular fa-circle-check"></i> Set Fees
-            </button>
-            <button id="cancelFeesModalBtn" type="button" class="bg-red">
-              <i class="fa-solid fa-xmark"></i> Cancel
-            </button>
+            <button id="setFeesBtn" type="button" title="Set Fees">Set Fees</button>
+            <button id="cancelFeesModalBtn" type="button" class="btn">Cancel</button>
           </div>
         </form>
       </div>

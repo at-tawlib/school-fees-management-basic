@@ -1,35 +1,38 @@
-import { CONTAINERS } from "./constants/constants.js";
-import { showHideFeesContainer } from "./utils/show-fees-container.js";
+import { setUpAcademicYearsSelect, setUpClassSelect, setUpTermsSelect } from "./utils/setup-select-inputs.js";
 
 const studentClassTableBody = document.getElementById("studentClassTableBody");
 const studentsClass = document.getElementById("filterByClassSelect");
-const term = document.getElementById("filterByTErmSelect");
+const term = document.getElementById("filterByTerm");
 const academicYear = document.getElementById("academicYearFilter");
 
-document.getElementById("viewClassesButton").addEventListener("click", function () {
-    showHideFeesContainer(CONTAINERS.STUDENT_CLASS);
+document.getElementById("studentClassGoBtn").addEventListener("click", async function () {
+  console.log(studentsClass.value, term.value, academicYear.value);
+
+  const response = await window.api.getAllClassesStudents();
+  if (!response.success) {
+    showToast(response.message || "An error occurred", "error");
+    return;
+  }
+  displayStudentsClass();
 });
 
-document
-  .getElementById("studentClassGoBtn")
-  .addEventListener("click", async function () {
+export async function displayStudentsClass() {
+  const response = await window.api.getAllClassesStudents();
+  if (!response.success) {
+    showToast(response.message || "An error occurred", "error");
+    return;
+  }
 
-    console.log(studentsClass.value, term.value, academicYear.value);
+  studentsClass.innerHTML = "";
+  setUpClassSelect(studentsClass);
+  term.innerHTML = "";
+  setUpTermsSelect(term);
+  academicYear.innerHTML = "";
+  setUpAcademicYearsSelect(academicYear);
 
-    const response = await window.api.getAllClassesStudents();
-    if (!response.success) {
-      showToast(response.message || "An error occurred", "error");
-      return;
-    }
-    
-
-    displayStudentsClass(response.data);
-  });
-
-function displayStudentsClass(data) {
-    studentClassTableBody.innerHTML = "";
-    data.forEach((student, index) => {
-        studentClassTableBody.innerHTML += `
+  studentClassTableBody.innerHTML = "";
+  response.data.forEach((student, index) => {
+    studentClassTableBody.innerHTML += `
         <tr>
             <td>${index + 1}</td>
             <td id="studentId" style="display:none">${student.student_id}</td>
@@ -39,6 +42,5 @@ function displayStudentsClass(data) {
             <td></td>
         </tr>
         `;
-    });
+  });
 }
-

@@ -1,4 +1,5 @@
 import { CONTAINERS } from "./constants/constants.js";
+import { setUpAcademicYearsSelect, setUpClassSelect } from "./utils/setup-select-inputs.js";
 import { showHideFeesContainer } from "./utils/show-fees-container.js";
 import { showToast } from "./utils/toast.js";
 
@@ -64,12 +65,6 @@ changeClassButton.addEventListener("click", function () {
   resetAddStudentForm();
 });
 
-document
-  .getElementById("newClassButton")
-  .addEventListener("click", function () {
-    showHideFeesContainer(CONTAINERS.CLASS_FORM);
-    resetAddStudentForm();
-  });
 
 document
   .getElementById("addOneStudentRow")
@@ -284,7 +279,13 @@ function clearInput(input) {
   input.disabled = false;
 }
 
-function resetAddStudentForm() {
+export function resetAddStudentForm() {
+  addClassFormClass.innerHTML = "";
+  addClassFormYear.innerHTML = "";
+
+  setUpClassSelect(addClassFormClass);
+  setUpAcademicYearsSelect(addClassFormYear);
+
   addClassFormClass.disabled = false;
   addClassFormYear.disabled = false;
   clearInput(addClassFormClass);

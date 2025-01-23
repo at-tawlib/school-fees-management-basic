@@ -2,47 +2,61 @@ import { CONTAINERS } from "../constants/constants.js";
 
 // This function is used to show and hide the container based on the container name passed as an argument.
 export function showHideFeesContainer(container) {
-  const feesTableContainer = document.getElementById("feesTableContainer");
-  const addClassFormContainer = document.getElementById("addClassFormContainer");
-  const studentClassContainer = document.getElementById("studentClassContainer");
-  const billClassContainer = document.getElementById("billClassContainer");
-  const viewClassBillsContainer = document.getElementById("viewClassBillsContainer");
+  const studentsView = document.getElementById("studentsView");
+  const viewFeesSection = document.getElementById("viewFeesSection");
+  const addClassSection = document.getElementById("addClassSection");
+  const studentClassSection = document.getElementById("studentClassSection");
+  const billClassSection = document.getElementById("billClassSection");
+  const settingsSection = document.getElementById("settingsSection");
 
   switch (container) {
-    case CONTAINERS.FEES_TABLE:
-      feesTableContainer.style.display = "block";
-      addClassFormContainer.style.display = "none";
-      studentClassContainer.style.display = "none";
-      billClassContainer.style.display = "none";
-      viewClassBillsContainer.style.display = "none";
+    case CONTAINERS.STUDENTS_VIEW:
+      studentsView.style.display = "block";
+      viewFeesSection.style.display = "none";
+      addClassSection.style.display = "none";
+      studentClassSection.style.display = "none";
+      billClassSection.style.display = "none";
+      settingsSection.style.display = "none";
       break;
-    case CONTAINERS.CLASS_FORM:
-      feesTableContainer.style.display = "none";
-      addClassFormContainer.style.display = "block";
-      studentClassContainer.style.display = "none";
-      billClassContainer.style.display = "none";
-      viewClassBillsContainer.style.display = "none";
+    case CONTAINERS.VIEW_FEES:
+      studentsView.style.display = "none";
+      viewFeesSection.style.display = "block";
+      addClassSection.style.display = "none";
+      studentClassSection.style.display = "none";
+      billClassSection.style.display = "none";
+      settingsSection.style.display = "none";
+      break;
+    case CONTAINERS.ADD_CLASS:
+      studentsView.style.display = "none";
+      viewFeesSection.style.display = "none";
+      addClassSection.style.display = "block";
+      studentClassSection.style.display = "none";
+      billClassSection.style.display = "none";
+      settingsSection.style.display = "none";
       break;
     case CONTAINERS.STUDENT_CLASS:
-      feesTableContainer.style.display = "none";
-      addClassFormContainer.style.display = "none";
-      studentClassContainer.style.display = "block";
-      billClassContainer.style.display = "none";
-      viewClassBillsContainer.style.display = "none";
+      studentsView.style.display = "none";
+      viewFeesSection.style.display = "none";
+      addClassSection.style.display = "none";
+      studentClassSection.style.display = "block";
+      billClassSection.style.display = "none";
+      settingsSection.style.display = "none";
       break;
     case CONTAINERS.BILL_CLASS:
-      feesTableContainer.style.display = "none";
-      addClassFormContainer.style.display = "none";
-      studentClassContainer.style.display = "none";
-      billClassContainer.style.display = "block";
-      viewClassBillsContainer.style.display = "none";
+      studentsView.style.display = "none";
+      viewFeesSection.style.display = "none";
+      addClassSection.style.display = "none";
+      studentClassSection.style.display = "none";
+      billClassSection.style.display = "block";
+      settingsSection.style.display = "none";
       break;
-    case CONTAINERS.VIEW_BILLS:
-      feesTableContainer.style.display = "none";
-      addClassFormContainer.style.display = "none";
-      studentClassContainer.style.display = "none";
-      billClassContainer.style.display = "none";
-      viewClassBillsContainer.style.display = "block";
+    case CONTAINERS.SETTINGS_VIEW:
+      studentsView.style.display = "none";
+      viewFeesSection.style.display = "none";
+      addClassSection.style.display = "none";
+      studentClassSection.style.display = "none";
+      billClassSection.style.display = "none";
+      settingsSection.style.display = "block";
       break;
   }
 }
