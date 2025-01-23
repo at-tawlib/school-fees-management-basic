@@ -5,7 +5,7 @@ export const CONTAINERS = {
   STUDENT_CLASS: "studentClass",
   BILL_CLASS: "billClass",
   SETTINGS_VIEW: "settingsView",
+  VIEW_BILLS: "viewBills",
   // FEES_TABLE: "feesTable",
   // CLASS_FORM: "classForm",
-  // VIEW_BILLS: "viewBills",
 };

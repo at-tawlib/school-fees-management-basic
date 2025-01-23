@@ -5,6 +5,7 @@ import { displayAcademicYearSettingsTable, displayClassSettingsTable } from "./s
 import { displayStudentsClass } from "./student-class.js";
 import { displayStudents } from "./student.js";
 import { showHideFeesContainer } from "./utils/show-fees-container.js";
+import { setUpViewBills } from "./view-bills.js";
 import { displayFeesTable } from "./view-fees.js";
 
 document.getElementById("navStudents").addEventListener("click", function () {
@@ -36,4 +37,9 @@ document.getElementById("navSettings").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
   displayClassSettingsTable();
   displayAcademicYearSettingsTable();
+});
+
+document.getElementById("navViewBills").addEventListener("click", function () {
+  showHideFeesContainer(CONTAINERS.VIEW_BILLS);
+  setUpViewBills();
 });

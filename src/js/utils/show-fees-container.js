@@ -8,6 +8,7 @@ export function showHideFeesContainer(container) {
   const studentClassSection = document.getElementById("studentClassSection");
   const billClassSection = document.getElementById("billClassSection");
   const settingsSection = document.getElementById("settingsSection");
+  const viewBillSection = document.getElementById("viewBillSection");
 
   switch (container) {
     case CONTAINERS.STUDENTS_VIEW:
@@ -17,6 +18,7 @@ export function showHideFeesContainer(container) {
       studentClassSection.style.display = "none";
       billClassSection.style.display = "none";
       settingsSection.style.display = "none";
+      viewBillSection.style.display = "none";
       break;
     case CONTAINERS.VIEW_FEES:
       studentsView.style.display = "none";
@@ -25,6 +27,7 @@ export function showHideFeesContainer(container) {
       studentClassSection.style.display = "none";
       billClassSection.style.display = "none";
       settingsSection.style.display = "none";
+      viewBillSection.style.display = "none";
       break;
     case CONTAINERS.ADD_CLASS:
       studentsView.style.display = "none";
@@ -33,6 +36,7 @@ export function showHideFeesContainer(container) {
       studentClassSection.style.display = "none";
       billClassSection.style.display = "none";
       settingsSection.style.display = "none";
+      viewBillSection.style.display = "none";
       break;
     case CONTAINERS.STUDENT_CLASS:
       studentsView.style.display = "none";
@@ -41,6 +45,7 @@ export function showHideFeesContainer(container) {
       studentClassSection.style.display = "block";
       billClassSection.style.display = "none";
       settingsSection.style.display = "none";
+      viewBillSection.style.display = "none";
       break;
     case CONTAINERS.BILL_CLASS:
       studentsView.style.display = "none";
@@ -49,6 +54,7 @@ export function showHideFeesContainer(container) {
       studentClassSection.style.display = "none";
       billClassSection.style.display = "block";
       settingsSection.style.display = "none";
+      viewBillSection.style.display = "none";
       break;
     case CONTAINERS.SETTINGS_VIEW:
       studentsView.style.display = "none";
@@ -57,6 +63,16 @@ export function showHideFeesContainer(container) {
       studentClassSection.style.display = "none";
       billClassSection.style.display = "none";
       settingsSection.style.display = "block";
+      viewBillSection.style.display = "none";
+      break;
+    case CONTAINERS.VIEW_BILLS:
+      studentsView.style.display = "none";
+      viewFeesSection.style.display = "none";
+      addClassSection.style.display = "none";
+      studentClassSection.style.display = "none";
+      billClassSection.style.display = "none";
+      settingsSection.style.display = "none";
+      viewBillSection.style.display = "block";
       break;
   }
 }
