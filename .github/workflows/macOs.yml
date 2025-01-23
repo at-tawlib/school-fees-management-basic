@@ -1,0 +1,32 @@
+name: Build macOS App
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Package the app
+        run: npm run make
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: macOS-build
+          path: out/make
