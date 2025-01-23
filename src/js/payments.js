@@ -38,7 +38,16 @@ function filterPaymentsTable() {
   });
 }
 
-export function displayPaymentsTable(data) {
+export async function displayPaymentsTable() {
+  const response = await window.api.getAllPayments();
+
+  console.log(response)
+  if (!response.success) {
+    showToast(response.message || "An error occurred", "error");
+    return;
+  }
+
+  const data = response.data;
   tableBody.innerHTML = "";
   data.forEach((payment, index) => {
     const row = tableBody.insertRow(index);

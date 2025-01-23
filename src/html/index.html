@@ -35,7 +35,7 @@
           <li id="navClasses">Classes</li>
           <li id="navBillStudents">Bill Students</li>
           <li id="navViewBills">View Bills</li>
-          <li>Payments</li>
+          <li id="navPayments">Payments</li>
         </ul>
         <button id="navSettings"><i class="fa-solid fa-gears"></i> Settings</button>
       </nav>
@@ -321,7 +321,7 @@
         </section>
 
         <!-- ------------- VIEW CLASS BILLS ---------------------- -->
-        <section id="viewBillSection">
+        <section id="viewBillSection" style="display: none;">
           <h2 style="text-align: center">Class Bills</h2>
           <hr style="margin: 1rem 0rem" />
 
@@ -377,6 +377,65 @@
                 </table>
               </div>
             </div>
+          </div>
+        </section>
+
+        <!-------------- PAYMENTS  SECTION ----------------------->
+        <section id="paymentsSection">
+          <h2 style="text-align: center">Fees Payments</h2>
+          <hr style="margin: 1rem 0rem" />
+
+          <div>
+            <div class="flex-row align-center">
+              <label for="paymentAcademicYear"><h3>Select Year:</h3></label>
+              <select name="paymentAcademicYear" id="paymentAcademicYear" required>
+                <option value="all">All</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+              </select>
+
+              <label for="paymentClass"><h3>Select Class:</h3></label>
+              <select name="paymentClass" id="paymentClass" required>
+                <option value="all">All</option>
+                <option value="1">Class 1</option>
+                <option value="2">Class 2</option>
+                <option value="3">Class 3</option>
+                <option value="4">Class 4</option>
+                <option value="5">Class 5</option>
+                <option value="6">Class 6</option>
+              </select>
+
+              <label for="paymentTerm"><h3>Select Term:</h3></label>
+              <select name="paymentTerm" id="paymentTerm" required>
+                <option value="all">All</option>
+                <option value="first">First</option>
+                <option value="second">Second</option>
+                <option value="third">Third</option>
+              </select>
+
+              <button id="paymentFilter">Filter</button>
+            </div>
+            <table id="paymentsTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Class</th>
+                  <th>Academic Year</th>
+                  <th>Term</th>
+                  <th>Fees Amount</th>
+                  <th>Paid Amount</th>
+                  <th>Payment Mode</th>
+                  <th>Payment Details</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="paymentsTableBody">
+                <!-- Load data from the css -->
+              </tbody>
+            </table>
           </div>
         </section>
 

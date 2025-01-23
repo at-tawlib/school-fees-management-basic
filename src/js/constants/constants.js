@@ -6,6 +6,7 @@ export const CONTAINERS = {
   BILL_CLASS: "billClass",
   SETTINGS_VIEW: "settingsView",
   VIEW_BILLS: "viewBills",
+  PAYMENTS: "payments",
   // FEES_TABLE: "feesTable",
   // CLASS_FORM: "classForm",
 };

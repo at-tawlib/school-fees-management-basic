@@ -1,6 +1,7 @@
 import { resetAddStudentForm } from "./add-class.js";
 import { setUpBillStudentsSection } from "./billing.js";
 import { CONTAINERS } from "./constants/constants.js";
+import { displayPaymentsTable } from "./payments.js";
 import { displayAcademicYearSettingsTable, displayClassSettingsTable } from "./settings.js";
 import { displayStudentsClass } from "./student-class.js";
 import { displayStudents } from "./student.js";
@@ -42,4 +43,9 @@ document.getElementById("navSettings").addEventListener("click", function () {
 document.getElementById("navViewBills").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.VIEW_BILLS);
   setUpViewBills();
+});
+
+document.getElementById("navPayments").addEventListener("click", function () {
+  showHideFeesContainer(CONTAINERS.PAYMENTS);
+  displayPaymentsTable();
 });
