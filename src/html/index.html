@@ -87,32 +87,17 @@
           <div class="flex-row align-center">
             <div class="flex-row align-center">
               <label for="filterFeesByClassSelect">Class:</label>
-              <select id="filterFeesByClassSelect">
-                <option value="all">All</option>
-                <option value="Class One">Class One</option>
-                <option value="Form 1">Form 1</option>
-                <option value="Form 2">Form 2</option>
-                <option value="Form 3">Form 3</option>
-                <option value="Form 4">Form 4</option>
-              </select>
+              <select id="filterFeesByClassSelect"></select>
             </div>
 
             <div class="flex-row align-center">
               <label for="filterFeesByAcademicYear">Academic Year:</label>
-              <select id="filterFeesByAcademicYear">
-                <option value="2024">2024</option>
-                <option value="2025">2025</option>
-                <option value="2026">2026</option>
-              </select>
+              <select id="filterFeesByAcademicYear"></select>
             </div>
 
             <div class="flex-row align-center">
               <label for="filterFeesByTerm">Term:</label>
-              <select id="filterFeesByTerm">
-                <option value="first">first</option>
-                <option value="second">second</option>
-                <option value="third">third</option>
-              </select>
+              <select id="filterFeesByTerm"></select>
             </div>
 
             <button id="searchFeesButton">Search</button>
@@ -141,24 +126,10 @@
             <!-- ------ Select class, academic year and fees ---- -->
             <div class="flex-row align-center">
               <label for="addClassFormClass"><h3>Select Class:</h3></label>
-              <select name="addClassFormClass" id="addClassFormClass" required>
-                <option value="" disabled selected>Select Class</option>
-                <option value="1">Class 1</option>
-                <option value="2">Class 2</option>
-                <option value="3">Class 3</option>
-                <option value="4">Class 4</option>
-                <option value="5">Class 5</option>
-                <option value="6">Class 6</option>
-              </select>
+              <select name="addClassFormClass" id="addClassFormClass" required></select>
 
               <label for="addClassFormYear"><h3>Academic year:</h3></label>
-              <input
-                type="number"
-                id="addClassFormYear"
-                name="addClassFormYear"
-                placeholder="Enter Year"
-                required
-              />
+              <select name="addClassFormYear" id="addClassFormYear" required></select>
 
               <button id="setClassButton">Set Class</button>
               <button id="setChangeClassButton" style="display: none">Change Class</button>
@@ -243,31 +214,13 @@
           <div class="sectionContainer">
             <div class="flex-row align-center">
               <label for="filterByClass">Class:</label>
-              <select id="filterByClassSelect">
-                <option value="all">All</option>
-                <option value="1">Class 1</option>
-                <option value="2">Class 2</option>
-                <option value="3">Class 3</option>
-                <option value="4">Class 4</option>
-                <option value="5">Class 5</option>
-                <option value="6">Class 6</option>
-              </select>
+              <select id="filterByClassSelect"></select>
 
-              <label for="filterByTerrm">Term:</label>
-              <select id="filterByTErmSelect">
-                <option value="all">All</option>
-                <option value="1">First Term</option>
-                <option value="2">Second Term</option>
-                <option value="3">Third Term</option>
-              </select>
+              <label for="filterByTerm">Term:</label>
+              <select id="filterByTerm"></select>
 
-              <label for="filterByTErm">Year:</label>
-              <input
-                id="academicYearFilter"
-                placeholder="Enter academic year..."
-                type="number"
-                required
-              />
+              <label for="academicYearFilter">Year:</label>
+              <select id="academicYearFilter"></select>
 
               <button id="studentClassGoBtn">Go</button>
             </div>
@@ -299,37 +252,19 @@
             <div class="flex-column flex-1">
               <div class="flex-row align-center">
                 <label for="billByClassSelect">Class:</label>
-                <select id="billByClassSelect">
-                  <option value="" disabled selected>Select class</option>
-                  <option value="1">Class 1</option>
-                  <option value="2">Class 2</option>
-                  <option value="3">Class 3</option>
-                  <option value="4">Class 4</option>
-                  <option value="5">Class 5</option>
-                  <option value="6">Class 6</option>
-                </select>
+                <select id="billByClassSelect"></select>
               </div>
               <br />
 
               <div class="flex-row align-center">
-                <label for="billAcademicYearInput">Year:</label>
-                <input
-                  id="billAcademicYearInput"
-                  placeholder="Enter academic year..."
-                  type="number"
-                  required
-                />
+                <label for="billAcademicYearSelect">Year:</label>
+                <select id="billAcademicYearSelect"></select>
               </div>
               <br />
 
               <div class="flex-row align-center">
                 <label for="billByTermSelect">Term:</label>
-                <select id="billByTermSelect">
-                  <option value="" disabled selected>Select Term</option>
-                  <option value="first">First Term</option>
-                  <option value="second">Second Term</option>
-                  <option value="third">Third Term</option>
-                </select>
+                <select id="billByTermSelect"></select>
               </div>
               <br />
 
@@ -385,7 +320,7 @@
         </section>
 
         <!-- ------------ SETTINGS PAGE --------------------- -->
-        <section id="settingsSection" style="display: none;">
+        <section id="settingsSection" style="display: none">
           <h2 style="text-align: center">Settings</h2>
           <hr style="margin: 1rem 0rem" />
 
@@ -399,11 +334,11 @@
             <br />
             <h4>2024 Academic year, first term</h4>
             <br />
-            <div class="flex-row align-center" style="display: none;">
-              <label for="settingsAcademicYear">Academic Year:</label>
+            <div class="flex-row align-center" style="display: none">
+              <label for="settingsAcademicYearInput">Academic Year:</label>
               <input
                 type="number"
-                id="settingsAcademicYear"
+                id="settingsAcademicYearInput"
                 placeholder="Enter academic year..."
                 required
               />
@@ -454,7 +389,7 @@
               <br />
               <div class="flex-row align-center">
                 <div class="flex-row align-center">
-                  <label for="settingsAcademicYear">Class: </label>
+                  <label for="settingsAcademicYear">Year: </label>
                   <input
                     type="text"
                     id="settingsAcademicYear"
@@ -550,30 +485,17 @@
         <form>
           <div class="form-item">
             <label for="feesClassSelect">Class</label>
-            <select id="feesClassSelect">
-              <option value="Class One">Class One</option>
-              <option value="Class Two">Class Two</option>
-              <option value="Class Three">Class Three</option>
-              <option value="Class Four">Class Four</option>
-            </select>
+            <select id="feesClassSelect"></select>
           </div>
 
           <div class="form-item">
             <label for="feesAcademicYear">Academic Year</label>
-            <select id="feesAcademicYear">
-              <option value="2024">2024</option>
-              <option value="2025">2025</option>
-              <option value="2026">2026</option>
-            </select>
+            <select id="feesAcademicYear"></select>
           </div>
 
           <div class="form-item">
             <label for="feesTerm">Term</label>
-            <select id="feesTerm">
-              <option value="first">First</option>
-              <option value="second">Second</option>
-              <option value="third">Third</option>
-            </select>
+            <select id="feesTerm"></select>
           </div>
 
           <div class="form-item">

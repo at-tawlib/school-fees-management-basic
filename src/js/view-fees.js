@@ -1,11 +1,25 @@
+import {
+  setUpAcademicYearsSelect,
+  setUpClassSelect,
+  setUpTermsSelect,
+} from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
 const feesTable = document.getElementById("feesTable");
 const feesTableHead = document.getElementById("feesTableHead");
 const feesTableBody = document.getElementById("feesTableBody");
 const addFeesModal = document.getElementById("addFeesModal");
+const filterFeesByClassSelect = document.getElementById("filterFeesByClassSelect");
+const filterFeesByAcademicYear = document.getElementById("filterFeesByAcademicYear");
+const filterFeesByTerm = document.getElementById("filterFeesByTerm");
+const addFeesModalClass = document.getElementById("feesClassSelect");
+const addFeesModalYear = document.getElementById("feesAcademicYear");
+const addFeesModalTerm = document.getElementById("feesTerm");
 
 document.getElementById("btnAddFees").addEventListener("click", function () {
+  setUpClassSelect(addFeesModalClass);
+  setUpAcademicYearsSelect(addFeesModalYear);
+  setUpTermsSelect(addFeesModalTerm);
   addFeesModal.style.display = "block";
 });
 
@@ -52,6 +66,10 @@ export async function displayFeesTable() {
     showToast("Error occurred", "error");
     return;
   }
+
+  setUpClassSelect(filterFeesByClassSelect, true);
+  setUpAcademicYearsSelect(filterFeesByAcademicYear, true);
+  setUpTermsSelect(filterFeesByTerm, true);
 
   feesTableHead.innerHTML = "";
   feesTableBody.innerHTML = "";

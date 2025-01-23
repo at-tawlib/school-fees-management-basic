@@ -39,14 +39,11 @@ async function loadInitialData() {
     const terms = await dbHandler.getAllTerms();
 
     // Save data in electron-store
-    store.set("classes", classes.data);
-    store.set("academicYears", academicYears.data);
-    store.set("terms", terms.data);
+    store.set("classes", classes.data.map((classItem) => classItem.class_name));
+    store.set("academicYears", academicYears.data.map((year) => year.year));
+    store.set("terms", terms.data.map((term) => term.term));
 
     console.log("Data loaded into local storage");
-    console.log("classes: ", store.get("classes"));
-    console.log("academic years: ", store.get("academicYears"));
-    console.log("terms: ", store.get("terms"));
   } catch (error) {
     console.error("Failed to load initial data:", error);
   }

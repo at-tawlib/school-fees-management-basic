@@ -1,4 +1,5 @@
 import { CONTAINERS } from "./constants/constants.js";
+import { setUpAcademicYearsSelect, setUpClassSelect } from "./utils/setup-select-inputs.js";
 import { showHideFeesContainer } from "./utils/show-fees-container.js";
 import { showToast } from "./utils/toast.js";
 
@@ -279,6 +280,12 @@ function clearInput(input) {
 }
 
 export function resetAddStudentForm() {
+  addClassFormClass.innerHTML = "";
+  addClassFormYear.innerHTML = "";
+
+  setUpClassSelect(addClassFormClass);
+  setUpAcademicYearsSelect(addClassFormYear);
+
   addClassFormClass.disabled = false;
   addClassFormYear.disabled = false;
   clearInput(addClassFormClass);

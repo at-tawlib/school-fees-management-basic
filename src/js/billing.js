@@ -1,51 +1,24 @@
-import { CONTAINERS } from "./constants/constants.js";
 import { showToast } from "./utils/toast.js";
-import { showHideFeesContainer } from "./utils/show-fees-container.js";
 import { clearInputsStyles } from "./utils/clear-input-styles.js";
+import { setUpAcademicYearsSelect, setUpClassSelect, setUpTermsSelect } from "./utils/setup-select-inputs.js";
 
 const billClassTableContainer = document.getElementById("billClassTableContainer");
 const billClassTableBody = document.getElementById("billClassTableBody");
 const billClassTitle = document.getElementById("billClassTitle");
 const billByClassSelect = document.getElementById("billByClassSelect");
-const billAcademicYearInput = document.getElementById("billAcademicYearInput");
+const billAcademicYearSelect = document.getElementById("billAcademicYearSelect");
 const billByTermSelect = document.getElementById("billByTermSelect");
 const billDetailsText = document.getElementById("billDetailsText");
 const billFeesId = document.getElementById("billFeesId");
 
-document.getElementById("billClassButton").addEventListener("click", async () => {
-  showHideFeesContainer(CONTAINERS.BILL_CLASS);
-  // const response = await window.api.getAllFees();
-
-  // if (!response.success) {
-  //     showToast("Error occurred", "error");
-  //     return;
-  // }
-
-  // feesTableHead.innerHTML = "";
-  // feesTableBody.innerHTML = "";
-  // feesTable.innerHTML = "";
-
-  // const tableHeadRow = document.createElement("tr");
-  // tableHeadRow.innerHTML = `
-  //     <th>Number</th>
-  //     <th>Class</th>
-  //     <th>Academic Year</th>
-  //     <th>Term</th>
-  //     <th>Fees</th>
-  //     <th>Actions</th>
-  // `;
-  // feesTableHead.appendChild(tableHeadRow);
-  // feesTable.appendChild(feesTableHead);
-});
-
 document.getElementById("billClassOkBtn").addEventListener("click", async () => {
   const className = billByClassSelect.value;
-  const academicYear = billAcademicYearInput.value;
+  const academicYear = billAcademicYearSelect.value;
   const term = billByTermSelect.value;
   billDetailsText.textContent = "";
   billFeesId.textContent = "";
 
-  clearInputsStyles([billByClassSelect, billAcademicYearInput, billByTermSelect, billDetailsText]);
+  clearInputsStyles([billByClassSelect, billAcademicYearSelect, billByTermSelect, billDetailsText]);
 
   if (!className) {
     billByClassSelect.style.backgroundColor = "red";
@@ -56,8 +29,8 @@ document.getElementById("billClassOkBtn").addEventListener("click", async () => 
 
   if (!academicYear) {
     showToast("Select an academic year", "error");
-    billAcademicYearInput.style.backgroundColor = "red";
-    billAcademicYearInput.style.color = "white";
+    billAcademicYearSelect.style.backgroundColor = "red";
+    billAcademicYearSelect.style.color = "white";
     return;
   }
 
@@ -67,6 +40,8 @@ document.getElementById("billClassOkBtn").addEventListener("click", async () => 
     showToast("Select a term", "error");
     return;
   }
+
+  console.log(className, academicYear, term);
 
   const response = await window.api.filterAllClassesStudents({
     className,
@@ -144,7 +119,7 @@ document.getElementById("billStudentsSubmitButton").addEventListener("click", as
 
 function displayBillStudents(data) {
   const selectedClass = billByClassSelect.value;
-  const academicYear = billAcademicYearInput.value;
+  const academicYear = billAcademicYearSelect.value;
   const term = billByTermSelect.value;
 
   billClassTitle.innerHTML = "";
@@ -163,4 +138,14 @@ function displayBillStudents(data) {
         </tr>
         `;
   });
+}
+
+export function setUpBillStudentsSection() {
+  billByClassSelect.innerHTML = "";
+  billAcademicYearSelect.innerHTML = "";
+  billByTermSelect.innerHTML = "";
+
+  setUpClassSelect(billByClassSelect);
+  setUpAcademicYearsSelect(billAcademicYearSelect);
+  setUpTermsSelect(billByTermSelect);
 }

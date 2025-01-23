@@ -1,9 +1,8 @@
-import { CONTAINERS } from "./constants/constants.js";
-import { showHideFeesContainer } from "./utils/show-fees-container.js";
+import { setUpAcademicYearsSelect, setUpClassSelect, setUpTermsSelect } from "./utils/setup-select-inputs.js";
 
 const studentClassTableBody = document.getElementById("studentClassTableBody");
 const studentsClass = document.getElementById("filterByClassSelect");
-const term = document.getElementById("filterByTErmSelect");
+const term = document.getElementById("filterByTerm");
 const academicYear = document.getElementById("academicYearFilter");
 
 document.getElementById("studentClassGoBtn").addEventListener("click", async function () {
@@ -23,6 +22,14 @@ export async function displayStudentsClass() {
     showToast(response.message || "An error occurred", "error");
     return;
   }
+
+  studentsClass.innerHTML = "";
+  setUpClassSelect(studentsClass);
+  term.innerHTML = "";
+  setUpTermsSelect(term);
+  academicYear.innerHTML = "";
+  setUpAcademicYearsSelect(academicYear);
+
   studentClassTableBody.innerHTML = "";
   response.data.forEach((student, index) => {
     studentClassTableBody.innerHTML += `
