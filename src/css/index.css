@@ -18,7 +18,6 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #F3F9F7;
 }
 
 /* Usage
@@ -70,8 +69,9 @@ button,
 [type="button"],
 [type="reset"],
 [type="submit"] {
-  -webkit-appearance: button;
   background-image: none;
+  background-color: var(--color-secondary);
+  color: white;
 }
 
 button,
@@ -93,7 +93,7 @@ th {
 }
 
 th {
-  background-color: var(--color-blue);
+  background-color: var(--color-secondary);
   color: white;
   font-size: larger;
 }
@@ -140,35 +140,54 @@ th {
 }
 
 .full-width {
-  width: 100%
+  width: 100%;
 }
 
 /* ****************** CONTAINER CSS *************************** */
 .container {
+  margin: 0;
   display: flex;
   height: 100vh;
+  overflow: hidden;
+  background-color: var(--color-secondary);
 }
 
 /* ****************** MAIN CONTENT *************************** */
 main {
-  width: calc(100% - 16rem);
-  margin-left: 16rem;
-  overflow-y: auto;
+  /* 
+  margin-bottom: 1rem;
+  margin-right: 1rem;
   padding: 1rem;
+  background-color: #f3f9f7;
+  */
+
+  width: calc(100% - 16rem);
+  margin-top: 5.4rem;
+  margin-left: 18rem;
+  margin-right: 2rem;
+  margin-bottom: 1rem;
+  border-radius: 1rem;
+  padding: 20px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  height: calc(100vh - 3.75rem); /* Adjust height to avoid overlap with the header */
+  background-color: #f4f4f4;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 /* *********************** SIDEBAR *************************************** */
 .sidebar {
-  width: 16rem;
-  position: fixed;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  width: 16rem;
   background-color: var(--color-secondary);
-  color: white;
+  color: #fff;
+  position: fixed;
   top: 0;
-  bottom: 0;
-  overflow-y: auto; /* Allows sidebar to scroll independently if needed */
+  left: 0;
+  overflow-y: auto;
+  height: 100%;
 }
 
 .sidebar ul li {
@@ -179,12 +198,12 @@ main {
 }
 
 .sidebar ul li:hover {
-  /* background-color: #555; */
-  background-color: var(--color-primary); /
+  background-color: #555;
+  background-color: var(--color-primary);
 }
 
 .sidebar li.active {
-  background-color: var(--color-primary); /* Active color */
+  background-color: var(--color-primary);
   color: white;
 }
 
@@ -193,11 +212,37 @@ main {
   border-bottom: none;
   text-align: start;
   color: var(--color-secondary);
+  background-color: white;
 }
 
 #navSettings:hover {
   background-color: var(--color-secondary);
   color: white;
+}
+
+/* ***************** HEADER ****************** */
+header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 16rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  background-color: #f4f4f4;
+  border-radius: 1rem;
+  margin: 1rem 2rem 1rem 2rem;
+}
+
+/* *************** STUDENTS ********************* */
+.addStudentsButtonContainer{
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1rem;
 }
 
 /* ********************** ADD CLASS CSS *********************** */
@@ -417,15 +462,15 @@ main {
 /* ************** BUTTONS CSS ******************************* */
 .outlined-button {
   display: inline-block;
-  color: #007BFF; 
+  color: #007bff;
   background-color: transparent;
-  border: 1px solid #007BFF;
+  border: 1px solid #007bff;
   transition: all 0.3s ease;
 }
 
 .outlined-button:hover {
-  background-color: #007BFF;
-  color: #fff; 
+  background-color: #007bff;
+  color: #fff;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
 }
 
@@ -442,10 +487,9 @@ main {
   background-color: transparent;
 }
 
-
 .text-button {
   display: inline-block;
-  color: #007BFF;
+  color: #007bff;
   background-color: transparent;
   border: none;
   cursor: pointer;
@@ -470,7 +514,7 @@ main {
 .table-rounded {
   border-collapse: collapse;
   width: 100%;
-  border-radius: 10px;
+  border-radius: 0.75rem;
   overflow: hidden;
   background-color: white;
 }
@@ -484,15 +528,16 @@ main {
 .table-rounded th {
   background-color: var(--color-secondary);
   font-weight: bold;
-  border-bottom: 1px solid #ccc; /* Only bottom border for the header */
+  border: 0.1rem solid var(--text-color);
 }
 
 .table-rounded tr:last-child td {
-  border-bottom: none; /* Remove the bottom border for the last row */
+  border-bottom: none;
 }
-u
+
 .table-rounded td {
-  border-bottom: 1px solid var(--color-secondary); /* Only bottom border for rows */
+  /* border: 0.1rem solid var(--text-color); */
+  border: none;
 }
 
 /* Remove vertical borders completely */
@@ -500,4 +545,18 @@ u
 .table-rounded th {
   border-left: none;
   border-right: none;
+}
+
+.table-rounded tr:nth-of-type(odd) {
+  background-color: rgba(245, 247, 250, 0.5);
+}
+
+.table-rounded tr:hover,
+.table-rounded tr:nth-of-type(odd):hover {
+  background-color: #cce5ff;
+  cursor: pointer;
+}
+
+.table-rounded tr:hover {
+  background-color: #9ca3af;
 }

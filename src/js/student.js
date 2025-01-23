@@ -4,6 +4,10 @@ const addStudentModal = document.getElementById("addStudentModal");
 const firstNameInput = document.getElementById("studentFirstNameInput");
 const lastNameInput = document.getElementById("studentLastNameInput");
 const otherNamesInput = document.getElementById("studentOtherNameInput");
+const totalStudentsNumber = document.getElementById("totalStudentsNumber");
+const searchStudentInput = document.getElementById("searchStudentInput");
+const studentsTableBody = document.getElementById("studentsTableBody");
+const tableRows = studentsTableBody.getElementsByTagName("tr");
 let editingStudentId = null;
 
 document.getElementById("addStudentBtn").addEventListener("click", function () {
@@ -64,8 +68,11 @@ document.getElementById("addStudentModalBtn").addEventListener("click", async fu
     displayStudents();
     return;
   }
-
   showToast(result.message, "error");
+});
+
+searchStudentInput.addEventListener("input", function () {
+  filterStudentsTable();
 });
 
 function editStudentRecord(student) {
@@ -79,7 +86,6 @@ function editStudentRecord(student) {
 
 export async function displayStudents() {
   const response = await window.api.getAllStudents();
-  const studentsTableBody = document.getElementById("studentsTableBody");
   studentsTableBody.innerHTML = "";
 
   if (response.success === false) {
@@ -92,6 +98,8 @@ export async function displayStudents() {
     return;
   }
 
+  totalStudentsNumber.textContent = `Total Number Of Students: ${response.data.length}`;
+
   response.data.forEach((student) => {
     const row = document.createElement("tr");
     row.innerHTML = `
@@ -99,11 +107,10 @@ export async function displayStudents() {
         <td>${student.first_name}</td>
         <td>${student.last_name}</td>
         <td>${student.other_names}</td>
-        <td>
-            <button id="btnEditStudent" class="text-button" title="Edit student">
-              <i class="fa-solid fa-pen-to-square"></i>
-                Edit
-            </button>
+        <td> 
+          <div id="btnEditStudent" class="text-button">
+            <i class="fa-solid fa-pen-to-square"></i> Edit
+          </div>
         </td>
       `;
 
@@ -112,4 +119,28 @@ export async function displayStudents() {
     });
     studentsTableBody.appendChild(row);
   });
+}
+
+function filterStudentsTable() {
+  const searchValue = searchStudentInput.value.toLowerCase();
+
+  for (let row of tableRows) {
+    const cells = row.getElementsByTagName("td");
+    const firstNameCell = cells[1]?.textContent.toLowerCase();
+    const lastNameCell = cells[2]?.textContent.toLowerCase();
+    const otherNamesCell = cells[3]?.textContent.toLowerCase();
+
+    if (!firstNameCell && !lastNameCell && !otherNamesCell) return;
+
+    // Check if search value is included in the name
+    if (
+      firstNameCell.includes(searchValue) ||
+      lastNameCell.includes(searchValue) ||
+      otherNamesCell.includes(searchValue)
+    ) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+  }
 }

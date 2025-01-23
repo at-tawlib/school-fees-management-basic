@@ -40,38 +40,46 @@
         <button id="navSettings"><i class="fa-solid fa-gears"></i> Settings</button>
       </nav>
 
+      <header>
+        <h2>Students</h2>
+      </header>
+
       <main>
         <!-------------- STUDENTS  SECTION ----------------------->
-        <section id="studentsView" style="display: none">
-          <div class="flex-row align-center justify-space-between">
-            <h2>Students</h2>
-            <button id="addStudentBtn" class="bg-blue">
-              <i class="fa-solid fa-plus"></i> Add Student
-            </button>
-          </div>
-          <hr style="margin: 1rem 0rem" />
+        <section id="studentsView">
+          <div class="flex-row align-start">
+            <div class="flex-3">
+              <input
+                type="text"
+                id="searchStudentInput"
+                class="full-width"
+                placeholder="Search by name..."
+              />
+              <div>
+                <table id="studentsTable" class="table-rounded">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Other Names</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="studentsTableBody">
+                    <!-- Load data from the css -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-          <input
-            type="text"
-            id="searchStudentInput"
-            class="full-width"
-            placeholder="Search by name..."
-          />
-          <div>
-            <table id="studentsTable">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Other Names</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="studentsTableBody">
-                <!-- Load data from the css -->
-              </tbody>
-            </table>
+            <div class="flex-1 addStudentsButtonContainer">
+              <h3 id="totalStudentsNumber"></h3>
+              <br />
+              <button id="addStudentBtn" class="full-width">
+                <i class="fa-solid fa-plus"></i> Add Student
+              </button>
+            </div>
           </div>
         </section>
 
@@ -321,7 +329,7 @@
         </section>
 
         <!-- ------------- VIEW CLASS BILLS ---------------------- -->
-        <section id="viewBillSection" style="display: none;">
+        <section id="viewBillSection" style="display: none">
           <h2 style="text-align: center">Class Bills</h2>
           <hr style="margin: 1rem 0rem" />
 
@@ -381,7 +389,7 @@
         </section>
 
         <!-------------- PAYMENTS  SECTION ----------------------->
-        <section id="paymentsSection">
+        <section id="paymentsSection" style="display: none">
           <h2 style="text-align: center">Fees Payments</h2>
           <hr style="margin: 1rem 0rem" />
 
