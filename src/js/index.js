@@ -14,9 +14,9 @@ document.getElementById("navStudents").addEventListener("click", function () {
   displayStudents();
 });
 
-document.getElementById("navViewFees").addEventListener("click", function () {
+document.getElementById("navViewFees").addEventListener("click", async function () {
   showHideFeesContainer(CONTAINERS.VIEW_FEES);
-  displayFeesTable();
+  await displayFeesTable();
 });
 
 document.getElementById("navAddClass").addEventListener("click", function () {

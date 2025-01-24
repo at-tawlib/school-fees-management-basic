@@ -275,10 +275,21 @@ class DatabaseHandler {
       return { success: false, message: error.message };
     }
   }
-
+  
   getAllFees() {
     try {
-      const stmt = this.db.prepare(`SELECT * FROM fees`);
+      const stmt = this.db.prepare(`
+        SELECT 
+          fees.id,
+          fees.class,
+          fees.academic_year,
+          fees.term,
+          fees.amount,
+          COUNT(bills.student_id) AS total_students_billed
+        FROM fees
+        LEFT JOIN bills ON fees.id = bills.fees_id
+        GROUP BY fees.id
+      `);
       const records = stmt.all();
       return { success: true, data: records };
     } catch (error) {
@@ -311,6 +322,39 @@ class DatabaseHandler {
       return { success: false, message: error.message };
     }
   }
+
+  updateFeeAmount(data) {
+    try {
+      const stmt = this.db.prepare(`
+          UPDATE fees SET amount = ? WHERE id = ?
+        `);
+      stmt.run(data.amount, data.id);
+      return {
+        success: true,
+        message: "Fee updated successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  deleteFee(id) {
+    try {
+      const stmt = this.db.prepare(`
+          DELETE FROM fees WHERE id = ? 
+        `);
+      stmt.run(id);
+      return {
+        success: true,
+        message: "Fees deleted successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
 
   // Check whether student has already been billed with the fees in question
   studentBillExist(studentId, feesId) {

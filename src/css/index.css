@@ -239,7 +239,7 @@ header {
 }
 
 /* *************** STUDENTS ********************* */
-.addStudentsButtonContainer{
+.addStudentsButtonContainer {
   background-color: white;
   border-radius: 1rem;
   padding: 1rem;
@@ -363,10 +363,6 @@ header {
   }
 }
 
-.white-text {
-  color: white;
-}
-
 #addStudentForm {
   display: block;
   padding: 1rem;
@@ -376,6 +372,10 @@ header {
   animation: fadeIn 0.5s forwards;
   position: relative;
   padding: 1rem;
+}
+
+#addStudentModal button {
+  width: 8rem;
 }
 
 .form-item {
@@ -396,10 +396,6 @@ header {
 
 .form-item select {
   width: 60%;
-}
-
-#addStudentModal button {
-  width: 8rem;
 }
 
 /* *********************** TOAST CSS ************************ */
@@ -459,6 +455,14 @@ header {
   color: white;
 }
 
+.white-text {
+  color: white;
+}
+
+.color-red {
+  color: var(--color-red);
+}
+
 /* ************** BUTTONS CSS ******************************* */
 .outlined-button {
   display: inline-block;
@@ -493,6 +497,7 @@ header {
   background-color: transparent;
   border: none;
   cursor: pointer;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   transition: color 0.3s ease, text-decoration 0.3s ease;
 }
 
@@ -522,7 +527,7 @@ header {
 .table-rounded th,
 .table-rounded td {
   padding: 8px 12px;
-  text-align: left;
+  text-align: center;
 }
 
 .table-rounded th {
