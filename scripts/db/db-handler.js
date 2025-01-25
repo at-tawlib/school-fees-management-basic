@@ -170,34 +170,51 @@ class DatabaseHandler {
 
   addStudentToClass(data) {
     try {
-      // Check if the record already exists
-      const checkStmt = this.db.prepare(`
-        SELECT 1 FROM studentClasses 
-        WHERE student_id = ? AND academic_year = ?
-      `);
-      const exists = checkStmt.get(data.studentId, data.academicYear);
+      const existingStudents = [];
+      const db = this.db;
 
-      if (exists) {
-        return {
-          success: false,
-          message: `Student is already assigned to for the ${data.academicYear} academic year.`,
-        };
+      // Start a transaction explicitly
+      db.exec("BEGIN TRANSACTION");
+
+      try {
+        // Check each student and insert if not already assigned
+        for (const studentId of data.studentIds) {
+          const checkStmt = db.prepare(`
+            SELECT 1 FROM studentClasses 
+            WHERE student_id = ? AND academic_year = ?
+          `);
+          const exists = checkStmt.get(studentId, data.academicYear);
+
+          if (exists) {
+            existingStudents.push(studentId); // Track existing students
+          } else {
+            const insertStmt = db.prepare(`
+              INSERT INTO studentClasses (student_id, class_name, academic_year, created_at)
+              VALUES (?, ?, ?, ?)
+            `);
+            insertStmt.run(studentId, data.className, data.academicYear, new Date().toISOString());
+          }
+        }
+
+        // If any students are already assigned, ROLLBACK and return
+        if (existingStudents.length > 0) {
+          db.exec("ROLLBACK");
+          return {
+            success: false,
+            message: "Some students are already assigned to the class.",
+            data: existingStudents,
+          };
+        }
+
+        // If all students are new, COMMIT the transaction
+        db.exec("COMMIT");
+        return { success: true, message: "All students added to class." };
+      } catch (error) {
+        db.exec("ROLLBACK"); // Rollback on any error
+        throw error; // Re-throw to handle in outer catch
       }
-
-      // If not, insert the new record
-      const insertStmt = this.db.prepare(`
-        INSERT INTO studentClasses ( student_id, class_name, academic_year, created_at )
-        VALUES ( ?, ?, ?, ? )
-      `);
-      insertStmt.run(data.studentId, data.className, data.academicYear, new Date().toISOString());
-
-      return {
-        success: true,
-        message: "Student added to class.",
-      };
     } catch (error) {
       console.error("Database Error: ", error);
-      // TODO: log error here
       return { success: false, message: error.message };
     }
   }

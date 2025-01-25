@@ -1,4 +1,4 @@
-import { resetAddStudentForm } from "./add-class.js";
+import { setupClassesSection } from "./add-class.js";
 import { setUpBillStudentsSection } from "./billing.js";
 import { CONTAINERS } from "./constants/constants.js";
 import { displayPaymentsTable } from "./payments.js";
@@ -21,7 +21,7 @@ document.getElementById("navViewFees").addEventListener("click", async function 
 
 document.getElementById("navAddClass").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.ADD_CLASS);
-  resetAddStudentForm();
+  setupClassesSection();
 });
 
 document.getElementById("navClasses").addEventListener("click", function () {

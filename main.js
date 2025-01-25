@@ -186,13 +186,10 @@ ipcMain.handle("get-all-students", async () => {
 });
 
 // Add student to class
-ipcMain.handle("add-student-to-class", (event, data) => {
+// TODO: remove the try-catch block and handle errors in the renderer process
+ipcMain.handle("add-student-to-class", (_, data) => {
   try {
     const result = dbHandler.addStudentToClass(data);
-
-    if (!result.success) {
-      throw new Error(result.message);
-    }
     return result;
   } catch (error) {
     return { success: false, message: error.message };

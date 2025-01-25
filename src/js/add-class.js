@@ -1,17 +1,18 @@
-import { CONTAINERS } from "./constants/constants.js";
 import { setUpAcademicYearsSelect, setUpClassSelect } from "./utils/setup-select-inputs.js";
-import { showHideFeesContainer } from "./utils/show-fees-container.js";
 import { showToast } from "./utils/toast.js";
 
-const addClassTables = document.getElementById("addClassTables");
+const addClassTable = document.getElementById("addClassTable");
 const addStudentClassForm = document.getElementById("addStudentClassForm");
 const addClassFormClass = document.getElementById("addClassFormClass");
 const addClassFormYear = document.getElementById("addClassFormYear");
 const setClassButton = document.getElementById("setClassButton");
 const changeClassButton = document.getElementById("setChangeClassButton");
-const studentListTableBody = document.getElementById("studentsListTableBody");
+const sectionHeaderTitle = document.getElementById("sectionHeaderTitle");
+const addClassForm = document.getElementById("addClassForm");
 
 let studentsData = [];
+
+document.getElementById("addClassButton").addEventListener("click", resetAddStudentForm);
 
 setClassButton.addEventListener("click", async function () {
   clearInputStyles(addClassFormClass);
@@ -42,15 +43,11 @@ setClassButton.addEventListener("click", async function () {
   }
 
   if (resp.success && resp.exists) {
-    showToast(
-      resp.message || "Class already exists for the academic year",
-      "error"
-    );
+    showToast(resp.message || "Class already exists for the academic year", "error");
     return;
   }
 
   await setStudentsData();
-  displayStudentsList();
   addStudentClassForm.innerHTML = "";
   addClassRowToForm(5);
 
@@ -58,111 +55,104 @@ setClassButton.addEventListener("click", async function () {
   changeClassButton.style.display = "block";
   addClassFormClass.disabled = true;
   addClassFormYear.disabled = true;
-  addClassTables.style.display = "flex";
+  addClassTable.style.display = "block";
 });
 
 changeClassButton.addEventListener("click", function () {
   resetAddStudentForm();
 });
 
+document.getElementById("addOneStudentRow").addEventListener("click", () => addClassRowToForm(1));
+document.getElementById("addTwoStudentRows").addEventListener("click", () => addClassRowToForm(2));
+document.getElementById("addFiveStudentRows").addEventListener("click", () => addClassRowToForm(5));
 
-document
-  .getElementById("addOneStudentRow")
-  .addEventListener("click", () => addClassRowToForm(1));
-document
-  .getElementById("addTwoStudentRows")
-  .addEventListener("click", () => addClassRowToForm(2));
-document
-  .getElementById("addFiveStudentRows")
-  .addEventListener("click", () => addClassRowToForm(5));
+document.getElementById("addStudentsSaveBtn").addEventListener("click", async function () {
+  const records = [];
+  const studentClass = addClassFormClass.value;
+  const academicYear = addClassFormYear.value;
+  const rows = addStudentClassForm.getElementsByTagName("tr");
 
-document
-  .getElementById("addStudentsSaveBtn")
-  .addEventListener("click", async function () {
-    const records = [];
-    const studentClass = addClassFormClass.value;
-    const academicYear = addClassFormYear.value;
-    const rows = addStudentClassForm.getElementsByTagName("tr");
+  // Collect student IDs
+  for (let row of rows) {
+    row.style.background = "transparent"; // Reset row background
+    const studentId = row.querySelector("input[name=studentId]").value;
+    const studentName = row.querySelector("input[name=studentName]").value;
 
-    for (let row of rows) {
-      row.style.background = "transparent";
-      const studentId = row.querySelector("input[name=studentId]").value;
-      const studentName = row.querySelector("input[name=studentName]").value;
-
-      if (!row || !studentId || !studentName) {
-        row.style.background = "red";
-        showToast("Please select a student", "error");
-        return;
-      }
-
-      if (studentId) records.push(studentId);
+    if (!row || !studentId || !studentName) {
+      row.style.background = "red";
+      showToast("Please select a student", "error");
+      return;
     }
 
-    for (const record of records) {
-      const response = await window.api.addStudentToClass({
-        studentId: record,
-        className: studentClass,
-        academicYear: academicYear,
-      });
-      if (!response.success) {
-        showToast(
-          response.message || "An error occurred while saving records",
-          "error"
-        );
-        return;
+    if (studentId) records.push(studentId);
+  }
+
+  // Send data to backend
+  const response = await window.api.addStudentToClass({
+    studentIds: records, // Pass all student IDs at once
+    className: studentClass,
+    academicYear: academicYear,
+  });
+
+  if (!response.success) {
+    if (response.data) {
+      // Highlight rows for existing students
+      for (let row of rows) {
+        const studentId = row.querySelector("input[name=studentId]").value;
+        if (response.data.includes(studentId)) {
+          row.style.background = "red"; // Highlight row in red
+        }
       }
+      showToast(response.message, "error");
+    } else {
+      showToast(response.message || "An error occurred while saving records", "error");
     }
+    return;
+  }
 
-    showToast("Records saved successfully", "success");
-    resetAddStudentForm();
-  });
+  showToast("Records saved successfully", "success");
+  setupClassesSection();
+});
 
-document
-  .getElementById("clearAddStudentsForm")
-  .addEventListener("click", () => {
-    addStudentClassForm.innerHTML = "";
-    addClassRowToForm(5);
-  });
 
-document
-  .getElementById("cancelAddStudentsForm")
-  .addEventListener("click", () => {
-    resetAddStudentForm();
-  });
+document.getElementById("clearAddStudentsForm").addEventListener("click", () => {
+  addStudentClassForm.innerHTML = "";
+  addClassRowToForm(5);
+});
+
+document.getElementById("cancelAddStudentsForm").addEventListener("click", () => {
+  setupClassesSection();
+});
 
 function addClassRowToForm(rowCount) {
   for (let i = 0; i < rowCount; i++) {
     const row = document.createElement("tr");
     row.innerHTML = `
-            <td>${addStudentClassForm.rows.length + 1}</td>
-            <td style="position: relative;">
-                <input type="text" name="studentName" placeholder="Name" required />
-                <input type="hidden" name="studentId" />
-                <ul class="suggestion-list"></ul>
-            </td>
-            <td>
-                <button class="btn-delete" type="button" tabindex="-1" title="Remove row">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            </td>
-            `;
+        <td>${addStudentClassForm.rows.length + 1}</td>
+        <td style="position: relative;">
+          <input type="text" name="studentName" placeholder="Name" required />
+          <input type="hidden" name="studentId" />
+          <ul class="suggestion-list"></ul>
+        </td>
+        <td>
+          <button class="outlined-button" tabindex="-1" title="Remove row" style="color:red; border-color: red;">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </td>
+      `;
 
     const deleteButton = row.querySelector("button");
     deleteButton.addEventListener("click", function () {
       removeStudentRow(deleteButton);
     });
-    addStudentClassForm.appendChild(row);
 
     // Add event listener to the input element for auto-suggestions
     const input = row.querySelector("input[name=studentName]");
     const hiddenInput = row.querySelector("input[name=studentId]");
     const suggestionList = row.querySelector(".suggestion-list");
-    attachAutoSuggestEventListeners(
-      input,
-      hiddenInput,
-      suggestionList,
-      studentsData
-    );
+    attachAutoSuggestEventListeners(input, hiddenInput, suggestionList, studentsData);
+
+    addStudentClassForm.appendChild(row);
   }
 }
 
@@ -184,36 +174,7 @@ async function setStudentsData() {
   studentsData = response.data;
 }
 
-async function displayStudentsList() {
-  const response = await window.api.getAllStudents();
-  studentListTableBody.innerHTML = "";
-
-  if (response.success === false) {
-    showToast(`An error occurred ${response.message}`, "error");
-    return;
-  }
-
-  if (response.data.length === 0) {
-    showToast("No data found", "error");
-    return;
-  }
-
-  response.data.forEach((student) => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-        <td>${student.id}</td>
-        <td>${student.first_name} ${student.other_names} ${student.last_name}</td>
-      `;
-    studentListTableBody.appendChild(row);
-  });
-}
-
-function attachAutoSuggestEventListeners(
-  input,
-  hiddenInput,
-  suggestionList,
-  data
-) {
+function attachAutoSuggestEventListeners(input, hiddenInput, suggestionList, data) {
   input.addEventListener("input", function () {
     const query = input.value.trim().toLowerCase();
 
@@ -258,10 +219,7 @@ function attachAutoSuggestEventListeners(
 
   // Hide suggestions when clicking outside the input
   document.addEventListener("click", function (event) {
-    if (
-      !input.contains(event.target) &&
-      !suggestionList.contains(event.target)
-    ) {
+    if (!input.contains(event.target) && !suggestionList.contains(event.target)) {
       suggestionList.style.display = "none";
     }
   });
@@ -279,19 +237,50 @@ function clearInput(input) {
   input.disabled = false;
 }
 
-export function resetAddStudentForm() {
-  addClassFormClass.innerHTML = "";
-  addClassFormYear.innerHTML = "";
+export async function setupClassesSection() {
+  sectionHeaderTitle.textContent = "Students Classes";
+  addClassForm.style.display = "none";
+  const classesResp = await window.api.getDistinctClasses();
 
+  const classesList = document.getElementById("classesList");
+  classesList.innerHTML = "";
+
+  if (!classesResp.success) {
+    showToast("An error occurred while fetching classes", "error");
+    return;
+  }
+
+  if (classesResp.success) {
+    classesResp.data.forEach((cls) => {
+      const option = document.createElement("div");
+      option.className = "class-item";
+      option.textContent = `${cls.class_name} (${cls.academic_year})`;
+      option.setAttribute("data-class-name", cls.class_name);
+      option.setAttribute("data-academic-year", cls.academic_year);
+
+      // Add click event to fetch students for the selected class
+      option.addEventListener("click", () => {
+        fetchAndDisplayStudents(cls.class_name, cls.academic_year);
+      });
+
+      classesList.appendChild(option);
+    });
+  }
+}
+
+function resetAddStudentForm() {
+  addClassForm.style.display = "block";
   setUpClassSelect(addClassFormClass);
   setUpAcademicYearsSelect(addClassFormYear);
-
   addClassFormClass.disabled = false;
   addClassFormYear.disabled = false;
   clearInput(addClassFormClass);
   clearInput(addClassFormYear);
   setClassButton.style.display = "block";
   changeClassButton.style.display = "none";
-  addClassTables.style.display = "none";
+  addClassTable.style.display = "none";
   addStudentClassForm.innerHTML = "";
 }
+
+// Call this function when the page loads
+function fetchAndDisplayStudents() {}

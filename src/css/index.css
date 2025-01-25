@@ -243,9 +243,21 @@ header {
   background-color: white;
   border-radius: 1rem;
   padding: 1rem;
+  box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
 }
 
-/* ********************** ADD CLASS CSS *********************** */
+/* ************** ADD CLASS CSS ******************** */
+.class-item {
+  padding: 1rem;
+  cursor: pointer;
+  text-align: left;
+  border-bottom: 1px solid #e0d8d8;
+}
+
+.class-item:hover {
+  background-color: #f4f4f4;
+}
+
 .sectionContainer {
   background-color: white;
   padding: 1.5rem;
@@ -254,14 +266,12 @@ header {
   margin-bottom: 2rem;
 }
 
-#addClassTables {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
+#addClassTable input {
+  width: 100%;
 }
 
-#addClassTables input {
-  width: 100%;
+#addClassTable table {
+  overflow: visible;
 }
 
 .suggestion-list {
@@ -270,21 +280,26 @@ header {
   left: 0;
   background: white;
   border: 1px solid #ccc;
+  border-radius: 0.5rem;
   z-index: 10;
   list-style: none;
   margin: 0;
   padding: 0;
+  width: 100%;
   display: none;
+  font-size: medium;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* .suggestion-list {
-  background-color: white;
-  position: absolute;
-  z-index: 200;
-} */
+
+.suggestion-list li {
+  padding: 0.5rem 1rem !important;
+  cursor: pointer;
+}
 
 .suggestion-list li:hover {
-  background-color: #f4f4f4;
+  background-color: #f0f0f0;
 }
 
 /* ********************** BILL CSS *********************** */
@@ -522,6 +537,7 @@ header {
   border-radius: 0.75rem;
   overflow: hidden;
   background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .table-rounded th,
@@ -560,11 +576,6 @@ header {
 .table-rounded tr:nth-of-type(odd) {
   background-color: rgba(245, 247, 250, 0.5);
 }
-
-/* .table-rounded tr:nth-of-type(odd):hover {
-  background-color: #cce5ff;
-  cursor: pointer;
-} */
 
 .table-rounded tr:hover {
   background-color: #9ca3af;
