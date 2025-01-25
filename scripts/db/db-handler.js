@@ -165,9 +165,9 @@ class DatabaseHandler {
       // Check if the record already exists
       const checkStmt = this.db.prepare(`
         SELECT 1 FROM studentClasses 
-        WHERE student_id = ? AND class_name = ? AND academic_year = ?
+        WHERE student_id = ? AND academic_year = ?
       `);
-      const exists = checkStmt.get(data.studentId, data.className, data.academicYear);
+      const exists = checkStmt.get(data.studentId, data.academicYear);
 
       if (exists) {
         return {
