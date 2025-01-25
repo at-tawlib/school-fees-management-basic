@@ -530,6 +530,11 @@ header {
   text-align: center;
 }
 
+.table-rounded th:nth-child(2),
+.table-rounded td:nth-child(2) {
+  text-align: left;
+}
+
 .table-rounded th {
   background-color: var(--color-secondary);
   font-weight: bold;
@@ -556,11 +561,10 @@ header {
   background-color: rgba(245, 247, 250, 0.5);
 }
 
-.table-rounded tr:hover,
-.table-rounded tr:nth-of-type(odd):hover {
+/* .table-rounded tr:nth-of-type(odd):hover {
   background-color: #cce5ff;
   cursor: pointer;
-}
+} */
 
 .table-rounded tr:hover {
   background-color: #9ca3af;

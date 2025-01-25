@@ -46,7 +46,7 @@
 
       <main>
         <!-------------- STUDENTS  SECTION ----------------------->
-        <section id="studentsView">
+        <section id="studentsView" style="display: none">
           <div class="flex-row align-start">
             <div class="flex-3">
               <input
@@ -216,38 +216,45 @@
         </section>
 
         <!-- ------------ CLASSES / STUDENT CLASS SECTION ------------ -->
-        <section id="studentClassSection" style="display: none">
-          <h2 style="text-align: center">Students Class</h2>
-          <hr style="margin: 1rem 0rem" />
-
-          <div class="sectionContainer">
-            <div class="flex-row align-center">
-              <label for="filterByClass">Class:</label>
-              <select id="filterByClassSelect"></select>
-
-              <label for="filterByTerm">Term:</label>
-              <select id="filterByTerm"></select>
-
-              <label for="academicYearFilter">Year:</label>
-              <select id="academicYearFilter"></select>
-
-              <button id="studentClassGoBtn">Go</button>
+        <section id="studentClassSection">
+          <div class="flex-row align-start">
+            <div class="flex-3">
+              <input
+                type="text"
+                id="searchStudentClassInput"
+                class="full-width"
+                placeholder="Search by name..."
+              />
+              <table class="table-rounded">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Class</th>
+                    <th>Year</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="studentClassTableBody">
+                  <!-- Students Class List -->
+                </tbody>
+              </table>
             </div>
 
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Class</th>
-                  <th>Year</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="studentClassTableBody">
-                <!-- Students Class List -->
-              </tbody>
-            </table>
+            <div class="flex-1 addStudentsButtonContainer">
+              <div class="form-item">
+                <label for="filterByClass">Class:</label>
+                <select id="filterByClassSelect"></select>
+              </div>
+
+              <div class="form-item">
+                <label for="academicYearFilter">Year:</label>
+                <select id="academicYearFilter"></select>
+              </div>
+              <button id="clearStudentClassFilters" class="full-width">
+                <i class="fa-solid fa-arrows-rotate"></i> Clear Filters
+              </button>
+            </div>
           </div>
         </section>
 
