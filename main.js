@@ -104,6 +104,19 @@ ipcMain.handle("get-all-classes", () => {
   }
 });
 
+// Get distinct classes
+ipcMain.handle("get-distinct-classes", () => {
+  try {
+    const result = dbHandler.getDistinctClasses();
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // Add academic year
 ipcMain.handle("add-academic-year", (event, data) => {
   try {

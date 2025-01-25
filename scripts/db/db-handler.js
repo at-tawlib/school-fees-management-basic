@@ -5,7 +5,15 @@ const Database = require("better-sqlite3");
 const dbPath = require("../file-paths").getDbPath();
 
 //  Required tables for validation
-const requiredTables = ["academicYears", "bills", "classes", "fees", "students", "studentClasses", "terms"];
+const requiredTables = [
+  "academicYears",
+  "bills",
+  "classes",
+  "fees",
+  "students",
+  "studentClasses",
+  "terms",
+];
 
 class DatabaseHandler {
   constructor() {
@@ -172,7 +180,7 @@ class DatabaseHandler {
       if (exists) {
         return {
           success: false,
-          message: "Student is already assigned to this class for the academic year.",
+          message: `Student is already assigned to for the ${data.academicYear} academic year.`,
         };
       }
 
@@ -202,6 +210,19 @@ class DatabaseHandler {
           JOIN studentClasses c
           ON s.id = c.student_id
         `);
+      const records = stmt.all();
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getDistinctClasses() {
+    try {
+      const stmt = this.db.prepare(`
+    SELECT DISTINCT class_name, academic_year FROM studentClasses ORDER BY class_name, academic_year;
+    `);
       const records = stmt.all();
       return { success: true, data: records };
     } catch (error) {
@@ -275,7 +296,7 @@ class DatabaseHandler {
       return { success: false, message: error.message };
     }
   }
-  
+
   getAllFees() {
     try {
       const stmt = this.db.prepare(`
@@ -354,7 +375,6 @@ class DatabaseHandler {
       return { success: false, message: error.message };
     }
   }
-
 
   // Check whether student has already been billed with the fees in question
   studentBillExist(studentId, feesId) {

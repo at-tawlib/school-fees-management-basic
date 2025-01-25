@@ -23,6 +23,7 @@ contextBridge.exposeInMainWorld("api", {
   getAllAcademicYears: () => ipcRenderer.invoke("get-all-academic-years"),
   deleteFee: (data) => ipcRenderer.invoke("delete-fees", data),
   updateFeeAmount: (data) => ipcRenderer.invoke("update-fee-amount", data),
+  getDistinctClasses: () => ipcRenderer.invoke("get-distinct-classes"),
 });
 
 contextBridge.exposeInMainWorld("store", {
