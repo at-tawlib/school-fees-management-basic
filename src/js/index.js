@@ -1,13 +1,14 @@
-import { setupClassesSection } from "./add-class.js";
+import { setupStudentsClassSection } from "./student-class.js";
 import { setUpBillStudentsSection } from "./billing.js";
 import { CONTAINERS } from "./constants/constants.js";
 import { displayPaymentsTable } from "./payments.js";
 import { displayAcademicYearSettingsTable, displayClassSettingsTable } from "./settings.js";
-import { displayStudentsClass } from "./student-class.js";
 import { displayStudents } from "./student.js";
 import { showHideFeesContainer } from "./utils/show-fees-container.js";
 import { setUpViewBills } from "./view-bills.js";
 import { displayFeesTable } from "./view-fees.js";
+
+const sectionHeaderTitle = document.getElementById("sectionHeaderTitle");
 
 document.getElementById("navStudents").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.STUDENTS_VIEW);
@@ -19,14 +20,10 @@ document.getElementById("navViewFees").addEventListener("click", async function 
   await displayFeesTable();
 });
 
-document.getElementById("navAddClass").addEventListener("click", function () {
-  showHideFeesContainer(CONTAINERS.ADD_CLASS);
-  setupClassesSection();
-});
-
 document.getElementById("navClasses").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.STUDENT_CLASS);
-  displayStudentsClass();
+  sectionHeaderTitle.textContent = "Students Classes";
+  setupStudentsClassSection();
 });
 
 document.getElementById("navBillStudents").addEventListener("click", function () {

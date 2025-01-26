@@ -235,12 +235,12 @@ class DatabaseHandler {
     }
   }
 
-  getDistinctClasses() {
+  getDistinctClasses(year) {
     try {
       const stmt = this.db.prepare(`
-    SELECT DISTINCT class_name, academic_year FROM studentClasses ORDER BY class_name, academic_year;
+        SELECT DISTINCT class_name, academic_year FROM studentClasses WHERE academic_year = ?;
     `);
-      const records = stmt.all();
+      const records = stmt.all(year);
       return { success: true, data: records };
     } catch (error) {
       console.error("Database Error: ", error);
