@@ -39,7 +39,6 @@ document.getElementById("viewBillOkButton").addEventListener("click", async () =
     return;
   }
 
-  // const response = await window.api.getBillByClassYear({ className, academicYear });
   const response = await window.api.getStudentsBillSummary({ className, academicYear, term });
   console.log(response);
 

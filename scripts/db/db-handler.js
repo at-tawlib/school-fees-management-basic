@@ -466,22 +466,29 @@ class DatabaseHandler {
     }
   }
 
-  getBillByClassYear(filter) {
+  getBillDetails(filter) {
     try {
       const stmt = this.db.prepare(`
-          SELECT s.id AS student_id,
-            s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
-            c.class_name, c.academic_year,
-            f.term, f.amount AS fees_amount,
-            b.id AS bill_id,
-            b.created_at AS bill_date
-          FROM students s
-          JOIN studentClasses c ON s.id = c.student_id
-          LEFT JOIN bills b ON s.id = b.student_id
-          LEFT JOIN fees f ON b.fees_id = f.id
-          WHERE c.class_name = ? AND c.academic_year = ?
+           SELECT 
+      s.id AS student_id,
+      s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
+      f.id AS fees_id, 
+      f.amount AS fee_amount,
+      b.id AS bill_id, 
+      COUNT(b.id) AS is_billed,
+      IFNULL(SUM(p.amount), 0) AS total_payments
+    FROM students s
+    JOIN studentClasses c ON s.id = c.student_id
+    LEFT JOIN fees f ON c.class_name = f.class 
+      AND c.academic_year = f.academic_year 
+      AND f.term = ?
+    LEFT JOIN bills b ON s.id = b.student_id AND b.fees_id = f.id
+    LEFT JOIN payments p ON b.id = p.bill_id
+    WHERE c.class_name = ? AND c.academic_year = ?
+    GROUP BY s.id, s.first_name, s.last_name, s.other_names, f.amount
+    ORDER BY s.first_name, s.last_name;
         `);
-      const records = stmt.all(filter.className, filter.academicYear);
+      const records = stmt.all(filter.term, filter.className, filter.academicYear);
       return { success: true, data: records };
     } catch (error) {
       console.error("Database Error: ", error);
@@ -513,6 +520,62 @@ class DatabaseHandler {
     }
   }
 
+  // TODO: remove this function not use
+  /**
+   * Fetches detailed student billing information for a specific class, academic year, and term.
+   *
+   * This function retrieves a comprehensive list of students in a given class, along with their:
+   * - Personal details (name, ID)
+   * - Class and academic year information
+   * - Fee details (term, amount)
+   * - Billing status (whether they have been billed)
+   * - Total payments made (if any)
+   *
+   * The query performs the following operations:
+   * 1. Joins the `students` table with `studentClasses` to get class enrollment details.
+   * 2. Left joins the `fees` table to retrieve fee details for the specified class, academic year, and term.
+   * 3. Left joins the `bills` table to check if the student has been billed for the fee.
+   * 4. Left joins the `payments` table to calculate the total payments made by the student for the bill.
+   * 5. Groups the results by student and fee details to ensure accurate aggregation of payments.
+   * 6. Orders the results by the student's first and last name for readability.
+   *
+   * @param {string} className - The name of the class to filter by (e.g., "Class 10").
+   * @param {string} academicYear - The academic year to filter by (e.g., "2023").
+   * @param {string} term - The term to filter by (e.g., "Term 1").
+   * @returns {Array<Object>} - An array of objects containing the following fields:
+   *   - student_id: The unique ID of the student.
+   *   - student_name: The full name of the student (first name + last name + other names, if any).
+   *   - class_name: The name of the class the student is enrolled in.
+   *   - academic_year: The academic year of the class.
+   *   - fees_id: The unique ID of the fee record (if applicable).
+   *   - term: The term for which the fee applies.
+   *   - fee_amount: The amount of the fee.
+   *   - bill_id: The unique ID of the bill record (if the student has been billed).
+   *   - is_billed: A count indicating whether the student has been billed (1 if billed, 0 otherwise).
+   *   - total_payments: The total amount paid by the student for the bill (0 if no payments).
+   *
+   * Example Output:
+   * [
+   *   {
+   *     student_id: 1,
+   *     student_name: "John Doe Smith",
+   *     class_name: "Class 10",
+   *     academic_year: "2023",
+   *     fees_id: 101,
+   *     term: "Term 1",
+   *     fee_amount: 500,
+   *     bill_id: 201,
+   *     is_billed: 1,
+   *     total_payments: 300
+   *   },
+   *   ...
+   * ]
+   *
+   * Notes:
+   * - If a student has not been billed, `bill_id` and `total_payments` will be `null` or `0`.
+   * - If a student has no payments, `total_payments` will be `0`.
+   * - The `is_billed` field is derived from the count of bill records and will be `1` if the student has been billed.
+   */
   getStudentsBillSummary(filter) {
     try {
       const stmt = this.db.prepare(`
