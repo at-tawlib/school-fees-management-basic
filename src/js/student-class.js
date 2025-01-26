@@ -8,6 +8,7 @@ const addClassFormYear = document.getElementById("addClassFormYear");
 const setClassButton = document.getElementById("setClassButton");
 const changeClassButton = document.getElementById("setChangeClassButton");
 const addClassForm = document.getElementById("addClassForm");
+const studentClassTitle = document.getElementById("studentClassTitle");
 
 const studentClassTableContainer = document.getElementById("studentClassContainer");
 const searchStudentClassInput = document.getElementById("searchStudentClassInput");
@@ -114,7 +115,7 @@ document.getElementById("addStudentsSaveBtn").addEventListener("click", async fu
   }
 
   showToast("Records saved successfully", "success");
-  setupClassesSection();
+  setupClassesSidebar();
 });
 
 document.getElementById("clearAddStudentsForm").addEventListener("click", () => {
@@ -123,7 +124,7 @@ document.getElementById("clearAddStudentsForm").addEventListener("click", () => 
 });
 
 document.getElementById("cancelAddStudentsForm").addEventListener("click", () => {
-  setupClassesSection();
+  setupClassesSidebar();
 });
 
 function addClassRowToForm(rowCount) {
@@ -249,14 +250,14 @@ export async function setupStudentsClassSection() {
   studentClassTableContainer.style.display = "none";
   await setUpAcademicYearsSelect(filterStudentsByAcademicYear);
   filterStudentsByAcademicYear.value = "2024"; // TODO: get current year
-  setupClassesSection("2024");
+  setupClassesSidebar("2024");
 }
 
 filterStudentsByAcademicYear.addEventListener("change", async function () {
-  await setupClassesSection(this.value);
+  await setupClassesSidebar(this.value);
 });
 
-async function setupClassesSection(year) {
+async function setupClassesSidebar(year) {
   const classesResp = await window.api.getDistinctClasses(year);
   const classesList = document.getElementById("classesList");
   classesList.innerHTML = "";
@@ -312,6 +313,7 @@ document.getElementById("allClassesDiv").addEventListener("click", async functio
     return;
   }
 
+  studentClassTitle.textContent = "All Classes";
   studentClassTableBody.innerHTML = "";
   response.data.forEach((student, index) => {
     const row = document.createElement("tr");
@@ -336,6 +338,7 @@ document.getElementById("allClassesDiv").addEventListener("click", async functio
 async function fetchAndDisplayStudents(className, academicYear) {
   addClassForm.style.display = "none";
   studentClassTableContainer.style.display = "block";
+  studentClassTitle.textContent = `${className} (${academicYear})`;
 
   const response = await window.api.filterAllClassesStudents({ className, academicYear });
   if (!response.success) {

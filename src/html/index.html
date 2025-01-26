@@ -126,7 +126,7 @@
         </section>
 
         <!-- ------------ CLASSES / STUDENT CLASS SECTION ------------ -->
-        <section id="studentClassSection" style="display: none">
+        <section id="studentClassSection">
           <div class="flex-row align-start">
             <!-- Classes side bar (Classes, add class) -->
             <div class="flex-1 addStudentsButtonContainer">
@@ -144,15 +144,31 @@
               </button>
             </div>
 
+            <!-- Student class table -->
             <div class="flex-3">
-              <!-- Student class table -->
               <div id="studentClassContainer">
-                <input
-                  type="text"
-                  id="searchStudentClassInput"
-                  class="full-width"
-                  placeholder="Search by name..."
-                />
+                <div class="flex-row j-space-between">
+                  <h2 id="studentClassTitle">Class 1</h2>
+                  <div class="flex-row">
+                    <button id="addStudentClassBtn" class="bg-green">
+                      <i class="fa-solid fa-plus"></i> Add Student
+                    </button>
+                    <button id="billClassBtn" class="bg-blue">
+                      <i class="fa-solid fa-money-bill-1-wave"></i> Bill Class
+                    </button>
+                  </div>
+                </div>
+                <br />
+
+                <div class="flex-row j-space-between">
+                  <input type="text" id="searchStudentClassInput" placeholder="Search by name..." />
+                  <div class="flex-row">
+                    <button>First term</button>
+                    <button>Second term</button>
+                    <button>Third term</button>
+                  </div>
+                </div>
+
                 <table class="table-rounded">
                   <thead>
                     <tr>
@@ -248,7 +264,7 @@
         </section>
 
         <!-- ------------ BILL STUDENTS --------------------- -->
-        <section id="billClassSection">
+        <section id="billClassSection" style="display: none">
           <div class="flex-row align-start">
             <!-- Bill options (class, academic year, term) -->
             <div class="flex-1 addStudentsButtonContainer">

@@ -107,7 +107,6 @@ th {
 .flex-row {
   display: flex;
   flex-direction: row;
-  width: 100%;
   gap: 2rem;
 }
 
@@ -135,7 +134,7 @@ th {
   align-items: start;
 }
 
-.justify-space-between {
+.j-space-between {
   justify-content: space-between;
 }
 
