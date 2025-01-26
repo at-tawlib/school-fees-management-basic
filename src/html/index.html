@@ -248,41 +248,35 @@
         </section>
 
         <!-- ------------ BILL STUDENTS --------------------- -->
-        <section id="billClassSection" style="display: none">
-          <h2 style="text-align: center">Bills</h2>
-          <hr style="margin: 1rem 0rem" />
-
-          <div class="flex-row">
+        <section id="billClassSection">
+          <div class="flex-row align-start">
             <!-- Bill options (class, academic year, term) -->
-            <div class="flex-column flex-1">
-              <div class="flex-row align-center">
+            <div class="flex-1 addStudentsButtonContainer">
+              <div class="form-item">
                 <label for="billByClassSelect">Class:</label>
                 <select id="billByClassSelect"></select>
               </div>
-              <br />
 
-              <div class="flex-row align-center">
+              <div class="form-item">
                 <label for="billAcademicYearSelect">Year:</label>
                 <select id="billAcademicYearSelect"></select>
               </div>
-              <br />
 
-              <div class="flex-row align-center">
+              <div class="form-item">
                 <label for="billByTermSelect">Term:</label>
                 <select id="billByTermSelect"></select>
               </div>
-              <br />
 
-              <button id="billClassOkBtn">Ok</button>
+              <button id="billClassOkBtn" class="full-width">Ok</button>
             </div>
 
             <!-- Bill Table Container -->
-            <section class="flex-3">
+            <div class="flex-3">
               <h2 id="billDetailsText"></h2>
               <p id="billFeesId" style="display: none"></p>
               <div id="billClassTableContainer" style="display: none">
                 <!-- students class bill table -->
-                <table id="billClassTable">
+                <table id="billClassTable" class="table-rounded">
                   <thead>
                     <tr>
                       <th id="billClassTitle" colspan="4" style="text-align: center"></th>
@@ -320,7 +314,7 @@
                   </button>
                 </div>
               </div>
-            </section>
+            </div>
           </div>
         </section>
 

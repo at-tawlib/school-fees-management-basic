@@ -12,6 +12,7 @@ const sectionHeaderTitle = document.getElementById("sectionHeaderTitle");
 
 document.getElementById("navStudents").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.STUDENTS_VIEW);
+  sectionHeaderTitle.textContent = "Students";
   displayStudents();
 });
 
@@ -28,6 +29,7 @@ document.getElementById("navClasses").addEventListener("click", function () {
 
 document.getElementById("navBillStudents").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.BILL_CLASS);
+  sectionHeaderTitle.textContent = "Bill Students";
   setUpBillStudentsSection();
 });
 
