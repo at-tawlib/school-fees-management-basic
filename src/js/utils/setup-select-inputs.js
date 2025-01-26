@@ -1,4 +1,5 @@
 export async function setUpClassSelect(selectInput, allOption = false) {
+  selectInput.innerHTML = "";
   const classList = await window.store.getStoreClasses();
 
   if (allOption) {
@@ -17,6 +18,7 @@ export async function setUpClassSelect(selectInput, allOption = false) {
 }
 
 export async function setUpAcademicYearsSelect(selectInput, allOption = false) {
+  selectInput.innerHTML = "";
   const academicYears = await window.store.getStoreAcademicYears();
 
   if (allOption) {
@@ -35,6 +37,7 @@ export async function setUpAcademicYearsSelect(selectInput, allOption = false) {
 }
 
 export async function setUpTermsSelect(selectInput, allOption = false) {
+  selectInput.innerHTML = "";
   const terms = await window.store.getStoreTerms();
 
   if (allOption) {

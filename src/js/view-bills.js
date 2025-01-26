@@ -3,9 +3,14 @@ import { showToast } from "./utils/toast.js";
 import { showHideFeesContainer } from "./utils/show-fees-container.js";
 import { clearInputsStyles } from "./utils/clear-input-styles.js";
 import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
+import {
+  setUpAcademicYearsSelect,
+  setUpClassSelect,
+  setUpTermsSelect,
+} from "./utils/setup-select-inputs.js";
 
 const classSelect = document.getElementById("viewBillClassSelect");
-const academicYearInput = document.getElementById("viewBillAcademicYear");
+const academicYearSelect = document.getElementById("viewBillAcademicYear");
 const termSelect = document.getElementById("viewBillTermSelect");
 const billDetailsText = document.getElementById("viewBillDetailsText");
 const billClassTableContainer = document.getElementById("viewBillClassTableContainer");
@@ -13,16 +18,12 @@ const billClassTable = document.getElementById("viewBillClassTable");
 const billTableHeader = document.getElementById("viewBillClassTitle");
 const billClassTableBody = document.getElementById("viewBillClassTableBody");
 
-document.getElementById("viewBillsButton").addEventListener("click", async () => {
-  showHideFeesContainer(CONTAINERS.VIEW_BILLS);
-});
-
 document.getElementById("viewBillOkButton").addEventListener("click", async () => {
   const className = classSelect.value;
-  const academicYear = academicYearInput.value;
+  const academicYear = academicYearSelect.value;
   const term = termSelect.value;
 
-  clearInputsStyles([classSelect, academicYearInput, termSelect, billDetailsText]);
+  clearInputsStyles([classSelect, academicYearSelect, termSelect, billDetailsText]);
 
   if (!className) {
     classSelect.style.backgroundColor = "red";
@@ -33,8 +34,8 @@ document.getElementById("viewBillOkButton").addEventListener("click", async () =
 
   if (!academicYear) {
     showToast("Select an academic year", "error");
-    academicYearInput.style.backgroundColor = "red";
-    academicYearInput.style.color = "white";
+    academicYearSelect.style.backgroundColor = "red";
+    academicYearSelect.style.color = "white";
     return;
   }
 
@@ -60,7 +61,7 @@ document.getElementById("viewBillOkButton").addEventListener("click", async () =
 
 function displayViewBillTable(data) {
   const className = classSelect.value;
-  const academicYear = academicYearInput.value;
+  const academicYear = academicYearSelect.value;
   const term = termSelect.value;
   billDetailsText.textContent = "";
 
@@ -79,7 +80,7 @@ function displayViewBillTable(data) {
         <td>${item?.bill_id ? "Billed" : "Not Billed"}</td>
         <td>${item.fee_amount}</td>
         <td>${item.total_payments}</td>
-        <td>${(item.fee_amount - item.total_payments)}</td>
+        <td>${item.fee_amount - item.total_payments}</td>
         <td>
           <button id="btnPayFees"  title="Pay school fees">
             <i class="fa-solid fa-edit"></i>
@@ -94,4 +95,18 @@ function displayViewBillTable(data) {
 
     billClassTableBody.appendChild(row);
   });
+}
+
+export function setUpViewBills() {
+  classSelect.innerHTML = "";
+  academicYearSelect.innerHTML = "";
+  termSelect.innerHTML = "";
+  billDetailsText.textContent = "";
+  billClassTableContainer.style.display = "none";
+  billClassTableBody.innerHTML = "";
+  billTableHeader.textContent = "";
+
+  setUpClassSelect(classSelect, true);
+  setUpAcademicYearsSelect(academicYearSelect, true);
+  setUpTermsSelect(termSelect, true);
 }

@@ -39,9 +39,18 @@ async function loadInitialData() {
     const terms = await dbHandler.getAllTerms();
 
     // Save data in electron-store
-    store.set("classes", classes.data.map((classItem) => classItem.class_name));
-    store.set("academicYears", academicYears.data.map((year) => year.year));
-    store.set("terms", terms.data.map((term) => term.term));
+    store.set(
+      "classes",
+      classes.data.map((classItem) => classItem.class_name)
+    );
+    store.set(
+      "academicYears",
+      academicYears.data.map((year) => year.year)
+    );
+    store.set(
+      "terms",
+      terms.data.map((term) => term.term)
+    );
 
     console.log("Data loaded into local storage");
   } catch (error) {
@@ -89,6 +98,16 @@ ipcMain.handle("get-all-classes", () => {
     if (!result.success) {
       throw new Error(result.message);
     }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// Get distinct classes
+ipcMain.handle("get-distinct-classes", (_, data) => {
+  try {
+    const result = dbHandler.getDistinctClasses(data);
     return result;
   } catch (error) {
     return { success: false, message: error.message };
@@ -164,13 +183,10 @@ ipcMain.handle("get-all-students", async () => {
 });
 
 // Add student to class
-ipcMain.handle("add-student-to-class", (event, data) => {
+// TODO: remove the try-catch block and handle errors in the renderer process
+ipcMain.handle("add-student-to-class", (_, data) => {
   try {
     const result = dbHandler.addStudentToClass(data);
-
-    if (!result.success) {
-      throw new Error(result.message);
-    }
     return result;
   } catch (error) {
     return { success: false, message: error.message };
@@ -223,6 +239,32 @@ ipcMain.handle("filter-all-classes-students", async (_, filter) => {
 ipcMain.handle("add-fees", async (_, data) => {
   try {
     const result = await dbHandler.addFees(data);
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// Update fee amount
+ipcMain.handle("update-fee-amount", async (_, data) => {
+  try {
+    const result = await dbHandler.updateFeeAmount(data);
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// Delete fees
+ipcMain.handle("delete-fees", async (_, data) => {
+  try {
+    const result = await dbHandler.deleteFee(data);
     if (!result.success) {
       throw new Error(result.message);
     }

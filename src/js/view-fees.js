@@ -5,17 +5,18 @@ import {
 } from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
-const feesTable = document.getElementById("feesTable");
-const feesTableHead = document.getElementById("feesTableHead");
 const feesTableBody = document.getElementById("feesTableBody");
 const addFeesModal = document.getElementById("addFeesModal");
-const filterFeesByClassSelect = document.getElementById("filterFeesByClassSelect");
 const filterFeesByAcademicYear = document.getElementById("filterFeesByAcademicYear");
 const filterFeesByTerm = document.getElementById("filterFeesByTerm");
 const addFeesModalClass = document.getElementById("feesClassSelect");
 const addFeesModalYear = document.getElementById("feesAcademicYear");
 const addFeesModalTerm = document.getElementById("feesTerm");
 
+const editFeesModal = document.getElementById("editFeesModal");
+const sectionHeaderTitle = document.getElementById("sectionHeaderTitle");
+
+// Event Listeners for Add Fees Modal
 document.getElementById("btnAddFees").addEventListener("click", function () {
   setUpClassSelect(addFeesModalClass);
   setUpAcademicYearsSelect(addFeesModalYear);
@@ -31,6 +32,11 @@ document.getElementById("cancelFeesModalBtn").addEventListener("click", function
   addFeesModal.style.display = "none";
 });
 
+// Event Listeners for Filtering
+filterFeesByAcademicYear.addEventListener("change", filterFeesTable);
+filterFeesByTerm.addEventListener("change", filterFeesTable);
+
+// Event Listener for Adding Fees
 document.getElementById("setFeesBtn").addEventListener("click", async () => {
   const studentClass = document.getElementById("feesClassSelect").value;
   const academicYear = document.getElementById("feesAcademicYear").value;
@@ -42,12 +48,21 @@ document.getElementById("setFeesBtn").addEventListener("click", async () => {
     return;
   }
 
+  // Show loading state
+  const setFeesBtn = document.getElementById("setFeesBtn");
+  setFeesBtn.disabled = true;
+  setFeesBtn.innerHTML = "Saving...";
+
   const response = await window.api.addFees({
     class: studentClass,
     academicYear,
     term,
     amount: feesAmount,
   });
+
+  // Hide loading state
+  setFeesBtn.disabled = false;
+  setFeesBtn.innerHTML = "Save";
 
   if (!response.success) {
     showToast(response.message || "Failed to set fees", "error");
@@ -57,9 +72,83 @@ document.getElementById("setFeesBtn").addEventListener("click", async () => {
   showToast(response.message, "success");
   document.getElementById("feesAmount").value = "";
   addFeesModal.style.display = "none";
+  await displayFeesTable();
 });
 
+// Event Listener for Saving Edited Fees
+document.getElementById("saveEditFeesBtn").addEventListener("click", async () => {
+  const feeId = document.getElementById("editFeesId").value;
+  const updatedAmount = document.getElementById("editFeesAmount").value;
+
+  if (!updatedAmount) {
+    showToast("Please enter a valid amount", "error");
+    return;
+  }
+
+  // Show loading state
+  const saveEditFeesBtn = document.getElementById("saveEditFeesBtn");
+  saveEditFeesBtn.disabled = true;
+  saveEditFeesBtn.innerHTML = "Saving...";
+
+  const response = await window.api.updateFeeAmount({
+    id: feeId,
+    amount: updatedAmount,
+  });
+
+  // Hide loading state
+  saveEditFeesBtn.disabled = false;
+  saveEditFeesBtn.innerHTML = "Save";
+
+  if (!response.success) {
+    showToast(response.message || "Failed to update fee", "error");
+    return;
+  }
+
+  showToast(response.message, "success");
+  document.getElementById("editFeesModal").style.display = "none";
+  await displayFeesTable();
+});
+
+// Event Listeners for Edit Fees Modal
+document.getElementById("editFeesCloseXBtn").addEventListener("click", function () {
+  document.getElementById("editFeesModal").style.display = "none";
+});
+
+document.getElementById("cancelEditFeesModalBtn").addEventListener("click", function () {
+  document.getElementById("editFeesModal").style.display = "none";
+});
+
+// Event Delegation for Edit and Delete Buttons
+feesTableBody.addEventListener("click", (event) => {
+  const editButton = event.target.closest("#btnEditFees");
+  const deleteButton = event.target.closest("#btnDeleteFees");
+
+  if (editButton) {
+    const row = editButton.closest("tr");
+    const fee = {
+      id: row.getAttribute("data-id"),
+      class: row.getAttribute("data-class"),
+      academic_year: row.getAttribute("data-academic-year"),
+      term: row.getAttribute("data-term"),
+      amount: row.getAttribute("data-amount"),
+      total_students_billed: row.getAttribute("data-total-students-billed"),
+    };
+    handleEditFee(fee);
+  }
+
+  if (deleteButton) {
+    const row = deleteButton.closest("tr");
+    const fee = {
+      id: row.getAttribute("data-id"),
+      total_students_billed: row.getAttribute("data-total-students-billed"),
+    };
+    handleDeleteFee(fee);
+  }
+});
+
+// Function to Display Fees Table
 export async function displayFeesTable() {
+  sectionHeaderTitle.textContent = "Fees";
   const response = await window.api.getAllFees();
 
   if (!response.success) {
@@ -67,46 +156,108 @@ export async function displayFeesTable() {
     return;
   }
 
-  setUpClassSelect(filterFeesByClassSelect, true);
   setUpAcademicYearsSelect(filterFeesByAcademicYear, true);
   setUpTermsSelect(filterFeesByTerm, true);
-
-  feesTableHead.innerHTML = "";
   feesTableBody.innerHTML = "";
-  feesTable.innerHTML = "";
 
-  const tableHeadRow = document.createElement("tr");
-  tableHeadRow.innerHTML = `
-        <th>#</th>
-        <th>Class</th>
-        <th>Academic Year</th>
-        <th>Term</th>
-        <th>Fees</th>
-        <th>Actions</th>
-    `;
-  feesTableHead.appendChild(tableHeadRow);
-  feesTable.appendChild(feesTableHead);
-
-  // TODO: add filters and search functionality and option to update amount
   response.data.forEach((record, index) => {
     const row = document.createElement("tr");
+
+    // Add data attributes to the row
+    row.setAttribute("data-id", record.id);
+    row.setAttribute("data-class", record.class);
+    row.setAttribute("data-academic-year", record.academic_year);
+    row.setAttribute("data-term", record.term);
+    row.setAttribute("data-amount", record.amount);
+    row.setAttribute("data-total-students-billed", record.total_students_billed);
+
+    const isBilled = record.total_students_billed > 0;
+
     row.innerHTML = `
         <td>${index + 1}</td>
         <td>${record.class} </td>
         <td>${record.academic_year} </td>
         <td>${record.term} </td>
         <td>${record.amount} </td>
+        <td>${record.total_students_billed} </td>
         <td>
           <div style="display: flex; justify-content: center">
-           <button id="btnEditDailyStats" class="text-button" title="Edit record">
-            <i class="fa-solid fa-edit"></i>
-            Edit
-          </button>
+            <button id="btnEditFees" class="text-button" title="Edit record" ${
+              isBilled ? "disabled" : ""
+            }>
+              <i class="fa-solid fa-edit"></i>
+              Edit
+            </button>
+            <button id="btnDeleteFees" class="text-button" title="Delete record" ${
+              isBilled ? "disabled" : ""
+            } style="color:red;">
+              <i class="fa-solid fa-trash"></i>
+              Delete
+            </button>
           </div>
         </td>
       `;
+
     feesTableBody.appendChild(row);
   });
+}
 
-  feesTable.appendChild(feesTableBody);
+// Function to Filter Fees Table
+function filterFeesTable() {
+  const year = filterFeesByAcademicYear.value;
+  const term = filterFeesByTerm.value;
+
+  const tableRows = feesTableBody.querySelectorAll("tr");
+
+  tableRows.forEach((row) => {
+    const rowTerm = row.getAttribute("data-term");
+    const rowYear = row.getAttribute("data-academic-year");
+
+    // Handle cases where rowTerm or rowYear is null or undefined
+    const yearMatch = year === "all" || (rowYear && rowYear.includes(year));
+    const termMatch = term === "all" || (rowTerm && rowTerm.includes(term));
+
+    // Show or hide row based on filter match
+    if (yearMatch && termMatch) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+  });
+}
+
+// Function to Handle Editing Fees
+function handleEditFee(fee) {
+  if (fee.total_students_billed > 0) {
+    showToast("Cannot edit fee: Students have already been billed", "error");
+    return;
+  }
+
+  editFeesModal.style.display = "block";
+  document.getElementById("editFeesId").value = fee.id;
+  document.getElementById("editFeesClass").value = fee.class;
+  document.getElementById("editFeesAcademicYear").value = fee.academic_year;
+  document.getElementById("editFeesTerm").value = fee.term;
+  document.getElementById("editFeesAmount").value = fee.amount;
+}
+
+// Function to Handle Deleting Fees
+async function handleDeleteFee(fee) {
+  if (fee.total_students_billed > 0) {
+    showToast("Cannot delete fee: Students have already been billed", "error");
+    return;
+  }
+
+  const confirmDelete = confirm("Are you sure you want to delete this fee?");
+  if (!confirmDelete) return;
+
+  const deleteResponse = await window.api.deleteFee(fee.id);
+
+  if (!deleteResponse.success) {
+    showToast(deleteResponse.message || "Failed to delete fee", "error");
+    return;
+  }
+
+  showToast(deleteResponse.message, "success");
+  await displayFeesTable();
 }
