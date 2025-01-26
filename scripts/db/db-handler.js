@@ -467,6 +467,83 @@ class DatabaseHandler {
   }
 
   /**
+ * Bills a list of students with the specified fees. Skips students who have already been billed.
+ *
+ * @param {Array<number>} idsArray - Array of student IDs to be billed.
+ * @param {number} feesId - The ID of the fee to be billed to the students.
+ * @returns {Object} - Returns an object containing:
+ *   - `success` (boolean): Indicates if the operation was successful.
+ *   - `message` (string): A summary message about the billing operation.
+ *   - `data` (Object): Detailed results of the operation, containing:
+ *     - `inserted` (Array<number>): List of student IDs successfully billed.
+ *     - `skipped` (Array<number>): List of student IDs that were already billed and skipped.
+ *
+ * @throws {Error} If a database error occurs during the transaction.
+ *
+ * Example:
+ * ```javascript
+ * const result = billStudentsByClass([1, 2, 3, 4], 5);
+ * console.log(result);
+ * // {
+ * //   success: true,
+ * //   message: "2 student(s) billed successfully. 2 student(s) were already billed and skipped.",
+ * //   data: { inserted: [2, 4], skipped: [1, 3] }
+ * // }
+ * ```
+ */
+  billStudentsByClass(idsArray, feesId) {
+    try {
+      const transaction = this.db.transaction(() => {
+        const inserted = [];
+        const skipped = [];
+
+        // Fetch all students already billed for the given feesId
+        const billedStudents = new Set(
+          this.db
+            .prepare(
+              `SELECT student_id FROM bills WHERE fees_id = ? AND student_id IN (${idsArray
+                .map(() => "?")
+                .join(",")})`
+            )
+            .all(feesId, ...idsArray)
+            .map((row) => row.student_id)
+        );
+
+        const insertStmt = this.db.prepare(`
+          INSERT INTO bills (student_id, fees_id, created_at)
+          VALUES (?, ?, ?)
+        `);
+
+        idsArray.forEach((studentId) => {
+          if (billedStudents.has(studentId)) {
+            skipped.push(studentId);
+          } else {
+            insertStmt.run(studentId, feesId, new Date().toISOString());
+            inserted.push(studentId);
+          }
+        });
+
+        return { inserted, skipped };
+      });
+
+      const result = transaction();
+      console.log("Transaction Result: ", result);
+
+      // Return meaningful messages
+      const message = `${result.inserted.length} student(s) billed successfully. ${
+        result.skipped.length > 0
+          ? `${result.skipped.length} student(s) were already billed and skipped.`
+          : ""
+      }`;
+
+      return { success: true, message, data: result };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  /**
    * Retrieves detailed billing information for students based on the provided filters.
    *
    * @param {Object} filter - An object containing filtering criteria.
