@@ -466,32 +466,55 @@ class DatabaseHandler {
     }
   }
 
+  /**
+   * Retrieves detailed billing information for students based on the provided filters.
+   *
+   * @param {Object} filter - An object containing filtering criteria.
+   * @param {string} filter.term - The academic term for which the details are fetched.
+   * @param {string} filter.className - The class name to filter the students.
+   * @param {string} filter.academicYear - The academic year to filter the students.
+   * @returns {Object} - Returns an object containing:
+   *   - `success` (boolean): Indicates if the query was successful.
+   *   - `data` (Array|undefined): Array of billing details if successful.
+   *   - `message` (string|undefined): Error message if the query fails.
+   *
+   * Each record in `data` contains:
+   *   - `student_id` (number): ID of the student.
+   *   - `student_name` (string): Full name of the student.
+   *   - `fees_id` (number|null): ID of the associated fee structure.
+   *   - `fee_amount` (number|null): Amount of the fee.
+   *   - `bill_id` (number|null): ID of the bill, if issued.
+   *   - `billed_status` (number): 1 if billed, 0 otherwise.
+   *   - `total_payments` (number): Total payments made towards the bill.
+   *
+   * @throws {Error} If a database error occurs.
+   */
   getBillDetails(filter) {
     try {
       const stmt = this.db.prepare(`
-           SELECT 
-      s.id AS student_id,
-      s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
-      f.id AS fees_id, 
-      f.amount AS fee_amount,
-      b.id AS bill_id, 
-      COUNT(b.id) AS is_billed,
-      IFNULL(SUM(p.amount), 0) AS total_payments
-    FROM students s
-    JOIN studentClasses c ON s.id = c.student_id
-    LEFT JOIN fees f ON c.class_name = f.class 
-      AND c.academic_year = f.academic_year 
-      AND f.term = ?
-    LEFT JOIN bills b ON s.id = b.student_id AND b.fees_id = f.id
-    LEFT JOIN payments p ON b.id = p.bill_id
-    WHERE c.class_name = ? AND c.academic_year = ?
-    GROUP BY s.id, s.first_name, s.last_name, s.other_names, f.amount
-    ORDER BY s.first_name, s.last_name;
-        `);
+        SELECT 
+          s.id AS student_id,
+          s.first_name || ' ' || s.last_name || ' ' || COALESCE(s.other_names, '') AS student_name,
+          f.id AS fees_id, 
+          f.amount AS fee_amount,
+          b.id AS bill_id, 
+          COUNT(b.id) AS billed_status,
+          COALESCE(SUM(p.amount), 0) AS total_payments
+        FROM students s
+        JOIN studentClasses c ON s.id = c.student_id
+        LEFT JOIN fees f ON c.class_name = f.class 
+          AND c.academic_year = f.academic_year 
+          AND f.term = ?
+        LEFT JOIN bills b ON s.id = b.student_id AND b.fees_id = f.id
+        LEFT JOIN payments p ON b.id = p.bill_id
+        WHERE c.class_name = ? AND c.academic_year = ?
+        GROUP BY s.id, s.first_name, s.last_name, s.other_names, f.id, f.amount, b.id
+        ORDER BY s.first_name, s.last_name;
+      `);
       const records = stmt.all(filter.term, filter.className, filter.academicYear);
       return { success: true, data: records };
     } catch (error) {
-      console.error("Database Error: ", error);
+      console.error("Database Error in getBillDetails: ", error);
       return { success: false, message: error.message };
     }
   }
