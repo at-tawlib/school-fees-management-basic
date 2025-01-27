@@ -18,6 +18,7 @@ document.getElementById("navStudents").addEventListener("click", function () {
 
 document.getElementById("navViewFees").addEventListener("click", async function () {
   showHideFeesContainer(CONTAINERS.VIEW_FEES);
+  sectionHeaderTitle.textContent = "Fees";
   await displayFeesTable();
 });
 
@@ -25,6 +26,12 @@ document.getElementById("navClasses").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.STUDENT_CLASS);
   sectionHeaderTitle.textContent = "Students Classes";
   setupStudentsClassSection();
+});
+
+document.getElementById("navPayments").addEventListener("click", function () {
+  showHideFeesContainer(CONTAINERS.PAYMENTS);
+  sectionHeaderTitle.textContent = "Payments";
+  displayPaymentsTable();
 });
 
 document.getElementById("navBillStudents").addEventListener("click", function () {
@@ -42,9 +49,4 @@ document.getElementById("navSettings").addEventListener("click", function () {
 document.getElementById("navViewBills").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.VIEW_BILLS);
   setUpViewBills();
-});
-
-document.getElementById("navPayments").addEventListener("click", function () {
-  showHideFeesContainer(CONTAINERS.PAYMENTS);
-  displayPaymentsTable();
 });

@@ -126,7 +126,7 @@
         </section>
 
         <!-- ------------ CLASSES / STUDENT CLASS SECTION ------------ -->
-        <section id="studentClassSection">
+        <section id="studentClassSection" style="display: none">
           <div class="flex-row align-start">
             <!-- Classes side bar (Classes, add class) -->
             <div class="flex-1 elevated-container">
@@ -164,8 +164,12 @@
                   <input type="text" id="searchStudentClassInput" placeholder="Search by name..." />
 
                   <div id="term-buttons" class="toggle-buttons">
-                    <button id="firstTerm" data-term="first" class="active toggle-btn">First Term</button>
-                    <button id="secondTerm" data-term="second" class="toggle-btn">Second Term</button>
+                    <button id="firstTerm" data-term="first" class="active toggle-btn">
+                      First Term
+                    </button>
+                    <button id="secondTerm" data-term="second" class="toggle-btn">
+                      Second Term
+                    </button>
                     <button id="thirdTerm" data-term="third" class="toggle-btn">Third Term</button>
                   </div>
                 </div>
@@ -398,42 +402,30 @@
         </section>
 
         <!-------------- PAYMENTS  SECTION ----------------------->
-        <section id="paymentsSection" style="display: none">
+        <section id="paymentsSection">
           <h2 style="text-align: center">Fees Payments</h2>
           <hr style="margin: 1rem 0rem" />
 
           <div>
             <div class="flex-row align-center">
-              <label for="paymentAcademicYear"><h3>Select Year:</h3></label>
-              <select name="paymentAcademicYear" id="paymentAcademicYear" required>
-                <option value="all">All</option>
-                <option value="2024">2024</option>
-                <option value="2025">2025</option>
-                <option value="2026">2026</option>
-              </select>
+              <label for="paymentAcademicYear"><h3>Year:</h3></label>
+              <select name="paymentAcademicYear" id="paymentAcademicYear" required></select>
 
-              <label for="paymentClass"><h3>Select Class:</h3></label>
-              <select name="paymentClass" id="paymentClass" required>
-                <option value="all">All</option>
-                <option value="1">Class 1</option>
-                <option value="2">Class 2</option>
-                <option value="3">Class 3</option>
-                <option value="4">Class 4</option>
-                <option value="5">Class 5</option>
-                <option value="6">Class 6</option>
-              </select>
+              <label for="paymentClass"><h3>Class:</h3></label>
+              <select name="paymentClass" id="paymentClass" required></select>
 
-              <label for="paymentTerm"><h3>Select Term:</h3></label>
-              <select name="paymentTerm" id="paymentTerm" required>
-                <option value="all">All</option>
-                <option value="first">First</option>
-                <option value="second">Second</option>
-                <option value="third">Third</option>
-              </select>
+              <label for="paymentTerm"><h3>Term:</h3></label>
+              <select name="paymentTerm" id="paymentTerm" required></select>
 
-              <button id="paymentFilter">Filter</button>
+              <input
+                type="text"
+                id="searchPaymentsInput"
+                class="full-width"
+                placeholder="Search by name..."
+              />
             </div>
-            <table id="paymentsTable">
+
+            <table id="paymentsTable" class="table-rounded">
               <thead>
                 <tr>
                   <th>#</th>

@@ -14,7 +14,6 @@ const addFeesModalYear = document.getElementById("feesAcademicYear");
 const addFeesModalTerm = document.getElementById("feesTerm");
 
 const editFeesModal = document.getElementById("editFeesModal");
-const sectionHeaderTitle = document.getElementById("sectionHeaderTitle");
 
 // Event Listeners for Add Fees Modal
 document.getElementById("btnAddFees").addEventListener("click", function () {
@@ -148,7 +147,6 @@ feesTableBody.addEventListener("click", (event) => {
 
 // Function to Display Fees Table
 export async function displayFeesTable() {
-  sectionHeaderTitle.textContent = "Fees";
   const response = await window.api.getAllFees();
 
   if (!response.success) {
