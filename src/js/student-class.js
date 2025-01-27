@@ -1,6 +1,10 @@
 import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
 import { fCurrency } from "./utils/format-currency.js";
-import { setUpAcademicYearsSelect, setUpClassSelect } from "./utils/setup-select-inputs.js";
+import {
+  setUpAcademicYearsSelect,
+  setUpClassSelect,
+  setUpTermsSelect,
+} from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
 const addClassTable = document.getElementById("addClassTable");
@@ -15,12 +19,53 @@ const billStudentsMessage = document.getElementById("billStudentsMessage");
 
 const studentClassTableContainer = document.getElementById("studentClassContainer");
 const searchStudentClassInput = document.getElementById("searchStudentClassInput");
-const classesAcademicYearSelect = document.getElementById("filterStudentsByAcademicYear");
+const buttons = document.querySelectorAll("#term-buttons button");
 
 const billClassModal = document.getElementById("billClassModal");
 
 let studentsData = [];
 let currentFee = {};
+
+export async function setupStudentsClassSection() {
+  addClassForm.style.display = "none";
+  studentClassTableContainer.style.display = "none";
+  await setUpAcademicYearsSelect(filterStudentsByAcademicYear);
+  filterStudentsByAcademicYear.value = "2024"; // TODO: get current year
+  setupClassesSidebar("2024");
+}
+
+filterStudentsByAcademicYear.addEventListener("change", async function () {
+  await setupClassesSidebar(this.value);
+});
+
+async function setupClassesSidebar(year) {
+  const classesResp = await window.api.getDistinctClasses(year);
+  const classesList = document.getElementById("classesList");
+  classesList.innerHTML = "";
+
+  if (!classesResp.success) {
+    showToast("An error occurred while fetching classes", "error");
+    return;
+  }
+
+  if (classesResp.success) {
+    classesResp.data.forEach((cls) => {
+      const option = document.createElement("div");
+      option.className = "class-item";
+      option.textContent = `${cls.class_name} (${cls.academic_year})`;
+      option.setAttribute("data-class-name", cls.class_name);
+      option.setAttribute("data-academic-year", cls.academic_year);
+
+      // Add click event to fetch students for the selected class
+      option.addEventListener("click", () => {
+        displayClassStudentsTable(cls.class_name, cls.academic_year);
+        resetTermButtons();
+      });
+
+      classesList.appendChild(option);
+    });
+  }
+}
 
 // ************************** ADD STUDENTS TO CLASS FORM *******************************
 document.getElementById("addClassButton").addEventListener("click", resetAddStudentForm);
@@ -252,46 +297,6 @@ function clearInput(input) {
   input.disabled = false;
 }
 
-export async function setupStudentsClassSection() {
-  addClassForm.style.display = "none";
-  studentClassTableContainer.style.display = "none";
-  await setUpAcademicYearsSelect(filterStudentsByAcademicYear);
-  filterStudentsByAcademicYear.value = "2024"; // TODO: get current year
-  setupClassesSidebar("2024");
-}
-
-filterStudentsByAcademicYear.addEventListener("change", async function () {
-  await setupClassesSidebar(this.value);
-});
-
-async function setupClassesSidebar(year) {
-  const classesResp = await window.api.getDistinctClasses(year);
-  const classesList = document.getElementById("classesList");
-  classesList.innerHTML = "";
-
-  if (!classesResp.success) {
-    showToast("An error occurred while fetching classes", "error");
-    return;
-  }
-
-  if (classesResp.success) {
-    classesResp.data.forEach((cls) => {
-      const option = document.createElement("div");
-      option.className = "class-item";
-      option.textContent = `${cls.class_name} (${cls.academic_year})`;
-      option.setAttribute("data-class-name", cls.class_name);
-      option.setAttribute("data-academic-year", cls.academic_year);
-
-      // Add click event to fetch students for the selected class
-      option.addEventListener("click", () => {
-        displayClassStudentsTable(cls.class_name, cls.academic_year);
-      });
-
-      classesList.appendChild(option);
-    });
-  }
-}
-
 function resetAddStudentForm() {
   addClassForm.style.display = "block";
   studentClassTableContainer.style.display = "none";
@@ -309,6 +314,16 @@ function resetAddStudentForm() {
 }
 
 // ******************************** STUDENT CLASS TABLE ********************************
+buttons.forEach((button) => {
+  button.addEventListener("click", () => {
+    buttons.forEach((btn) => btn.classList.remove("active"));
+    button.classList.add("active");
+
+    currentFee.term = button.dataset.term;
+    displayClassStudentsTable(currentFee.className, currentFee.academicYear, currentFee.term);
+  });
+});
+
 document.getElementById("allClassesDiv").addEventListener("click", async function () {
   addClassForm.style.display = "none";
   studentClassTableContainer.style.display = "block";
@@ -423,6 +438,11 @@ function filterStudentsClassTable() {
   }
 }
 
+function resetTermButtons() {
+  buttons.forEach((btn) => btn.classList.remove("active"));
+  document.getElementById("firstTerm").classList.add("active"); // Set "First Term" active
+}
+
 // ************************** BILL CLASS MODAL *******************************
 document.getElementById("billClassBtn").addEventListener("click", async function () {
   if (!currentFee.className || !currentFee.academicYear || !currentFee.term) {
@@ -469,7 +489,7 @@ document.getElementById("submitBillClassModalBtn").addEventListener("click", asy
 
   const response = await window.api.billClassStudents(idsArray, currentFee.id);
 
-  if(!response.success) {
+  if (!response.success) {
     showToast(response.message || "An error occurred", "error");
     return;
   }

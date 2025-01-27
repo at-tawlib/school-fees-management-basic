@@ -162,10 +162,11 @@
 
                 <div class="flex-row j-space-between">
                   <input type="text" id="searchStudentClassInput" placeholder="Search by name..." />
-                  <div class="flex-row">
-                    <button>First term</button>
-                    <button>Second term</button>
-                    <button>Third term</button>
+
+                  <div id="term-buttons" class="toggle-buttons">
+                    <button id="firstTerm" data-term="first" class="active toggle-btn">First Term</button>
+                    <button id="secondTerm" data-term="second" class="toggle-btn">Second Term</button>
+                    <button id="thirdTerm" data-term="third" class="toggle-btn">Third Term</button>
                   </div>
                 </div>
 
@@ -747,7 +748,9 @@
 
         <br />
 
-        <h3 class="color-blue" id="fullyPaidText" style="display: none">Bill has been fully paid.</h3>
+        <h3 class="color-blue" id="fullyPaidText" style="display: none">
+          Bill has been fully paid.
+        </h3>
 
         <form id="makePaymentForm" style="display: none">
           <h3>Make payment</h3>
