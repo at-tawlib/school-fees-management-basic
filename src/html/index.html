@@ -666,14 +666,9 @@
         </div>
 
         <div id="billStudentsMessage"></div>
-        
+
         <div class="flex-row">
-          <button
-            id="submitBillClassModalBtn"
-            type="button"
-            title="Ok"
-            class="outlined-button"
-          >
+          <button id="submitBillClassModalBtn" type="button" title="Ok" class="outlined-button">
             <i class="fa-regular fa-circle-check"></i> Ok
           </button>
           <button id="cancelBillClassModalBtn" type="button" class="bg-red">
@@ -739,20 +734,22 @@
 
         <div class="form-item">
           <label><h3>Fees:</h3></label>
-          200
+          <span id="makePaymentModalFees"></span>
         </div>
         <div class="form-item">
           <label>Paid</label>
-          200
+          <span id="makePaymentModalPaid"></span>
         </div>
         <div class="form-item">
           <label>Arrears</label>
-          200
+          <span id="makePaymentModalArrears"></span>
         </div>
 
         <br />
 
-        <form id="makePaymentForm">
+        <h3 class="color-blue" id="fullyPaidText" style="display: none">Bill has been fully paid.</h3>
+
+        <form id="makePaymentForm" style="display: none">
           <h3>Make payment</h3>
 
           <div class="form-item">
@@ -787,8 +784,14 @@
           </div>
 
           <div class="flex-row">
-            <button id="submitPayment" type="button" title="Make Payment">Make Payment</button>
-            <button id="cancelPaymentModalBtn" type="button" class="btn">Cancel</button>
+            <button id="submitPayment" type="button" title="Make Payment">
+              <i class="fa-solid fa-money-bill-wave"></i>
+              Make Payment
+            </button>
+            <button id="cancelPaymentModalBtn" type="button" class="bg-red">
+              <i class="fa-solid fa-close"></i>
+              Cancel
+            </button>
           </div>
         </form>
       </div>

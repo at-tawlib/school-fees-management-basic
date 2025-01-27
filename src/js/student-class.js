@@ -353,7 +353,6 @@ async function displayClassStudentsTable(className, academicYear, term = "first"
   studentClassTitle.textContent = `${className} (${academicYear}) - ${term} term`;
 
   const response = await window.api.getBillDetails({ className, academicYear, term });
-  console.log(response);
 
   if (!response.success) {
     showToast(response.message || "An error occurred", "error");
@@ -371,6 +370,7 @@ async function displayClassStudentsTable(className, academicYear, term = "first"
 
   studentClassTableBody.innerHTML = "";
   response.data.forEach((item, index) => {
+    const arrears = item.fee_amount - (item.total_payments ?? 0);
     const row = document.createElement("tr");
     row.innerHTML = `
         <td>${index + 1}</td>
@@ -381,7 +381,7 @@ async function displayClassStudentsTable(className, academicYear, term = "first"
         <td>${item?.bill_id ? "Billed" : "Not Billed"}</td>
         <td class="color-blue">${fCurrency(item.fee_amount)}</td>
         <td class="color-green">${fCurrency(item.total_payments)}</td>
-        <td class="color-red">${fCurrency(item.fee_amount - item.total_payments)}</td>
+        <td class="color-red">${fCurrency(arrears)}</td>
         <td>
           <button id="btnPayFees"  title="Pay school fees">
             <i class="fa-solid fa-edit"></i>
@@ -391,7 +391,7 @@ async function displayClassStudentsTable(className, academicYear, term = "first"
     `;
 
     row.querySelector("#btnPayFees").addEventListener("click", () => {
-      openStudentPaymentModal(item);
+      openStudentPaymentModal(item, currentFee);
     });
 
     studentClassTableBody.appendChild(row);
@@ -466,7 +466,6 @@ document.getElementById("submitBillClassModalBtn").addEventListener("click", asy
   // get student ids from the table
   const rows = studentClassTableBody.getElementsByTagName("tr");
   const idsArray = Array.from(rows).map((row) => row.children[3].textContent);
-  console.log(idsArray);
 
   const response = await window.api.billClassStudents(idsArray, currentFee.id);
 
