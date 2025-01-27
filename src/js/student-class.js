@@ -1,3 +1,5 @@
+import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
+import { fCurrency } from "./utils/format-currency.js";
 import { setUpAcademicYearsSelect, setUpClassSelect } from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
@@ -9,13 +11,18 @@ const setClassButton = document.getElementById("setClassButton");
 const changeClassButton = document.getElementById("setChangeClassButton");
 const addClassForm = document.getElementById("addClassForm");
 const studentClassTitle = document.getElementById("studentClassTitle");
+const billStudentsMessage = document.getElementById("billStudentsMessage");
 
 const studentClassTableContainer = document.getElementById("studentClassContainer");
 const searchStudentClassInput = document.getElementById("searchStudentClassInput");
 const classesAcademicYearSelect = document.getElementById("filterStudentsByAcademicYear");
 
-let studentsData = [];
+const billClassModal = document.getElementById("billClassModal");
 
+let studentsData = [];
+let currentFee = {};
+
+// ************************** ADD STUDENTS TO CLASS FORM *******************************
 document.getElementById("addClassButton").addEventListener("click", resetAddStudentForm);
 
 setClassButton.addEventListener("click", async function () {
@@ -277,7 +284,7 @@ async function setupClassesSidebar(year) {
 
       // Add click event to fetch students for the selected class
       option.addEventListener("click", () => {
-        fetchAndDisplayStudents(cls.class_name, cls.academic_year);
+        displayClassStudentsTable(cls.class_name, cls.academic_year);
       });
 
       classesList.appendChild(option);
@@ -335,41 +342,61 @@ document.getElementById("allClassesDiv").addEventListener("click", async functio
   });
 });
 
-async function fetchAndDisplayStudents(className, academicYear) {
+searchStudentClassInput.addEventListener("input", function () {
+  filterStudentsClassTable();
+});
+
+async function displayClassStudentsTable(className, academicYear, term = "first") {
   addClassForm.style.display = "none";
   studentClassTableContainer.style.display = "block";
-  studentClassTitle.textContent = `${className} (${academicYear})`;
+  studentClassTitle.textContent = "";
+  studentClassTitle.textContent = `${className} (${academicYear}) - ${term} term`;
 
-  const response = await window.api.filterAllClassesStudents({ className, academicYear });
+  const response = await window.api.getBillDetails({ className, academicYear, term });
+  console.log(response);
+
   if (!response.success) {
     showToast(response.message || "An error occurred", "error");
     return;
   }
 
+  if (response.data.length === 0) {
+    studentClassTableBody.innerHTML = "";
+    studentClassTitle.textContent = `No students found for ${className} for ${academicYear} academic year.`;
+    showToast("No students found for this class", "error");
+    return;
+  }
+
+  currentFee = { className, academicYear, term };
+
   studentClassTableBody.innerHTML = "";
-  response.data.forEach((student, index) => {
+  response.data.forEach((item, index) => {
     const row = document.createElement("tr");
-
-    // Add data attributes to the row
-    row.setAttribute("data-id", student.student_id);
-    row.setAttribute("data-class", student.class_name);
-    row.setAttribute("data-academic-year", student.academic_year);
-
     row.innerHTML = `
-          <td>${index + 1}</td>
-          <td>${student.first_name} ${student.other_names} ${student.last_name}</td>
-          <td>${student.class_name}</td>
-          <td>${student.academic_year}</td>  
-          <td></td>
-        `;
+        <td>${index + 1}</td>
+        <td>${item.student_name}</td>
+        <td style="display:none">${item.bill_id}</td>
+        <td style="display:none">${item.student_id}</td>
+        <td style="display:none">${item.fees_id}</td>
+        <td>${item?.bill_id ? "Billed" : "Not Billed"}</td>
+        <td class="color-blue">${fCurrency(item.fee_amount)}</td>
+        <td class="color-green">${fCurrency(item.total_payments)}</td>
+        <td class="color-red">${fCurrency(item.fee_amount - item.total_payments)}</td>
+        <td>
+          <button id="btnPayFees"  title="Pay school fees">
+            <i class="fa-solid fa-edit"></i>
+            Pay fees
+          </button>
+        </td>
+    `;
+
+    row.querySelector("#btnPayFees").addEventListener("click", () => {
+      openStudentPaymentModal(item);
+    });
 
     studentClassTableBody.appendChild(row);
   });
 }
-
-searchStudentClassInput.addEventListener("input", function () {
-  filterStudentsClassTable();
-});
 
 function filterStudentsClassTable() {
   const searchValue = searchStudentClassInput.value.toLowerCase();
@@ -395,3 +422,61 @@ function filterStudentsClassTable() {
     }
   }
 }
+
+// ************************** BILL CLASS MODAL *******************************
+document.getElementById("billClassBtn").addEventListener("click", async function () {
+  if (!currentFee.className || !currentFee.academicYear || !currentFee.term) {
+    showToast("Please select a class, academic year and term", "error");
+    return;
+  }
+
+  const response = await window.api.getSingleFee({ ...currentFee });
+
+  if (!response.success) {
+    showToast(response.message || "An error occurred", "error");
+    return;
+  }
+
+  currentFee.id = response.data.id;
+  currentFee.amount = response.data.amount;
+
+  const message = `
+      <p>You are about to bill students in <strong>${currentFee.className}</strong> with the following details:</p>
+      <ul>
+        <li><strong>Academic Year:</strong> ${currentFee.academicYear}</li>
+        <li><strong>Term:</strong> ${currentFee.term}</li>
+        <li><strong>Fee Amount:</strong> GH₵${currentFee.amount}</li>
+      </ul>
+      <p><strong>Do you want to proceed?</strong></p>
+  `;
+
+  billStudentsMessage.innerHTML = message;
+  billClassModal.style.display = "block";
+});
+
+document.getElementById("billClassCloseXBtn").addEventListener("click", function () {
+  billClassModal.style.display = "none";
+});
+
+document.getElementById("cancelBillClassModalBtn").addEventListener("click", function () {
+  billClassModal.style.display = "none";
+});
+
+document.getElementById("submitBillClassModalBtn").addEventListener("click", async function () {
+  // get student ids from the table
+  const rows = studentClassTableBody.getElementsByTagName("tr");
+  const idsArray = Array.from(rows).map((row) => row.children[3].textContent);
+  console.log(idsArray);
+
+  const response = await window.api.billClassStudents(idsArray, currentFee.id);
+
+  if(!response.success) {
+    showToast(response.message || "An error occurred", "error");
+    return;
+  }
+
+  showToast(response.message || "Students billed successfully", "success");
+
+  billClassModal.style.display = "none";
+  displayClassStudentsTable(currentFee.className, currentFee.academicYear, currentFee.term);
+});

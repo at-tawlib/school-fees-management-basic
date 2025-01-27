@@ -278,19 +278,6 @@ ipcMain.handle("delete-fees", async (_, data) => {
 ipcMain.handle("bill-class-students", async (_, dataArray, feesId) => {
   try {
     const result = await dbHandler.billClassStudents(dataArray, feesId);
-    if (!result.success) {
-      throw new Error(result.message);
-    }
-    return result;
-  } catch (error) {
-    return { success: false, message: error.message };
-  }
-});
-
-// Bill students by class
-ipcMain.handle("bill-students-by-class", async (_, data, feeId) => {
-  try {
-    const result = await dbHandler.billStudentsByClass(data, feeId);
     return result;
   } catch (error) {
     return { success: false, message: error.message };
