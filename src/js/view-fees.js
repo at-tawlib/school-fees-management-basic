@@ -188,7 +188,7 @@ export async function displayFeesTable() {
             </button>
             <button id="btnDeleteFees" class="text-button" title="Delete record" ${
               isBilled ? "disabled" : ""
-            } style="color:red;">
+            } style="color: ${isBilled ? "" : "red"}">
               <i class="fa-solid fa-trash"></i>
               Delete
             </button>

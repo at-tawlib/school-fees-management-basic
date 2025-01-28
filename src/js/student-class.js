@@ -22,6 +22,7 @@ const searchStudentClassInput = document.getElementById("searchStudentClassInput
 const buttons = document.querySelectorAll("#term-buttons button");
 
 const billClassModal = document.getElementById("billClassModal");
+const paymentHistoryModal = document.getElementById("paymentHistoryModal");
 
 let studentsData = [];
 let currentFee = {};
@@ -398,15 +399,26 @@ async function displayClassStudentsTable(className, academicYear, term = "first"
         <td class="color-green">${fCurrency(item.total_payments)}</td>
         <td class="color-red">${fCurrency(arrears)}</td>
         <td>
-          <button id="btnPayFees"  title="Pay school fees">
-            <i class="fa-solid fa-edit"></i>
-            Pay fees
-          </button>
+          <div style="display: flex; justify-content: center">
+            <button id="btnPayFees"  class="text-button" title="Pay school fees">
+              <i class="fa-brands fa-amazon-pay"></i>
+            </button>
+
+            <div style="border-left: 1px solid #ccc; height: 24px;"></div>
+
+            <button id="btnPaymentsHistory"  class="text-button" title="Payment history">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
         </td>
     `;
 
     row.querySelector("#btnPayFees").addEventListener("click", () => {
       openStudentPaymentModal(item, currentFee);
+    });
+
+    row.querySelector("#btnPaymentsHistory").addEventListener("click", () => {
+      showPaymentHistoryModal(item, currentFee);
     });
 
     studentClassTableBody.appendChild(row);
@@ -499,3 +511,37 @@ document.getElementById("submitBillClassModalBtn").addEventListener("click", asy
   billClassModal.style.display = "none";
   displayClassStudentsTable(currentFee.className, currentFee.academicYear, currentFee.term);
 });
+
+// *********************** PAYMENT HISTORY MODAL ***************************
+document.getElementById("paymentHistoryClassCloseXBtn").addEventListener("click", function () {
+  paymentHistoryModal.style.display = "none";
+});
+
+document.getElementById("paymentHistoryOkModalBtn").addEventListener("click", function () {
+  paymentHistoryModal.style.display = "none";
+});
+
+function showPaymentHistoryModal(data, currentFee) {
+  console.log(data, currentFee);
+  paymentHistoryModal.style.display = "block";
+  document.getElementById("paymentHistoryStudentName").textContent = data.student_name;
+  document.getElementById(
+    "paymentHistoryFeesText"
+  ).textContent = `${currentFee.className} - ${currentFee.term} Term, ${currentFee.academicYear}`;
+}
+
+// {
+//   "student_id": 1,
+//   "student_name": "Abubakari Abdul-Fatahu Wunitira",
+//   "fees_id": 1,
+//   "fee_amount": 200,
+//   "bill_id": 1,
+//   "billed_status": 1,
+//   "total_payments": 200
+// }
+
+// {
+//   "className": "Class One",
+//   "academicYear": "2024",
+//   "term": "first"
+// }

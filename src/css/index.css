@@ -529,6 +529,10 @@ header {
 .color-blue {
   color: var(--color-blue);
 }
+
+.color-secondary {
+  color: var(--color-secondary);
+}
 /* ************** BUTTONS CSS ******************************* */
 .outlined-button {
   display: inline-block;
