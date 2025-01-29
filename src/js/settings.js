@@ -1,4 +1,5 @@
 import { ACADEMIC_YEAR, TERM } from "./constants/constants.js";
+import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
 import { setUpAcademicYearsSelect, setUpTermsSelect } from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
@@ -99,8 +100,6 @@ document.getElementById("settingsAddYearBtn").addEventListener("click", async fu
   displayAcademicYearSettingsTable();
 });
 
-// *************************************************************
-
 export function initSettings() {
   displayClassSettingsTable();
   displayAcademicYearSettingsTable();
@@ -108,12 +107,9 @@ export function initSettings() {
 }
 
 async function setUpDefaultValues() {
-  const settings = await window.store.getStoreSettings();
-  console.log("Settings", settings);
 
-  // Find academic year and term from the array
-  const academicYearSetting = settings.find((item) => item.setting_key === ACADEMIC_YEAR);
-  const termSetting = settings.find((item) => item.setting_key === TERM);
+  const academicYearSetting = await getDefaultYearSetting();
+  const termSetting = await getDefaultTermSetting();
 
   if (!academicYearSetting || !termSetting) {
     return;

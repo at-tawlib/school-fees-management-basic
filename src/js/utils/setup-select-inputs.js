@@ -20,7 +20,6 @@ export async function setUpClassSelect(selectInput, allOption = false) {
 export async function setUpAcademicYearsSelect(selectInput, allOption = false) {
   selectInput.innerHTML = "";
   const academicYears = await window.store.getStoreAcademicYears();
-  console.log("Academic Years", academicYears);
 
   if (allOption) {
     const allOption = document.createElement("option");
@@ -47,7 +46,6 @@ export async function setUpTermsSelect(selectInput, allOption = false) {
     allOption.text = "All";
     selectInput.appendChild(allOption);
   }
-  console.log("Terms", terms);
 
   terms.forEach((item) => {
     const option = document.createElement("option");
