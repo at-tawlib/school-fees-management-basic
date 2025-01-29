@@ -37,22 +37,13 @@ async function loadInitialData() {
     const classes = await dbHandler.getAllClasses();
     const academicYears = await dbHandler.getAllAcademicYears();
     const terms = await dbHandler.getAllTerms();
+    const settings = await dbHandler.getAllSettings();
 
     // Save data in electron-store
-    store.set(
-      "classes",
-      classes.data.map((classItem) => classItem.class_name)
-    );
-    store.set(
-      "academicYears",
-      academicYears.data.map((year) => year.year)
-    );
-    store.set(
-      "terms",
-      terms.data.map((term) => term.term)
-    );
-
-    console.log("Data loaded into local storage");
+    store.set("classes", classes.data);
+    store.set("academicYears", academicYears.data);
+    store.set("terms", terms.data);
+    store.set("settings", settings.data);
   } catch (error) {
     console.error("Failed to load initial data:", error);
   }
@@ -63,7 +54,12 @@ ipcMain.handle("get-initial-data", (_) => {
     classes: store.get("classes") || [],
     academicYears: store.get("academicYears") || [],
     terms: store.get("terms") || [],
+    settings: store.get("settings") || [],
   };
+});
+
+ipcMain.handle("get-store-settings", (_) => {
+  return store.get("settings") || [];
 });
 
 ipcMain.handle("get-store-classes", (_) => {
@@ -76,6 +72,16 @@ ipcMain.handle("get-store-years", (_) => {
 
 ipcMain.handle("get-store-terms", (_) => {
   return store.get("terms") || [];
+});
+
+// Set settings key, value
+ipcMain.handle("save-setting", (_, key, value, text) => {
+  try {
+    const result = dbHandler.saveSetting(key, value, text);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 });
 
 // Add class

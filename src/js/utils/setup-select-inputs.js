@@ -9,10 +9,10 @@ export async function setUpClassSelect(selectInput, allOption = false) {
     selectInput.appendChild(allOption);
   }
 
-  classList.forEach((className) => {
+  classList.forEach((item) => {
     const option = document.createElement("option");
-    option.value = className;
-    option.text = className;
+    option.value = item.id;
+    option.text = item.class_name;
     selectInput.appendChild(option);
   });
 }
@@ -20,6 +20,7 @@ export async function setUpClassSelect(selectInput, allOption = false) {
 export async function setUpAcademicYearsSelect(selectInput, allOption = false) {
   selectInput.innerHTML = "";
   const academicYears = await window.store.getStoreAcademicYears();
+  console.log("Academic Years", academicYears);
 
   if (allOption) {
     const allOption = document.createElement("option");
@@ -28,10 +29,10 @@ export async function setUpAcademicYearsSelect(selectInput, allOption = false) {
     selectInput.appendChild(allOption);
   }
 
-  academicYears.forEach((year) => {
+  academicYears.forEach((item) => {
     const option = document.createElement("option");
-    option.value = year;
-    option.text = year;
+    option.value = item.id;
+    option.text = item.year;
     selectInput.appendChild(option);
   });
 }
@@ -46,11 +47,12 @@ export async function setUpTermsSelect(selectInput, allOption = false) {
     allOption.text = "All";
     selectInput.appendChild(allOption);
   }
+  console.log("Terms", terms);
 
-  terms.forEach((termName) => {
+  terms.forEach((item) => {
     const option = document.createElement("option");
-    option.value = termName;
-    option.text = termName;
+    option.value = item.id;
+    option.text = item.term;
     selectInput.appendChild(option);
   });
 }

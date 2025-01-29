@@ -2,7 +2,7 @@ import { setupStudentsClassSection } from "./student-class.js";
 import { setUpBillStudentsSection } from "./billing.js";
 import { CONTAINERS } from "./constants/constants.js";
 import { displayPaymentsTable } from "./payments.js";
-import { displayAcademicYearSettingsTable, displayClassSettingsTable } from "./settings.js";
+import { initSettings } from "./settings.js";
 import { displayStudents } from "./student.js";
 import { showHideFeesContainer } from "./utils/show-fees-container.js";
 import { setUpViewBills } from "./view-bills.js";
@@ -42,8 +42,7 @@ document.getElementById("navBillStudents").addEventListener("click", function ()
 
 document.getElementById("navSettings").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
-  displayClassSettingsTable();
-  displayAcademicYearSettingsTable();
+  initSettings();
 });
 
 document.getElementById("navViewBills").addEventListener("click", function () {

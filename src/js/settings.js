@@ -1,11 +1,62 @@
+import { ACADEMIC_YEAR, TERM } from "./constants/constants.js";
+import { setUpAcademicYearsSelect, setUpTermsSelect } from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
-const classInput = document.getElementById("settingsClass");
-const academicYearInput = document.getElementById("settingsAcademicYear");
+const changeYearTermContainer = document.getElementById("changeYearTermContainer");
+const defaultYearTermTextContainer = document.getElementById("defaultYearTermTextContainer");
 
-document.getElementById("settingsAddClass").addEventListener("click", async function () {
-  const className = classInput.value;
+document.getElementById("changeYearTermBtn").addEventListener("click", function () {
+  changeYearTermContainer.style.display = "";
+  defaultYearTermTextContainer.style.display = "none";
+
+  setUpAcademicYearsSelect(document.getElementById("settingsDefaultAcademicYear"), false);
+  setUpTermsSelect(document.getElementById("settingsDefaultTerm"), false);
+});
+
+document.getElementById("currentYearTermCancelBtn").addEventListener("click", function () {
+  changeYearTermContainer.style.display = "none";
+  defaultYearTermTextContainer.style.display = "";
+});
+
+document.getElementById("currentYearTermSaveBtn").addEventListener("click", async function () {
+  const year = document.getElementById("settingsDefaultAcademicYear").value;
+  const term = document.getElementById("settingsDefaultTerm").value;
+
+  if (!year || !term) {
+    showToast("Please select a year and term", "error");
+    return;
+  }
+
+  const yearText = document.getElementById("settingsDefaultAcademicYear").options[
+    document.getElementById("settingsDefaultAcademicYear").selectedIndex
+  ].text;
+
+  const yearRes = await window.api.saveSetting(ACADEMIC_YEAR, year, yearText);
+
+  if (!yearRes.success) {
+    showToast(yearRes.message, "error");
+    return;
+  }
+
+  const termText =
+    document.getElementById("settingsDefaultTerm").options[
+      document.getElementById("settingsDefaultTerm").selectedIndex
+    ].text;
+  const termRes = await window.api.saveSetting(TERM, term, termText);
+  if (!termRes.success) {
+    showToast(termRes.message, "error");
+    return;
+  }
+
+  showToast("Year and term set successfully", "success");
+  changeYearTermContainer.style.display = "none";
+  defaultYearTermTextContainer.style.display = "";
+});
+
+document.getElementById("settingsAddClassBtn").addEventListener("click", async function () {
+  const classInput = document.getElementById("newClassInput");
   classInput.style.background = "";
+  const className = classInput.value;
 
   if (!className) {
     showToast("Please enter a class name", "error");
@@ -22,14 +73,16 @@ document.getElementById("settingsAddClass").addEventListener("click", async func
   showToast("Class added successfully", "success");
   classInput.value = "";
   classInput.style.background = "";
+  displayClassSettingsTable();
 });
 
-document.getElementById("settingsAddYears").addEventListener("click", async function () {
-  const academicYear = academicYearInput.value;
+document.getElementById("settingsAddYearBtn").addEventListener("click", async function () {
+  const academicYearInput = document.getElementById("newAcademicYear");
   academicYearInput.style.background = "";
+  const academicYear = academicYearInput.value;
 
   if (!academicYear) {
-    showToast("Please enter an academic year", "error");
+    showToast("Please enter a class name", "error");
     academicYearInput.style.background = "red";
     return;
   }
@@ -40,19 +93,43 @@ document.getElementById("settingsAddYears").addEventListener("click", async func
     return;
   }
 
-  showToast("Academic year added successfully", "success");
+  showToast(response.message, "success");
   academicYearInput.value = "";
   academicYearInput.style.background = "";
+  displayAcademicYearSettingsTable();
 });
 
-export async function displayClassSettingsTable() {
+// *************************************************************
+
+export function initSettings() {
+  displayClassSettingsTable();
+  displayAcademicYearSettingsTable();
+  setUpDefaultValues();
+}
+
+async function setUpDefaultValues() {
+  const settings = await window.store.getStoreSettings();
+  console.log("Settings", settings);
+
+  // Find academic year and term from the array
+  const academicYearSetting = settings.find((item) => item.setting_key === ACADEMIC_YEAR);
+  const termSetting = settings.find((item) => item.setting_key === TERM);
+
+  if (!academicYearSetting || !termSetting) {
+    return;
+  }
+
+  const resultText = `${academicYearSetting.setting_text} Academic year, ${termSetting.setting_text} Term`;
+  document.getElementById("defaultYearTermText").textContent = resultText;
+}
+
+async function displayClassSettingsTable() {
   const response = await window.api.getAllClass();
+
   if (!response.success) {
     showToast(response.message, "error");
     return;
   }
-
-  console.log(response);
 
   const tableBody = document.getElementById("settingsClassTableBody");
   tableBody.innerHTML = "";
@@ -62,31 +139,47 @@ export async function displayClassSettingsTable() {
     row.innerHTML = `
         <td>${item.id}</td>
         <td>${item.class_name}</td>
-        <td><button class="btn btn-danger">Delete</button></td>
+        <td>
+          <div>
+            <button class="text-button">
+              <i class="fa-solid fa-edit"></i> Edit Class
+            </button>
+            <button class="text-button" style="color: red">
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
+          </div>
+        </td>
     `;
     tableBody.appendChild(row);
   });
 }
 
-export async function displayAcademicYearSettingsTable() {
+async function displayAcademicYearSettingsTable() {
   const response = await window.api.getAllAcademicYears();
 
-  console.log(response);
   if (!response.success) {
     showToast(response.message, "error");
     return;
   }
 
-  const tableBody = document.getElementById("settingsAcademicYearsTableBody");
+  const tableBody = document.getElementById("settingsYearTableBody");
   tableBody.innerHTML = "";
 
   response.data.forEach((item) => {
     const row = document.createElement("tr");
     row.innerHTML = `
-            <td>${item.id}</td>
-            <td>${item.year}</td>
-            <td>${item.is_active}</td>
-            <td><button class="btn btn-danger">Delete</button></td>
+          <td>${item.id}</td>
+          <td>${item.year}</td>
+          <td>
+          <div>
+              <button class="text-button">
+                <i class="fa-solid fa-edit"></i> Edit Class
+              </button>
+              <button class="text-button" style="color: red">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
+            </div>
+          </td>
         `;
     tableBody.appendChild(row);
   });

@@ -1,6 +1,8 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("api", {
+  saveSetting: (key, value, text) => ipcRenderer.invoke("save-setting", key, value, text),
+  getAllSettings: () => ipcRenderer.invoke("get-all-settings"),
   getAllStudents: () => ipcRenderer.invoke("get-all-students"),
   insertStudent: (student) => ipcRenderer.invoke("insert-student", student),
   updateStudent: (student) => ipcRenderer.invoke("update-student", student),
@@ -39,5 +41,8 @@ contextBridge.exposeInMainWorld("store", {
   },
   getStoreTerms: async () => {
     return await ipcRenderer.invoke("get-store-terms");
+  },
+  getStoreSettings: async () => {
+    return await ipcRenderer.invoke("get-store-settings");
   },
 });

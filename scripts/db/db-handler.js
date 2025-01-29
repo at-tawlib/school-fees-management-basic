@@ -10,6 +10,7 @@ const requiredTables = [
   "bills",
   "classes",
   "fees",
+  "settings",
   "students",
   "studentClasses",
   "terms",
@@ -55,6 +56,44 @@ class DatabaseHandler {
         `;
     const rows = this.db.prepare(query).all();
     return rows.map((row) => row.name);
+  }
+
+  saveSetting(key, value, text) {
+    try {
+      const existingSetting = this.db
+        .prepare("SELECT COUNT(*) as count FROM settings WHERE setting_key = ?")
+        .get(key);
+
+      if (existingSetting.count > 0) {
+        // Update if setting exists
+        const updateStmt = this.db.prepare(
+          "UPDATE settings SET setting_value = ?, setting_text = ? WHERE setting_key = ?"
+        );
+        updateStmt.run(value, text, key);
+      } else {
+        // Insert if setting doesn't exist
+        const insertStmt = this.db.prepare(
+          "INSERT INTO settings (setting_key, setting_value, setting_text) VALUES (?, ?, ?)"
+        );
+        insertStmt.run(key, value, text);
+      }
+
+      return { success: true, message: "Setting saved successfully." };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getAllSettings() {
+    try {
+      const stmt = this.db.prepare("SELECT * FROM settings");
+      const records = stmt.all();
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
   }
 
   addClass(className) {

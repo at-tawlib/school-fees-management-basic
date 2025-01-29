@@ -18,6 +18,7 @@
 body {
   margin: 0;
   padding: 0;
+  color: var(--color-secondary);
 }
 
 /* Usage
@@ -136,6 +137,30 @@ th {
 
 .j-space-between {
   justify-content: space-between;
+}
+
+.flex-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.flex-item label {
+  width: 30%;
+  font-size: large;
+}
+
+.flex-item input {
+  width: 60%;
+}
+
+.flex-item select {
+  width: 60%;
+}
+
+.flex-item span {
+  width: 60%;
 }
 
 .full-width {
@@ -308,7 +333,7 @@ header {
 .toggle-btn {
   border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: #FFF;
+  background-color: #fff;
   color: var(--color-secondary);
   cursor: pointer;
   transition: all 0.3s ease;
@@ -350,6 +375,12 @@ header {
 #billClassContainer select,
 #billClassContainer input {
   width: 100%;
+}
+
+/* ********************** SETTINGS PAGE ****************** */
+#settingsClassTableBody td:nth-child(3),
+#settingsYearTableBody td:nth-child(3) {
+  text-align: right;
 }
 
 /* *************** MODAL CSS *********************** */
@@ -436,27 +467,6 @@ header {
 #addStudentModal button {
   width: 8rem;
 }
-
-.form-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin: 1rem 0;
-}
-
-.form-item label {
-  width: 30%;
-  font-size: large;
-}
-
-.form-item input {
-  width: 60%;
-}
-
-.form-item select {
-  width: 60%;
-}
-
 /* *********************** TOAST CSS ************************ */
 .toast-container {
   width: 250px;
@@ -635,3 +645,65 @@ header {
 .table-rounded tr:hover {
   background-color: #9ca3af;
 }
+
+/* ************************************************************** */
+/* .container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+h1 {
+  text-align: center;
+  color: #343a40;
+}
+.section {
+  margin-bottom: 2rem;
+}
+.section h2 {
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+.form-group {
+  margin-bottom: 1rem;
+}
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+input[type="text"],
+select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+.btn {
+  display: inline-block;
+  margin: 0.5rem 0.25rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.btn:hover {
+  background: #0056b3;
+}
+.list {
+  list-style: none;
+  padding: 0;
+}
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+} */
