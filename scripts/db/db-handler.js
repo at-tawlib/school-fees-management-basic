@@ -277,8 +277,12 @@ class DatabaseHandler {
   getDistinctClasses(year) {
     try {
       const stmt = this.db.prepare(`
-        SELECT DISTINCT class_name, academic_year FROM studentClasses WHERE academic_year = ?;
-    `);
+          SELECT DISTINCT c.id AS class_id,  c.class_name,  ay.id AS academic_year_id,  ay.year AS academic_year
+          FROM studentClasses sc
+          JOIN classes c ON sc.class_name = c.id
+          JOIN academicYears ay ON sc.academic_year = ay.id
+          WHERE ay.id = ?;
+      `);
       const records = stmt.all(year);
       return { success: true, data: records };
     } catch (error) {
@@ -337,15 +341,15 @@ class DatabaseHandler {
     try {
       const stmt = this.db.prepare(`
         SELECT * FROM fees
-        WHERE class = ? AND term = ? AND academic_year = ?
+        WHERE class_id = ? AND term_id = ? AND year_id = ?
         LIMIT 1
       `);
 
-      const result = stmt.get(fee.className, fee.term, fee.academicYear);
+      const result = stmt.get(fee.class, fee.term, fee.academicYear);
       if (!result) {
         return {
           success: false,
-          message: `No fee found for ${fee.className} (${fee.academicYear}) ${fee.term} term.`,
+          message: `No fee found for the selected class, year and term.`,
         };
       }
 
@@ -359,16 +363,14 @@ class DatabaseHandler {
   getAllFees() {
     try {
       const stmt = this.db.prepare(`
-        SELECT 
-          fees.id,
-          fees.class,
-          fees.academic_year,
-          fees.term,
-          fees.amount,
-          COUNT(bills.student_id) AS total_students_billed
-        FROM fees
-        LEFT JOIN bills ON fees.id = bills.fees_id
-        GROUP BY fees.id
+          SELECT f.id, c.class_name, c.id AS class_id,  ay.year AS academic_year, ay.id AS year_id, t.id AS term_id, t.term, f.amount,
+            COUNT(b.student_id) AS total_students_billed
+          FROM fees f
+          LEFT JOIN bills b ON f.id = b.fees_id
+          JOIN classes c ON f.class_id = c.id
+          JOIN academicYears ay ON f.year_id = ay.id
+          JOIN terms t ON f.term_id = t.id
+          GROUP BY f.id, c.class_name, ay.year, t.term, f.amount;
       `);
       const records = stmt.all();
       return { success: true, data: records };
@@ -383,14 +385,13 @@ class DatabaseHandler {
       // Checks if fees exist for the class, term and academic year before adding
       const isFeesExists = this.getSingleFee(data);
       if (isFeesExists.success === true && isFeesExists.data) {
-        console.log("Fees already exists for the specified class, term, and academic year.");
         return {
           success: false,
           message: "Fee already exists for the specified class, term, and academic year.",
         };
       }
       const stmt = this.db.prepare(`
-          INSERT INTO fees (class, academic_year, term, amount, created_at) VALUES (?, ?, ?, ?, ?)
+          INSERT INTO fees (class_id, year_id, term_id, amount, created_at) VALUES (?, ?, ?, ?, ?)
         `);
       stmt.run(data.class, data.academicYear, data.term, data.amount, new Date().toISOString());
       return {
@@ -560,26 +561,29 @@ class DatabaseHandler {
   getBillDetails(filter) {
     try {
       const stmt = this.db.prepare(`
-        SELECT 
-          s.id AS student_id,
-          s.first_name || ' ' || s.last_name || ' ' || COALESCE(s.other_names, '') AS student_name,
-          f.id AS fees_id, 
-          f.amount AS fee_amount,
-          b.id AS bill_id, 
-          COUNT(b.id) AS billed_status,
-          COALESCE(SUM(p.amount), 0) AS total_payments
+        SELECT s.id AS student_id, 
+            s.first_name || ' ' || s.last_name || ' ' || COALESCE(s.other_names, '') AS student_name,
+            f.id AS fees_id, f.amount AS fee_amount, b.id AS bill_id, 
+            COUNT(b.id) AS billed_status,
+            COALESCE(SUM(p.amount), 0) AS total_payments
         FROM students s
         JOIN studentClasses c ON s.id = c.student_id
+        LEFT JOIN academicYears ay ON c.academic_year = ay.id
+        LEFT JOIN terms t ON f.term = t.id
         LEFT JOIN fees f ON c.class_name = f.class 
-          AND c.academic_year = f.academic_year 
-          AND f.term = ?
+            AND c.academic_year = f.academic_year 
+            AND f.term = t.id
         LEFT JOIN bills b ON s.id = b.student_id AND b.fees_id = f.id
         LEFT JOIN payments p ON b.id = p.bill_id
-        WHERE c.class_name = ? AND c.academic_year = ?
+        WHERE c.id = ? 
+            AND ay.id = ?
+            AND t.term = ? 
         GROUP BY s.id, s.first_name, s.last_name, s.other_names, f.id, f.amount, b.id
         ORDER BY s.first_name, s.last_name;
       `);
-      const records = stmt.all(filter.term, filter.className, filter.academicYear);
+
+      console.log(filter)
+      const records = stmt.all(filter.term, filter.classId, filter.yearId);
       return { success: true, data: records };
     } catch (error) {
       console.error("Database Error in getBillDetails: ", error);

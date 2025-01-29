@@ -1,3 +1,4 @@
+import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
 import {
   setUpAcademicYearsSelect,
   setUpClassSelect,
@@ -47,21 +48,12 @@ document.getElementById("setFeesBtn").addEventListener("click", async () => {
     return;
   }
 
-  // Show loading state
-  const setFeesBtn = document.getElementById("setFeesBtn");
-  setFeesBtn.disabled = true;
-  setFeesBtn.innerHTML = "Saving...";
-
   const response = await window.api.addFees({
     class: studentClass,
     academicYear,
     term,
     amount: feesAmount,
   });
-
-  // Hide loading state
-  setFeesBtn.disabled = false;
-  setFeesBtn.innerHTML = "Save";
 
   if (!response.success) {
     showToast(response.message || "Failed to set fees", "error");
@@ -84,19 +76,10 @@ document.getElementById("saveEditFeesBtn").addEventListener("click", async () =>
     return;
   }
 
-  // Show loading state
-  const saveEditFeesBtn = document.getElementById("saveEditFeesBtn");
-  saveEditFeesBtn.disabled = true;
-  saveEditFeesBtn.innerHTML = "Saving...";
-
   const response = await window.api.updateFeeAmount({
     id: feeId,
     amount: updatedAmount,
   });
-
-  // Hide loading state
-  saveEditFeesBtn.disabled = false;
-  saveEditFeesBtn.innerHTML = "Save";
 
   if (!response.success) {
     showToast(response.message || "Failed to update fee", "error");
@@ -146,7 +129,7 @@ feesTableBody.addEventListener("click", (event) => {
 });
 
 // Function to Display Fees Table
-export async function displayFeesTable() {
+async function displayFeesTable() {
   const response = await window.api.getAllFees();
 
   if (!response.success) {
@@ -154,8 +137,6 @@ export async function displayFeesTable() {
     return;
   }
 
-  setUpAcademicYearsSelect(filterFeesByAcademicYear, true);
-  setUpTermsSelect(filterFeesByTerm, true);
   feesTableBody.innerHTML = "";
 
   response.data.forEach((record, index) => {
@@ -163,7 +144,10 @@ export async function displayFeesTable() {
 
     // Add data attributes to the row
     row.setAttribute("data-id", record.id);
-    row.setAttribute("data-class", record.class);
+    row.setAttribute("data-class-id", record.class_id);
+    row.setAttribute("data-year-id", record.year_id);
+    row.setAttribute("data-term-id", record.term_id);
+    row.setAttribute("data-class", record.class_name);
     row.setAttribute("data-academic-year", record.academic_year);
     row.setAttribute("data-term", record.term);
     row.setAttribute("data-amount", record.amount);
@@ -173,7 +157,7 @@ export async function displayFeesTable() {
 
     row.innerHTML = `
         <td>${index + 1}</td>
-        <td>${record.class} </td>
+        <td>${record.class_name} </td>
         <td>${record.academic_year} </td>
         <td>${record.term} </td>
         <td>${record.amount} </td>
@@ -208,8 +192,8 @@ function filterFeesTable() {
   const tableRows = feesTableBody.querySelectorAll("tr");
 
   tableRows.forEach((row) => {
-    const rowTerm = row.getAttribute("data-term");
-    const rowYear = row.getAttribute("data-academic-year");
+    const rowTerm = row.getAttribute("data-term-id");
+    const rowYear = row.getAttribute("data-year-id");
 
     // Handle cases where rowTerm or rowYear is null or undefined
     const yearMatch = year === "all" || (rowYear && rowYear.includes(year));
@@ -258,4 +242,17 @@ async function handleDeleteFee(fee) {
 
   showToast(deleteResponse.message, "success");
   await displayFeesTable();
+}
+
+export async function setUpFeesSection() {
+  const termSetting = await getDefaultTermSetting();
+  const yearSetting = await getDefaultYearSetting();
+
+  await setUpAcademicYearsSelect(filterFeesByAcademicYear, true);
+  await setUpTermsSelect(filterFeesByTerm, true);
+  filterFeesByAcademicYear.value = yearSetting.setting_value;
+  filterFeesByTerm.value = termSetting.setting_value;
+
+  await displayFeesTable();
+  filterFeesTable();
 }

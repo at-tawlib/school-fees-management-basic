@@ -6,7 +6,7 @@ import { initSettings } from "./settings.js";
 import { displayStudents } from "./student.js";
 import { showHideFeesContainer } from "./utils/show-fees-container.js";
 import { setUpViewBills } from "./view-bills.js";
-import { displayFeesTable } from "./view-fees.js";
+import { setUpFeesSection } from "./fees.js";
 
 const sectionHeaderTitle = document.getElementById("sectionHeaderTitle");
 
@@ -16,10 +16,10 @@ document.getElementById("navStudents").addEventListener("click", function () {
   displayStudents();
 });
 
-document.getElementById("navViewFees").addEventListener("click", async function () {
+document.getElementById("navFees").addEventListener("click", async function () {
   showHideFeesContainer(CONTAINERS.VIEW_FEES);
   sectionHeaderTitle.textContent = "Fees";
-  await displayFeesTable();
+  setUpFeesSection();
 });
 
 document.getElementById("navClasses").addEventListener("click", function () {

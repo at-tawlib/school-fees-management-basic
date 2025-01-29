@@ -183,6 +183,57 @@ th {
   box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
 }
 
+/* ************************ ROUNDED TABLE CSS ****************** */
+.table-rounded {
+  border-collapse: collapse;
+  width: 100%;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table-rounded th,
+.table-rounded td {
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.table-rounded th:nth-child(2),
+.table-rounded td:nth-child(2) {
+  text-align: left;
+}
+
+.table-rounded th {
+  background-color: var(--color-secondary);
+  font-weight: bold;
+  border: 0.1rem solid var(--text-color);
+}
+
+.table-rounded tr:last-child td {
+  border-bottom: none;
+}
+
+.table-rounded td {
+  /* border: 0.1rem solid var(--text-color); */
+  border: none;
+}
+
+/* Remove vertical borders completely */
+.table-rounded td,
+.table-rounded th {
+  border-left: none;
+  border-right: none;
+}
+
+.table-rounded tr:nth-of-type(odd) {
+  background-color: rgba(245, 247, 250, 0.5);
+}
+
+.table-rounded tr:hover {
+  background-color: #9ca3af;
+}
+
 /* ****************** MAIN CONTENT *************************** */
 main {
   /* 
@@ -275,8 +326,19 @@ header {
 #studentsTable td:nth-child(3),
 #studentsTable th:nth-child(3),
 #studentsTable td:nth-child(4),
-#studentsTable th:nth-child(4){
+#studentsTable th:nth-child(4) {
   text-align: left;
+}
+
+/* ************************** FEES ******************* */
+#feesTable td:last-child,
+#feesTable th:last-child {
+  text-align: end;
+}
+
+#feesTable td:nth-child(6),
+#feesTable th:nth-child(6) {
+  text-align: center;
 }
 
 /* ************** ADD CLASS CSS ******************** */
@@ -603,116 +665,3 @@ header {
   color: #ccc;
   cursor: not-allowed;
 }
-
-/* ************************ ROUNDED TABLE CSS ****************** */
-.table-rounded {
-  border-collapse: collapse;
-  width: 100%;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  background-color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.table-rounded th,
-.table-rounded td {
-  padding: 8px 12px;
-  text-align: center;
-}
-
-.table-rounded th:nth-child(2),
-.table-rounded td:nth-child(2) {
-  text-align: left;
-}
-
-.table-rounded th {
-  background-color: var(--color-secondary);
-  font-weight: bold;
-  border: 0.1rem solid var(--text-color);
-}
-
-.table-rounded tr:last-child td {
-  border-bottom: none;
-}
-
-.table-rounded td {
-  /* border: 0.1rem solid var(--text-color); */
-  border: none;
-}
-
-/* Remove vertical borders completely */
-.table-rounded td,
-.table-rounded th {
-  border-left: none;
-  border-right: none;
-}
-
-.table-rounded tr:nth-of-type(odd) {
-  background-color: rgba(245, 247, 250, 0.5);
-}
-
-.table-rounded tr:hover {
-  background-color: #9ca3af;
-}
-
-/* ************************************************************** */
-/* .container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 1rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-h1 {
-  text-align: center;
-  color: #343a40;
-}
-.section {
-  margin-bottom: 2rem;
-}
-.section h2 {
-  color: #495057;
-  margin-bottom: 0.5rem;
-}
-.form-group {
-  margin-bottom: 1rem;
-}
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-input[type="text"],
-select {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-}
-.btn {
-  display: inline-block;
-  margin: 0.5rem 0.25rem;
-  padding: 0.5rem 1rem;
-  border: none;
-  background: #007bff;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.btn:hover {
-  background: #0056b3;
-}
-.list {
-  list-style: none;
-  padding: 0;
-}
-.list-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
-} */
