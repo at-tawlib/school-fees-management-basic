@@ -167,13 +167,20 @@ th {
   width: 100%;
 }
 
-/* ****************** CONTAINER CSS *************************** */
+/* ****************** CONTAINERS CSS *************************** */
 .container {
   margin: 0;
   display: flex;
   height: 100vh;
   overflow: hidden;
   background-color: var(--color-secondary);
+}
+
+.elevated-container {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
 }
 
 /* ****************** MAIN CONTENT *************************** */
@@ -263,11 +270,13 @@ header {
 }
 
 /* *************** STUDENTS ********************* */
-.elevated-container {
-  background-color: white;
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
+#studentsTable td:nth-child(2),
+#studentsTable th:nth-child(2),
+#studentsTable td:nth-child(3),
+#studentsTable th:nth-child(3),
+#studentsTable td:nth-child(4),
+#studentsTable th:nth-child(4){
+  text-align: left;
 }
 
 /* ************** ADD CLASS CSS ******************** */
