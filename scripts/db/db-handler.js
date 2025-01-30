@@ -220,7 +220,7 @@ class DatabaseHandler {
         for (const studentId of data.studentIds) {
           const checkStmt = db.prepare(`
             SELECT 1 FROM studentClasses 
-            WHERE student_id = ? AND academic_year = ?
+            WHERE student_id = ? AND year_id = ?
           `);
           const exists = checkStmt.get(studentId, data.academicYear);
 
@@ -228,7 +228,7 @@ class DatabaseHandler {
             existingStudents.push(studentId); // Track existing students
           } else {
             const insertStmt = db.prepare(`
-              INSERT INTO studentClasses (student_id, class_name, academic_year, created_at)
+              INSERT INTO studentClasses (student_id, class_id, year_id, created_at)
               VALUES (?, ?, ?, ?)
             `);
             insertStmt.run(studentId, data.className, data.academicYear, new Date().toISOString());
@@ -279,8 +279,8 @@ class DatabaseHandler {
       const stmt = this.db.prepare(`
           SELECT DISTINCT c.id AS class_id,  c.class_name,  ay.id AS academic_year_id,  ay.year AS academic_year
           FROM studentClasses sc
-          JOIN classes c ON sc.class_name = c.id
-          JOIN academicYears ay ON sc.academic_year = ay.id
+          JOIN classes c ON sc.class_id = c.id
+          JOIN academicYears ay ON sc.year_id = ay.id
           WHERE ay.id = ?;
       `);
       const records = stmt.all(year);
@@ -314,7 +314,7 @@ class DatabaseHandler {
         SELECT EXISTS (
           SELECT 1 
           FROM studentClasses 
-          WHERE class_name = ? AND academic_year = ?
+          WHERE class_id = ? AND year_id = ?
         ) AS data_exists;
       `);
       const result = stmt.get(filter.className, filter.academicYear);
@@ -345,7 +345,8 @@ class DatabaseHandler {
         LIMIT 1
       `);
 
-      const result = stmt.get(fee.class, fee.term, fee.academicYear);
+      console.log(fee);
+      const result = stmt.get(fee.classId, fee.termId, fee.yearId);
       if (!result) {
         return {
           success: false,
@@ -561,29 +562,28 @@ class DatabaseHandler {
   getBillDetails(filter) {
     try {
       const stmt = this.db.prepare(`
-        SELECT s.id AS student_id, 
+        SELECT 
+            s.id AS student_id, 
             s.first_name || ' ' || s.last_name || ' ' || COALESCE(s.other_names, '') AS student_name,
-            f.id AS fees_id, f.amount AS fee_amount, b.id AS bill_id, 
-            COUNT(b.id) AS billed_status,
-            COALESCE(SUM(p.amount), 0) AS total_payments
+            f.id AS fees_id, 
+            f.amount AS fee_amount, 
+            b.id AS bill_id, 
+            COALESCE(SUM(p.amount), 0) AS total_payments, 
+            (f.amount - COALESCE(SUM(p.amount), 0)) AS balance
         FROM students s
-        JOIN studentClasses c ON s.id = c.student_id
-        LEFT JOIN academicYears ay ON c.academic_year = ay.id
-        LEFT JOIN terms t ON f.term = t.id
-        LEFT JOIN fees f ON c.class_name = f.class 
-            AND c.academic_year = f.academic_year 
-            AND f.term = t.id
+        JOIN studentClasses sc ON s.id = sc.student_id
+        JOIN classes c ON sc.class_id = c.id
+        JOIN academicYears ay ON sc.year_id = ay.id
+        JOIN terms t ON f.term_id = t.id
+        LEFT JOIN fees f ON sc.class_id = f.class_id  AND sc.year_id = f.year_id AND f.term_id = t.id
         LEFT JOIN bills b ON s.id = b.student_id AND b.fees_id = f.id
         LEFT JOIN payments p ON b.id = p.bill_id
-        WHERE c.id = ? 
-            AND ay.id = ?
-            AND t.term = ? 
+        WHERE sc.class_id = ? AND ay.id = ? AND t.id = ?
         GROUP BY s.id, s.first_name, s.last_name, s.other_names, f.id, f.amount, b.id
         ORDER BY s.first_name, s.last_name;
       `);
 
-      console.log(filter)
-      const records = stmt.all(filter.term, filter.classId, filter.yearId);
+      const records = stmt.all(filter.classId, filter.yearId, filter.term);
       return { success: true, data: records };
     } catch (error) {
       console.error("Database Error in getBillDetails: ", error);

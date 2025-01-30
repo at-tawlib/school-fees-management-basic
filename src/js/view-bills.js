@@ -1,6 +1,4 @@
-import { CONTAINERS } from "./constants/constants.js";
 import { showToast } from "./utils/toast.js";
-import { showHideFeesContainer } from "./utils/show-fees-container.js";
 import { clearInputsStyles } from "./utils/clear-input-styles.js";
 import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
 import {

@@ -1,3 +1,4 @@
+import { displayClassStudentsTable } from "../student-class.js";
 import { fCurrency } from "../utils/format-currency.js";
 import { showToast } from "../utils/toast.js";
 
@@ -10,6 +11,9 @@ const paymentDetailsField = document.getElementById("paymentDetails");
 const feesText = document.getElementById("makePaymentModalFees");
 const paidText = document.getElementById("makePaymentModalPaid");
 const arrearsText = document.getElementById("makePaymentModalArrears");
+
+let selectedFee = null;
+let selectedTerm = null;
 
 document.getElementById("cancelPaymentModalBtn").addEventListener("click", () => {
   modal.style.display = "none";
@@ -48,13 +52,23 @@ document.getElementById("submitPayment").addEventListener("click", async () => {
   });
 
   if (!response.success) {
-    showToast("Payment failed", "error");
+    showToast(response.message || "Payment failed", "error");
     return;
   }
   showToast(response.message, "success");
 
   clearPaymentModalFields();
   modal.style.display = "none";
+
+  displayClassStudentsTable(
+    {
+      class_name: selectedFee.className,
+      academic_year: selectedFee.academicYear,
+      academic_year_id: selectedFee.yearId,
+      class_id: selectedFee.classId,
+    },
+    { value: selectedFee.termId, text: selectedFee.term }
+  );
 });
 
 function clearPaymentModalFields() {
@@ -64,7 +78,10 @@ function clearPaymentModalFields() {
   paymentDetailsField.value = "";
 }
 
-export function openStudentPaymentModal(details, currentFee) {
+export function openStudentPaymentModal(details, currentFee, classTerm) {
+  selectedFee = currentFee;
+  selectedTerm = classTerm;
+
   if (!details.bill_id || !details.student_id) {
     showToast("Check student bill.", "error");
     return;
@@ -74,7 +91,7 @@ export function openStudentPaymentModal(details, currentFee) {
   document.getElementById("modalStudentName").textContent = details.student_name;
   document.getElementById(
     "modalStudentClass"
-  ).textContent = `Pay fees for ${currentFee.className} - ${currentFee.term} term, ${currentFee.academicYear}`;
+  ).textContent = `Pay fees for ${currentFee.className} - ${classTerm.text} term, ${currentFee.academicYear}`;
 
   const arrears = details.fee_amount - (details.total_payments ?? 0);
   studentIdElement.textContent = details.student_id;

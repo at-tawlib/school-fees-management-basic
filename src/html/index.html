@@ -12,17 +12,7 @@
     <link href="../assets/fontawesome/css/solid.css" rel="stylesheet" />
 
     <script type="module" src="../js/index.js" defer></script>
-    <script type="module" src="../js/billing.js" defer></script>
     <script type="module" src="../js/settings.js" defer></script>
-    <!--     
-      <script type="module" src="../js/student.js" defer></script>
-      <script type="module" src="../js/add-class.js" defer></script>
-    <script type="module" src="../js/student-class.js" defer></script>
-    <script type="module" src="../js/class.js" defer></script>
-    <script type="module" src="../js/payments.js" defer></script>
-    <script type="module" src="../js/view-bills.js" defer></script>
-    <script type="module" src="../js/view-fees.js" defer></script>
-    -->
   </head>
   <body>
     <div class="container">
@@ -32,8 +22,6 @@
           <li id="navStudents">Students</li>
           <li id="navFees">View Fees</li>
           <li id="navClasses">Students Classes</li>
-          <li id="navBillStudents">Bill Students</li>
-          <li id="navViewBills">View Bills</li>
           <li id="navPayments">Payments</li>
         </ul>
         <button id="navSettings"><i class="fa-solid fa-gears"></i> Settings</button>
@@ -135,8 +123,6 @@
                 <select id="filterStudentsByAcademicYear"></select>
               </div>
 
-              <div id="allClassesDiv" class="class-item">All Classes</div>
-
               <div id="classesList"></div>
               <br />
               <button id="addClassButton" class="full-width">
@@ -163,15 +149,7 @@
                 <div class="flex-row j-space-between">
                   <input type="text" id="searchStudentClassInput" placeholder="Search by name..." />
 
-                  <div id="term-buttons" class="toggle-buttons">
-                    <button id="firstTerm" data-term="first" class="active toggle-btn">
-                      First Term
-                    </button>
-                    <button id="secondTerm" data-term="second" class="toggle-btn">
-                      Second Term
-                    </button>
-                    <button id="thirdTerm" data-term="third" class="toggle-btn">Third Term</button>
-                  </div>
+                  <div id="term-buttons" class="toggle-buttons"></div>
                 </div>
 
                 <table class="table-rounded">
@@ -265,137 +243,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ------------ BILL STUDENTS --------------------- -->
-        <section id="billClassSection" style="display: none">
-          <div class="flex-row align-start">
-            <!-- Bill options (class, academic year, term) -->
-            <div class="flex-1 elevated-container">
-              <div class="flex-item">
-                <label for="billByClassSelect">Class:</label>
-                <select id="billByClassSelect"></select>
-              </div>
-
-              <div class="flex-item">
-                <label for="billAcademicYearSelect">Year:</label>
-                <select id="billAcademicYearSelect"></select>
-              </div>
-
-              <div class="flex-item">
-                <label for="billByTermSelect">Term:</label>
-                <select id="billByTermSelect"></select>
-              </div>
-
-              <button id="billClassOkBtn" class="full-width">Ok</button>
-            </div>
-
-            <!-- Bill Table Container -->
-            <div class="flex-3">
-              <h2 id="billDetailsText"></h2>
-              <p id="billFeesId" style="display: none"></p>
-              <div id="billClassTableContainer" style="display: none">
-                <!-- students class bill table -->
-                <table id="billClassTable" class="table-rounded">
-                  <thead>
-                    <tr>
-                      <th id="billClassTitle" colspan="4" style="text-align: center"></th>
-                    </tr>
-                  </thead>
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Name</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="billClassTableBody">
-                    <!-- bills Class List -->
-                  </tbody>
-                </table>
-
-                <div class="flex-row">
-                  <button id="billSelectAllStudents" title="Select All Students">
-                    <i class="fa-solid fa-save"></i> Select All
-                  </button>
-                  <button id="billClearSelection" class="bg-yellow" title="Clear Selection">
-                    <i class="fa-solid fa-eraser"></i> Clear Selection
-                  </button>
-                </div>
-
-                <hr style="border: none; border-top: 2px solid #ccc; margin: 20px 0" />
-                <div class="flex-row">
-                  <button id="billStudentsSubmitButton" class="bg-green" title="Bill Students">
-                    <i class="fa-solid fa-save"></i> Bill Students
-                  </button>
-                  <button class="bg-red" title="Cancel">
-                    <i class="fa-solid fa-close"></i> Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ------------- VIEW CLASS BILLS ---------------------- -->
-        <section id="viewBillSection" style="display: none">
-          <h2 style="text-align: center">Class Bills</h2>
-          <hr style="margin: 1rem 0rem" />
-
-          <div class="flex-row">
-            <!-- Bill options (class, academic year, term) -->
-            <div class="flex-column flex-1">
-              <div class="flex-row align-center">
-                <label for="viewBillClassSelect">Class:</label>
-                <select id="viewBillClassSelect"></select>
-              </div>
-              <br />
-
-              <div class="flex-row align-center">
-                <label for="viewBillAcademicYear">Year:</label>
-                <select id="viewBillAcademicYear"></select>
-              </div>
-              <br />
-
-              <div class="flex-row align-center">
-                <label for="viewBillTermSelect">Term:</label>
-                <select id="viewBillTermSelect"></select>
-              </div>
-              <br />
-
-              <button id="viewBillOkButton">Ok</button>
-            </div>
-
-            <!-- Bill Table Container -->
-            <div class="flex-3">
-              <h2 id="viewBillDetailsText"></h2>
-              <div id="viewBillClassTableContainer" style="display: none">
-                <!-- students class bill table -->
-                <table id="viewBillClassTable">
-                  <thead>
-                    <tr>
-                      <th id="viewBillClassTitle" colspan="9" style="text-align: center"></th>
-                    </tr>
-                  </thead>
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Name</th>
-                      <th>Bill Status</th>
-                      <th>Fees</th>
-                      <th>Paid</th>
-                      <th>Balance</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="viewBillClassTableBody">
-                    <!-- bills Class List -->
-                  </tbody>
-                </table>
               </div>
             </div>
           </div>
