@@ -134,7 +134,7 @@
               <!-- Student class table -->
               <div id="studentClassContainer">
                 <div class="flex-row j-space-between">
-                  <h2 id="studentClassTitle">Class 1</h2>
+                  <h2 id="studentClassTitle"></h2>
                   <div class="flex-row">
                     <button id="addStudentToClassBtn" class="bg-green">
                       <i class="fa-solid fa-plus"></i> Add Student
@@ -152,21 +152,27 @@
                   <div id="term-buttons" class="toggle-buttons"></div>
                 </div>
 
-                <table class="table-rounded">
+                <table id="studentClassTable" class="table-rounded" style="display: none">
                   <thead>
                     <tr>
                       <th>#</th>
                       <th>Name</th>
-                      <th>Bill Status</th>
                       <th>Fees</th>
                       <th>Paid</th>
                       <th>Balance</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
-                  <tbody id="studentClassTableBody">
-                    <!-- Students Class List -->
-                  </tbody>
+                  <tbody id="studentClassTableBody"></tbody>
+                </table>
+
+                <table id="notBilledStudentClassTable" class="table-rounded" style="display: none">
+                  <thead>
+                    <tr>
+                      <th colspan="7">Students Not Billed</th>
+                    </tr>
+                  </thead>
+                  <tbody id="notBilledStudentClassTableBody"></tbody>
                 </table>
               </div>
 
@@ -556,49 +562,27 @@
         <br />
         <h3 id="paymentHistoryFeesText" class="color-blue"></h3>
 
-        <table>
+        <table class="table-rounded">
           <thead>
             <tr>
+              <th>#</th>
               <th>Date</th>
               <th>Paid Amount</th>
               <th>Mode</th>
               <th>Details</th>
             </tr>
           </thead>
-          <tr>
-            <td>14th Jan, 2025</td>
-            <td>GH 300</td>
-            <td>Bank</td>
-            <td>NIB</td>
-          </tr>
-          <tr>
-            <td>14th Jan, 2025</td>
-            <td>GH 300</td>
-            <td>MOMO</td>
-            <td>125654</td>
-          </tr>
-          <tr>
-            <td>14th Jan, 2025</td>
-            <td>GH 300</td>
-            <td>Cash</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>14th Jan, 2025</td>
-            <td>GH 300</td>
-            <td>MOMO</td>
-            <td>5252</td>
-          </tr>
+          <tbody id="paymentHistoryTableBody"></tbody>
         </table>
 
         <div class="flex-item">
-          <label>Total Paid: </label>
-          <span>GH 200</span>
+          <label class="bold-text">Total Paid: </label>
+          <span id="paymentModalTotalPaidText" class="color-green bold-text"></span>
         </div>
 
         <div class="flex-item">
-          <label>Balance: </label>
-          <span>GH 200</span>
+          <label class="bold-text">Balance: </label>
+          <span id="paymentModalBalanceText" class="color-red bold-text"></span>
         </div>
 
         <hr style="margin: 1rem 0rem" />

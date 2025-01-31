@@ -19,6 +19,8 @@ contextBridge.exposeInMainWorld("api", {
   makePayment: (data) => ipcRenderer.invoke("make-payment", data),
   getStudentsBillSummary: (data) => ipcRenderer.invoke("get-students-bill-summary", data),
   getAllPayments: () => ipcRenderer.invoke("get-all-payments"),
+  getYearTermPayments: (data) => ipcRenderer.invoke("get-year-term-payments", data),
+  getStudentPayments: (data) => ipcRenderer.invoke("get-student-payments", data),
   addClass: (data) => ipcRenderer.invoke("add-class", data),
   getAllClass: () => ipcRenderer.invoke("get-all-classes"),
   addAcademicYear: (data) => ipcRenderer.invoke("add-academic-year", data),

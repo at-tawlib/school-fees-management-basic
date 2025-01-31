@@ -385,6 +385,28 @@ ipcMain.handle("get-all-payments", async () => {
   }
 });
 
+// Get year term payments
+ipcMain.handle("get-year-term-payments", async (_, data) => {
+  try {
+    const result = await dbHandler.getYearTermPayments(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Get student payments
+ipcMain.handle("get-student-payments", async (_, data) => {
+  try {
+    const result = await dbHandler.getStudentPayments(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
 // app.whenReady().then(createWindow);
 app.whenReady().then(async () => {
   try {

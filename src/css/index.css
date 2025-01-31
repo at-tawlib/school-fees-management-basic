@@ -334,6 +334,16 @@ header {
   text-align: left;
 }
 
+#notBilledStudentClassTable thead tr th{
+  text-align: center;
+  background-color: var(--color-yellow);
+  color: white;
+}
+
+#notBilledStudentClassTableBody td:last-child {
+  text-align: end;
+}
+
 /* ************************** FEES ******************* */
 #feesTable td:last-child,
 #feesTable th:last-child {
