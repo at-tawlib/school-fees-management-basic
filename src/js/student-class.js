@@ -1,11 +1,8 @@
 import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
 import { fCurrency } from "./utils/format-currency.js";
+import { formatDate } from "./utils/format-date.js";
 import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
-import {
-  setUpAcademicYearsSelect,
-  setUpClassSelect,
-  setUpTermsSelect,
-} from "./utils/setup-select-inputs.js";
+import { setUpAcademicYearsSelect, setUpClassSelect } from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
 const addClassTable = document.getElementById("addClassTable");
@@ -18,13 +15,22 @@ const addClassForm = document.getElementById("addClassForm");
 const studentClassTitle = document.getElementById("studentClassTitle");
 const billStudentsMessage = document.getElementById("billStudentsMessage");
 const filterStudentsByAcademicYear = document.getElementById("filterStudentsByAcademicYear");
+const studentClassTable = document.getElementById("studentClassTable");
 const studentClassTableBody = document.getElementById("studentClassTableBody");
+const notBilledStudentClassTable = document.getElementById("notBilledStudentClassTable");
+const notBilledStudentClassTableBody = document.getElementById("notBilledStudentClassTableBody");
 
 const studentClassTableContainer = document.getElementById("studentClassContainer");
 const searchStudentClassInput = document.getElementById("searchStudentClassInput");
 
 const billClassModal = document.getElementById("billClassModal");
 const paymentHistoryModal = document.getElementById("paymentHistoryModal");
+
+const addStudentsToClassModal = document.getElementById("addStudentsToClassModal");
+const studentsToAddTableBody = document.getElementById("studentsToAddTableBody");
+const studentToAddInput = document.getElementById("studentToAddInput");
+const studentToAddId = document.getElementById("studentToAddId");
+const studentToAddSuggestionList = document.getElementById("studentToAddSuggestionList");
 
 let studentsData = [];
 let currentClass = {};
@@ -41,10 +47,6 @@ export async function setupStudentsClassSection() {
   filterStudentsByAcademicYear.value = defaultYear.setting_value;
   setupClassesSidebar(defaultYear.setting_value);
 }
-
-filterStudentsByAcademicYear.addEventListener("change", async function () {
-  await setupClassesSidebar(this.value);
-});
 
 async function setupClassesSidebar(year) {
   const classesResp = await window.api.getDistinctClasses(year);
@@ -81,6 +83,10 @@ async function setupClassesSidebar(year) {
     });
   }
 }
+
+filterStudentsByAcademicYear.addEventListener("change", async function () {
+  await setupClassesSidebar(this.value);
+});
 
 // ************************** ADD STUDENTS TO CLASS FORM *******************************
 document.getElementById("addClassButton").addEventListener("click", resetAddStudentForm);
@@ -145,6 +151,7 @@ document.getElementById("addStudentsSaveBtn").addEventListener("click", async fu
 
   // Collect student IDs
   for (let row of rows) {
+    // TODO: use the getAttribute method to get the student ID
     row.style.background = "transparent"; // Reset row background
     const studentId = row.querySelector("input[name=studentId]").value;
     const studentName = row.querySelector("input[name=studentName]").value;
@@ -200,9 +207,11 @@ function addClassRowToForm(rowCount) {
     row.innerHTML = `
         <td>${addStudentClassForm.rows.length + 1}</td>
         <td style="position: relative;">
-          <input type="text" name="studentName" placeholder="Name" required />
+          <div class="flex-column full-width" style="position: relative">
+            <input type="text" name="studentName" placeholder="Name" required />
+            <ul class="suggestion-list"></ul>
+          </div>
           <input type="hidden" name="studentId" />
-          <ul class="suggestion-list"></ul>
         </td>
         <td>
           <button class="outlined-button" tabindex="-1" title="Remove row" style="color:red; border-color: red;">
@@ -336,8 +345,13 @@ searchStudentClassInput.addEventListener("input", function () {
 export async function displayClassStudentsTable() {
   addClassForm.style.display = "none";
   studentClassTableContainer.style.display = "block";
+  studentClassTableBody.innerHTML = "";
+  notBilledStudentClassTableBody.innerHTML = "";
   studentClassTitle.textContent = "";
   studentClassTitle.textContent = `${currentClass.className} (${currentClass.academicYear}) - ${classTerm.text} term`;
+
+  let notBilledCount = 0;
+  let billedCount = 0;
 
   await createTermButtons(Number(classTerm.value));
 
@@ -354,25 +368,41 @@ export async function displayClassStudentsTable() {
 
   if (response.data.length === 0) {
     studentClassTableBody.innerHTML = "";
+
+    // TODO: check if bill exists, if it does not show a message
+    const feeResp = await window.api.getSingleFee({
+      classId: currentClass.classId,
+      yearId: currentClass.academicYearId,
+      termId: classTerm.value,
+    });
+
+    if (!feeResp.success) {
+      showToast(feeResp.message || "An error occurred", "error");
+      notBilledStudentClassTable.style.display = "none";
+      studentClassTable.style.display = "none";
+      return;
+    }
+
     studentClassTitle.textContent = `No students found for ${currentClass.className} for ${currentClass.academicYear} academic year.`;
     showToast("No students found for this class", "error");
     return;
   }
 
-  studentClassTableBody.innerHTML = "";
   response.data.forEach((item, index) => {
     const arrears = item.fee_amount - (item.total_payments ?? 0);
     const row = document.createElement("tr");
-    row.innerHTML = `
-        <td>${index + 1}</td>
+
+    if (item.bill_id) {
+      // TODO: use setAttribute to save the student id, fees id, and bill id
+      row.innerHTML = `
+        <td>${billedCount + 1}</td>
         <td>${item.student_name}</td>
         <td style="display:none">${item.bill_id}</td>
         <td style="display:none">${item.student_id}</td>
         <td style="display:none">${item.fees_id}</td>
-        <td>${item?.bill_id ? "Billed" : "Not Billed"}</td>
-        <td class="color-blue">${fCurrency(item.fee_amount)}</td>
-        <td class="color-green">${fCurrency(item.total_payments)}</td>
-        <td class="color-red">${fCurrency(arrears)}</td>
+        <td class="color-blue bold-text">${fCurrency(item.fee_amount)}</td>
+        <td class="color-green bold-text">${fCurrency(item.total_payments)}</td>
+        <td class="color-red bold-text">${fCurrency(arrears)}</td>
         <td>
           <div style="display: flex; justify-content: center">
             <button id="btnPayFees"  class="text-button" title="Pay school fees">
@@ -388,16 +418,45 @@ export async function displayClassStudentsTable() {
         </td>
     `;
 
-    row.querySelector("#btnPayFees").addEventListener("click", () => {
-      openStudentPaymentModal(item, currentClass, classTerm);
-    });
+      row.querySelector("#btnPayFees").addEventListener("click", () => {
+        openStudentPaymentModal(item, currentClass, classTerm);
+      });
 
-    row.querySelector("#btnPaymentsHistory").addEventListener("click", () => {
-      showPaymentHistoryModal(item, currentClass);
-    });
+      row.querySelector("#btnPaymentsHistory").addEventListener("click", () => {
+        showPaymentHistoryModal(item);
+      });
 
-    studentClassTableBody.appendChild(row);
+      studentClassTableBody.appendChild(row);
+      billedCount += 1;
+    } else {
+      row.setAttribute("data-student-id", item.student_id);
+      row.innerHTML = `
+        <td>${notBilledCount + 1}</td>
+        <td>${item.student_name}</td>
+        <td>
+          <button class="bg-green text-button">
+            <i class="fa-solid fa-money-bill-wave"></i> Bill Student
+          </button>
+        </td>
+      `;
+
+      row.querySelector("button").addEventListener("click", () => {
+        billSingleStudent(item.student_id, item.fees_id);
+      });
+
+      notBilledStudentClassTableBody.appendChild(row);
+      notBilledCount += 1;
+    }
   });
+
+  if (billedCount > 0) studentClassTable.style.display = "";
+  else studentClassTable.style.display = "none";
+
+  if (notBilledCount <= 0) {
+    notBilledStudentClassTable.style.display = "none";
+  } else {
+    notBilledStudentClassTable.style.display = "";
+  }
 }
 
 async function createTermButtons(activeTermId) {
@@ -451,6 +510,17 @@ function filterStudentsClassTable() {
   }
 }
 
+async function billSingleStudent(studentId, feesId) {
+  const billResp = await window.api.billStudent({ studentId, feesId });
+  if (!billResp.success) {
+    showToast(billResp.message || "An error occurred", "error");
+    return;
+  }
+
+  displayClassStudentsTable(currentClass, classTerm);
+  showToast(billResp.message || "Student billed successfully", "success");
+}
+
 // ************************** BILL CLASS MODAL *******************************
 document.getElementById("billClassBtn").addEventListener("click", async function () {
   if (!currentClass.className || !currentClass.academicYear || !classTerm.text) {
@@ -496,18 +566,16 @@ document.getElementById("cancelBillClassModalBtn").addEventListener("click", fun
 
 document.getElementById("submitBillClassModalBtn").addEventListener("click", async function () {
   // get student ids from the table
-  const rows = studentClassTableBody.getElementsByTagName("tr");
-  const idsArray = Array.from(rows).map((row) => row.children[3].textContent);
+  const rows = notBilledStudentClassTableBody.getElementsByTagName("tr");
+  const idsArray = Array.from(rows).map((row) => row.getAttribute("data-student-id"));
 
   const response = await window.api.billClassStudents(idsArray, currentClass.id);
-
   if (!response.success) {
     showToast(response.message || "An error occurred", "error");
     return;
   }
 
   showToast(response.message || "Students billed successfully", "success");
-
   billClassModal.style.display = "none";
   displayClassStudentsTable(currentClass, classTerm);
 });
@@ -521,10 +589,145 @@ document.getElementById("paymentHistoryOkModalBtn").addEventListener("click", fu
   paymentHistoryModal.style.display = "none";
 });
 
-function showPaymentHistoryModal(data, currentFee) {
+async function showPaymentHistoryModal(data) {
+  const response = await window.api.getStudentPayments(data.bill_id);
+  if (!response.success) {
+    showToast(response.message || "An error occurred", "error");
+    return;
+  }
+
+  if (response.data.length === 0) {
+    showToast("No payment history found for this student", "error");
+    return;
+  }
+
   paymentHistoryModal.style.display = "block";
   document.getElementById("paymentHistoryStudentName").textContent = data.student_name;
   document.getElementById(
     "paymentHistoryFeesText"
-  ).textContent = `${currentFee.className} - ${currentFee.term} Term, ${currentFee.academicYear}`;
+  ).textContent = `${currentClass.className} - ${classTerm.text} Term, ${currentClass.academicYear}`;
+
+  const tableBody = document.getElementById("paymentHistoryTableBody");
+  tableBody.innerHTML = "";
+
+  response.data.forEach((payment, index) => {
+    const row = tableBody.insertRow(index);
+    row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${formatDate(payment.date_paid)}</td>
+      <td class="color-green bold-text">${fCurrency(payment.payment_amount)}</td>
+      <td>${payment.payment_mode}</td>
+      <td>${payment.payment_details}</td>
+    `;
+  });
+
+  document.getElementById("paymentModalTotalPaidText").textContent = fCurrency(data.total_payments);
+  document.getElementById("paymentModalBalanceText").textContent = fCurrency(data.balance);
+}
+
+// **************** ADD STUDENTS TO CLASS MODAL ************************
+document.getElementById("addStudentToClassBtn").addEventListener("click", async function () {
+  addStudentsToClassModal.style.display = "block";
+  document.getElementById(
+    "addStudentsToClassTitle"
+  ).textContent = `Add Students to ${currentClass.className}`;
+  studentToAddId.value = "";
+  studentToAddInput.value = "";
+
+  if (!studentsData || studentsData.length === 0) {
+    await setStudentsData();
+  }
+
+  attachAutoSuggestEventListeners(
+    studentToAddInput,
+    studentToAddId,
+    studentToAddSuggestionList,
+    studentsData
+  );
+});
+
+document.getElementById("addStudentsToClassCloseX").addEventListener("click", () => {
+  resetStudentToAddModal();
+  addStudentsToClassModal.style.display = "none";
+});
+
+document.getElementById("cancelAddStudentToClassModalBtn").addEventListener("click", () => {
+  resetStudentToAddModal();
+  addStudentsToClassModal.style.display = "none";
+});
+
+document.getElementById("addStudentToList").addEventListener("click", () => {
+  const studentId = studentToAddId.value;
+  const studentName = studentToAddInput.value;
+
+  if (!studentId || !studentName) {
+    showToast("Please select a student", "error");
+    return;
+  }
+
+  const row = document.createElement("tr");
+  row.setAttribute("data-student-id", studentId);
+  row.innerHTML = `
+    <td>${studentName}</td>
+    <td>
+      <button class="text-button" title="Remove student">
+        <i class="fa-solid fa-trash color-red"></i>
+      </button>
+    </td>
+  `;
+
+  row.querySelector("button").addEventListener("click", () => {
+    row.remove();
+  });
+
+  studentToAddId.value = "";
+  studentToAddInput.value = "";
+
+  studentsToAddTableBody.appendChild(row);
+});
+
+document.getElementById("addStudentsToClassModalBtn").addEventListener("click", async () => {
+  const rows = studentsToAddTableBody.getElementsByTagName("tr");
+  const studentIds = Array.from(rows).map((row) => row.getAttribute("data-student-id"));
+
+  if (studentIds.length === 0) {
+    showToast("No students selected to be added", "error");
+    return;
+  }
+
+  const response = await window.api.addStudentToClass({
+    studentIds: studentIds,
+    className: currentClass.classId,
+    academicYear: currentClass.academicYearId,
+  });
+
+  if (!response.success) {
+    if (response.data) {
+      // Highlight rows for existing students
+      for (let row of rows) {
+        row.style.background = "";
+        row.getElementsByTagName("i")[0].style.color = "";
+        const studentId = row.getAttribute("data-student-id");
+        if (response.data.includes(studentId)) {
+          row.style.background = "red";
+          row.getElementsByTagName("i")[0].style.color = "white";
+        }
+      }
+      showToast(response.message, "error");
+    } else {
+      showToast(response.message || "An error occurred while saving records", "error");
+    }
+    return;
+  }
+
+  addStudentsToClassModal.style.display = "none";
+  resetStudentToAddModal();
+  showToast("Records saved successfully", "success");
+  displayClassStudentsTable(currentClass, classTerm);
+});
+
+function resetStudentToAddModal() {
+  studentToAddId.value = "";
+  studentToAddInput.value = "";
+  studentsToAddTableBody.innerHTML = "";
 }
