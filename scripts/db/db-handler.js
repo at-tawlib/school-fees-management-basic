@@ -700,15 +700,24 @@ class DatabaseHandler {
   getAllPayments() {
     try {
       const stmt = this.db.prepare(`
-          SELECT p.id AS payment_id, p.bill_id, p.amount AS payment_amount, p.payment_mode, p.payment_details, p.date_paid,
-            b.fees_id, s.id AS student_id, s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
-            f.class AS class_name, f.academic_year, f.term, f.amount AS fee_amount
+          SELECT 
+              p.id AS payment_id, p.bill_id, p.amount AS payment_amount, 
+              p.payment_mode, p.payment_details, p.date_paid,
+              b.fees_id, 
+              s.id AS student_id, 
+              s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
+              c.class_name, c.id AS class_id, 
+              ay.year AS academic_year, ay.id AS year_id,
+              t.term, f.amount AS fee_amount, t.id AS term_id
           FROM payments p
           JOIN bills b ON p.bill_id = b.id
           JOIN fees f ON b.fees_id = f.id
           JOIN students s ON b.student_id = s.id
+          JOIN classes c ON f.class_id = c.id
+          JOIN academicYears ay ON f.year_id = ay.id
+          JOIN terms t ON f.term_id = t.id
           ORDER BY p.date_paid DESC, s.first_name, s.last_name;
-    `);
+     `);
       const records = stmt.all();
       return { success: true, data: records };
     } catch (error) {

@@ -10,7 +10,7 @@
   --color-green: #38761d;
   --color-white: #f4f4f4;
   --text-color: #2c3e50; /* Dark Blue/Grey (same as secondary) */
-  --highlight-color: #e74c3c;
+  --highlight-color: #ddd;
   --neutral-color: #bdc3c7;
   --color-yellow: #fc8c05;
 }
@@ -167,6 +167,9 @@ th {
   width: 100%;
 }
 
+.bold-text {
+  font-weight: 700;
+}
 /* ****************** CONTAINERS CSS *************************** */
 .container {
   margin: 0;
@@ -231,7 +234,8 @@ th {
 }
 
 .table-rounded tr:hover {
-  background-color: #9ca3af;
+  background-color: var(--highlight-color);
+  cursor: pointer;
 }
 
 /* ****************** MAIN CONTENT *************************** */
@@ -370,18 +374,18 @@ header {
 }
 
 .suggestion-list {
+  display: none;
   position: absolute;
   top: 100%;
   left: 0;
   background: white;
+  width: 100%;
   border: 1px solid #ccc;
   border-radius: 0.5rem;
   z-index: 10;
   list-style: none;
   margin: 0;
   padding: 0;
-  width: 100%;
-  display: none;
   font-size: medium;
   overflow-y: auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -418,6 +422,40 @@ header {
   background-color: var(--color-secondary);
   color: #fff;
   border-color: var(--color-secondary);
+}
+
+#studentToAddInput {
+  width: 100%;
+}
+
+#studentToAddSuggestionList {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  z-index: 1000;
+  max-height: 200px;
+  font-size: medium;
+  overflow-y: auto;
+  scrollbar-width: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#studentToAddSuggestionList li {
+  padding: 0.5rem 1rem !important;
+  cursor: pointer;
+}
+
+#studentToAddSuggestionList li:hover {
+  background-color: #f0f0f0;
+}
+
+#studentsToAddTableBody td:nth-child(2) {
+  text-align: end;
 }
 
 #billStudentsMessage {
