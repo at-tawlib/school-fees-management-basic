@@ -1,6 +1,4 @@
-import { CONTAINERS } from "./constants/constants.js";
 import { showToast } from "./utils/toast.js";
-import { showHideFeesContainer } from "./utils/show-fees-container.js";
 import { clearInputsStyles } from "./utils/clear-input-styles.js";
 import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
 import {
@@ -39,7 +37,6 @@ document.getElementById("viewBillOkButton").addEventListener("click", async () =
     return;
   }
 
-  // const response = await window.api.getBillByClassYear({ className, academicYear });
   const response = await window.api.getStudentsBillSummary({ className, academicYear, term });
   console.log(response);
 

@@ -1,6 +1,8 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("api", {
+  saveSetting: (key, value, text) => ipcRenderer.invoke("save-setting", key, value, text),
+  getAllSettings: () => ipcRenderer.invoke("get-all-settings"),
   getAllStudents: () => ipcRenderer.invoke("get-all-students"),
   insertStudent: (student) => ipcRenderer.invoke("insert-student", student),
   updateStudent: (student) => ipcRenderer.invoke("update-student", student),
@@ -13,10 +15,12 @@ contextBridge.exposeInMainWorld("api", {
   filterAllClassesStudents: (data) => ipcRenderer.invoke("filter-all-classes-students", data),
   billClassStudents: (data, feesId) => ipcRenderer.invoke("bill-class-students", data, feesId),
   getSingleFee: (data) => ipcRenderer.invoke("get-single-fee", data),
-  getBillByClassYear: (data) => ipcRenderer.invoke("get-bill-by-class-year", data),
+  getBillDetails: (data) => ipcRenderer.invoke("get-bill-details", data),
   makePayment: (data) => ipcRenderer.invoke("make-payment", data),
   getStudentsBillSummary: (data) => ipcRenderer.invoke("get-students-bill-summary", data),
   getAllPayments: () => ipcRenderer.invoke("get-all-payments"),
+  getYearTermPayments: (data) => ipcRenderer.invoke("get-year-term-payments", data),
+  getStudentPayments: (data) => ipcRenderer.invoke("get-student-payments", data),
   addClass: (data) => ipcRenderer.invoke("add-class", data),
   getAllClass: () => ipcRenderer.invoke("get-all-classes"),
   addAcademicYear: (data) => ipcRenderer.invoke("add-academic-year", data),
@@ -31,6 +35,9 @@ contextBridge.exposeInMainWorld("store", {
   getInitialData: async () => {
     return await ipcRenderer.invoke("get-initial-data");
   },
+  reloadStore: async () => {
+    return await ipcRenderer.invoke("reload-store-data");
+  },
   getStoreClasses: async () => {
     return await ipcRenderer.invoke("get-store-classes");
   },
@@ -39,5 +46,11 @@ contextBridge.exposeInMainWorld("store", {
   },
   getStoreTerms: async () => {
     return await ipcRenderer.invoke("get-store-terms");
+  },
+  getStoreSettings: async () => {
+    return await ipcRenderer.invoke("get-store-settings");
+  },
+  setStoreClasses: async (data) => {
+    return await ipcRenderer.invoke("update-store-classes", data);
   },
 });

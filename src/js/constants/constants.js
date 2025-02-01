@@ -9,3 +9,7 @@ export const CONTAINERS = {
   // FEES_TABLE: "feesTable",
   // CLASS_FORM: "classForm",
 };
+
+// Used in settings.js
+export const ACADEMIC_YEAR = "academicYear";
+export const TERM = "term";

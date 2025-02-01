@@ -10,6 +10,7 @@ const requiredTables = [
   "bills",
   "classes",
   "fees",
+  "settings",
   "students",
   "studentClasses",
   "terms",
@@ -55,6 +56,44 @@ class DatabaseHandler {
         `;
     const rows = this.db.prepare(query).all();
     return rows.map((row) => row.name);
+  }
+
+  saveSetting(key, value, text) {
+    try {
+      const existingSetting = this.db
+        .prepare("SELECT COUNT(*) as count FROM settings WHERE setting_key = ?")
+        .get(key);
+
+      if (existingSetting.count > 0) {
+        // Update if setting exists
+        const updateStmt = this.db.prepare(
+          "UPDATE settings SET setting_value = ?, setting_text = ? WHERE setting_key = ?"
+        );
+        updateStmt.run(value, text, key);
+      } else {
+        // Insert if setting doesn't exist
+        const insertStmt = this.db.prepare(
+          "INSERT INTO settings (setting_key, setting_value, setting_text) VALUES (?, ?, ?)"
+        );
+        insertStmt.run(key, value, text);
+      }
+
+      return { success: true, message: "Setting saved successfully." };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getAllSettings() {
+    try {
+      const stmt = this.db.prepare("SELECT * FROM settings");
+      const records = stmt.all();
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
   }
 
   addClass(className) {
@@ -181,7 +220,7 @@ class DatabaseHandler {
         for (const studentId of data.studentIds) {
           const checkStmt = db.prepare(`
             SELECT 1 FROM studentClasses 
-            WHERE student_id = ? AND academic_year = ?
+            WHERE student_id = ? AND year_id = ?
           `);
           const exists = checkStmt.get(studentId, data.academicYear);
 
@@ -189,7 +228,7 @@ class DatabaseHandler {
             existingStudents.push(studentId); // Track existing students
           } else {
             const insertStmt = db.prepare(`
-              INSERT INTO studentClasses (student_id, class_name, academic_year, created_at)
+              INSERT INTO studentClasses (student_id, class_id, year_id, created_at)
               VALUES (?, ?, ?, ?)
             `);
             insertStmt.run(studentId, data.className, data.academicYear, new Date().toISOString());
@@ -238,8 +277,12 @@ class DatabaseHandler {
   getDistinctClasses(year) {
     try {
       const stmt = this.db.prepare(`
-        SELECT DISTINCT class_name, academic_year FROM studentClasses WHERE academic_year = ?;
-    `);
+          SELECT DISTINCT c.id AS class_id,  c.class_name,  ay.id AS academic_year_id,  ay.year AS academic_year
+          FROM studentClasses sc
+          JOIN classes c ON sc.class_id = c.id
+          JOIN academicYears ay ON sc.year_id = ay.id
+          WHERE ay.id = ?;
+      `);
       const records = stmt.all(year);
       return { success: true, data: records };
     } catch (error) {
@@ -271,7 +314,7 @@ class DatabaseHandler {
         SELECT EXISTS (
           SELECT 1 
           FROM studentClasses 
-          WHERE class_name = ? AND academic_year = ?
+          WHERE class_id = ? AND year_id = ?
         ) AS data_exists;
       `);
       const result = stmt.get(filter.className, filter.academicYear);
@@ -298,13 +341,17 @@ class DatabaseHandler {
     try {
       const stmt = this.db.prepare(`
         SELECT * FROM fees
-        WHERE class = ? AND term = ? AND academic_year = ?
+        WHERE class_id = ? AND term_id = ? AND year_id = ?
         LIMIT 1
       `);
 
-      const result = stmt.get(fee.class, fee.term, fee.academicYear);
+      console.log(fee);
+      const result = stmt.get(fee.classId, fee.termId, fee.yearId);
       if (!result) {
-        return { success: false, message: "Fee not found." };
+        return {
+          success: false,
+          message: `No fee found for the selected class, year and term.`,
+        };
       }
 
       return { success: true, data: result };
@@ -317,16 +364,14 @@ class DatabaseHandler {
   getAllFees() {
     try {
       const stmt = this.db.prepare(`
-        SELECT 
-          fees.id,
-          fees.class,
-          fees.academic_year,
-          fees.term,
-          fees.amount,
-          COUNT(bills.student_id) AS total_students_billed
-        FROM fees
-        LEFT JOIN bills ON fees.id = bills.fees_id
-        GROUP BY fees.id
+          SELECT f.id, c.class_name, c.id AS class_id,  ay.year AS academic_year, ay.id AS year_id, t.id AS term_id, t.term, f.amount,
+            COUNT(b.student_id) AS total_students_billed
+          FROM fees f
+          LEFT JOIN bills b ON f.id = b.fees_id
+          JOIN classes c ON f.class_id = c.id
+          JOIN academicYears ay ON f.year_id = ay.id
+          JOIN terms t ON f.term_id = t.id
+          GROUP BY f.id, c.class_name, ay.year, t.term, f.amount;
       `);
       const records = stmt.all();
       return { success: true, data: records };
@@ -341,14 +386,13 @@ class DatabaseHandler {
       // Checks if fees exist for the class, term and academic year before adding
       const isFeesExists = this.getSingleFee(data);
       if (isFeesExists.success === true && isFeesExists.data) {
-        console.log("Fees already exists for the specified class, term, and academic year.");
         return {
           success: false,
           message: "Fee already exists for the specified class, term, and academic year.",
         };
       }
       const stmt = this.db.prepare(`
-          INSERT INTO fees (class, academic_year, term, amount, created_at) VALUES (?, ?, ?, ?, ?)
+          INSERT INTO fees (class_id, year_id, term_id, amount, created_at) VALUES (?, ?, ?, ?, ?)
         `);
       stmt.run(data.class, data.academicYear, data.term, data.amount, new Date().toISOString());
       return {
@@ -429,7 +473,31 @@ class DatabaseHandler {
     }
   }
 
-  // Bill multiple students for fees
+  /**
+   * Bills a list of students with the specified fees. Skips students who have already been billed.
+   *
+   * @param {Array<number>} idsArray - Array of student IDs to be billed.
+   * @param {number} feesId - The ID of the fee to be billed to the students.
+   * @returns {Object} - Returns an object containing:
+   *   - `success` (boolean): Indicates if the operation was successful.
+   *   - `message` (string): A summary message about the billing operation.
+   *   - `data` (Object): Detailed results of the operation, containing:
+   *     - `inserted` (Array<number>): List of student IDs successfully billed.
+   *     - `skipped` (Array<number>): List of student IDs that were already billed and skipped.
+   *
+   * @throws {Error} If a database error occurs during the transaction.
+   *
+   * Example:
+   * ```javascript
+   * const result = billClassStudents([1, 2, 3, 4], 5);
+   * console.log(result);
+   * // {
+   * //   success: true,
+   * //   message: "2 student(s) billed successfully. 2 student(s) were already billed and skipped.",
+   * //   data: { inserted: [2, 4], skipped: [1, 3] }
+   * // }
+   * ```
+   */
   billClassStudents(idsArray, feesId) {
     try {
       const transaction = this.db.transaction(() => {
@@ -452,39 +520,73 @@ class DatabaseHandler {
           }
         });
 
-        // message: "Fees attached to student successfully.",
-        // message: "Student has already been billed with this fee.",
-
         return { inserted, skipped };
       });
+
       const result = transaction();
-      console.log("Transaction Result: ", result);
-      return { success: true, data: result };
+      const message = `${result.inserted.length} student(s) billed successfully. ${
+        result.skipped.length > 0
+          ? `${result.skipped.length} student(s) were already billed and skipped.`
+          : ""
+      }`;
+      return { success: true, message, data: result };
     } catch (error) {
       console.error("Database Error: ", error);
       return { success: false, message: error.message };
     }
   }
 
-  getBillByClassYear(filter) {
+  /**
+   * Retrieves detailed billing information for students based on the provided filters.
+   *
+   * @param {Object} filter - An object containing filtering criteria.
+   * @param {string} filter.term - The academic term for which the details are fetched.
+   * @param {string} filter.className - The class name to filter the students.
+   * @param {string} filter.academicYear - The academic year to filter the students.
+   * @returns {Object} - Returns an object containing:
+   *   - `success` (boolean): Indicates if the query was successful.
+   *   - `data` (Array|undefined): Array of billing details if successful.
+   *   - `message` (string|undefined): Error message if the query fails.
+   *
+   * Each record in `data` contains:
+   *   - `student_id` (number): ID of the student.
+   *   - `student_name` (string): Full name of the student.
+   *   - `fees_id` (number|null): ID of the associated fee structure.
+   *   - `fee_amount` (number|null): Amount of the fee.
+   *   - `bill_id` (number|null): ID of the bill, if issued.
+   *   - `billed_status` (number): 1 if billed, 0 otherwise.
+   *   - `total_payments` (number): Total payments made towards the bill.
+   *
+   * @throws {Error} If a database error occurs.
+   */
+  getBillDetails(filter) {
     try {
       const stmt = this.db.prepare(`
-          SELECT s.id AS student_id,
-            s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
-            c.class_name, c.academic_year,
-            f.term, f.amount AS fees_amount,
-            b.id AS bill_id,
-            b.created_at AS bill_date
-          FROM students s
-          JOIN studentClasses c ON s.id = c.student_id
-          LEFT JOIN bills b ON s.id = b.student_id
-          LEFT JOIN fees f ON b.fees_id = f.id
-          WHERE c.class_name = ? AND c.academic_year = ?
-        `);
-      const records = stmt.all(filter.className, filter.academicYear);
+        SELECT 
+            s.id AS student_id, 
+            s.first_name || ' ' || s.last_name || ' ' || COALESCE(s.other_names, '') AS student_name,
+            f.id AS fees_id, 
+            f.amount AS fee_amount, 
+            b.id AS bill_id, 
+            COALESCE(SUM(p.amount), 0) AS total_payments, 
+            (f.amount - COALESCE(SUM(p.amount), 0)) AS balance
+        FROM students s
+        JOIN studentClasses sc ON s.id = sc.student_id
+        JOIN classes c ON sc.class_id = c.id
+        JOIN academicYears ay ON sc.year_id = ay.id
+        JOIN terms t ON f.term_id = t.id
+        LEFT JOIN fees f ON sc.class_id = f.class_id  AND sc.year_id = f.year_id AND f.term_id = t.id
+        LEFT JOIN bills b ON s.id = b.student_id AND b.fees_id = f.id
+        LEFT JOIN payments p ON b.id = p.bill_id
+        WHERE sc.class_id = ? AND ay.id = ? AND t.id = ?
+        GROUP BY s.id, s.first_name, s.last_name, s.other_names, f.id, f.amount, b.id
+        ORDER BY s.first_name, s.last_name;
+      `);
+
+      const records = stmt.all(filter.classId, filter.yearId, filter.term);
       return { success: true, data: records };
     } catch (error) {
-      console.error("Database Error: ", error);
+      console.error("Database Error in getBillDetails: ", error);
       return { success: false, message: error.message };
     }
   }
@@ -513,6 +615,62 @@ class DatabaseHandler {
     }
   }
 
+  // TODO: remove this function not use
+  /**
+   * Fetches detailed student billing information for a specific class, academic year, and term.
+   *
+   * This function retrieves a comprehensive list of students in a given class, along with their:
+   * - Personal details (name, ID)
+   * - Class and academic year information
+   * - Fee details (term, amount)
+   * - Billing status (whether they have been billed)
+   * - Total payments made (if any)
+   *
+   * The query performs the following operations:
+   * 1. Joins the `students` table with `studentClasses` to get class enrollment details.
+   * 2. Left joins the `fees` table to retrieve fee details for the specified class, academic year, and term.
+   * 3. Left joins the `bills` table to check if the student has been billed for the fee.
+   * 4. Left joins the `payments` table to calculate the total payments made by the student for the bill.
+   * 5. Groups the results by student and fee details to ensure accurate aggregation of payments.
+   * 6. Orders the results by the student's first and last name for readability.
+   *
+   * @param {string} className - The name of the class to filter by (e.g., "Class 10").
+   * @param {string} academicYear - The academic year to filter by (e.g., "2023").
+   * @param {string} term - The term to filter by (e.g., "Term 1").
+   * @returns {Array<Object>} - An array of objects containing the following fields:
+   *   - student_id: The unique ID of the student.
+   *   - student_name: The full name of the student (first name + last name + other names, if any).
+   *   - class_name: The name of the class the student is enrolled in.
+   *   - academic_year: The academic year of the class.
+   *   - fees_id: The unique ID of the fee record (if applicable).
+   *   - term: The term for which the fee applies.
+   *   - fee_amount: The amount of the fee.
+   *   - bill_id: The unique ID of the bill record (if the student has been billed).
+   *   - is_billed: A count indicating whether the student has been billed (1 if billed, 0 otherwise).
+   *   - total_payments: The total amount paid by the student for the bill (0 if no payments).
+   *
+   * Example Output:
+   * [
+   *   {
+   *     student_id: 1,
+   *     student_name: "John Doe Smith",
+   *     class_name: "Class 10",
+   *     academic_year: "2023",
+   *     fees_id: 101,
+   *     term: "Term 1",
+   *     fee_amount: 500,
+   *     bill_id: 201,
+   *     is_billed: 1,
+   *     total_payments: 300
+   *   },
+   *   ...
+   * ]
+   *
+   * Notes:
+   * - If a student has not been billed, `bill_id` and `total_payments` will be `null` or `0`.
+   * - If a student has no payments, `total_payments` will be `0`.
+   * - The `is_billed` field is derived from the count of bill records and will be `1` if the student has been billed.
+   */
   getStudentsBillSummary(filter) {
     try {
       const stmt = this.db.prepare(`
@@ -542,16 +700,86 @@ class DatabaseHandler {
   getAllPayments() {
     try {
       const stmt = this.db.prepare(`
-          SELECT p.id AS payment_id, p.bill_id, p.amount AS payment_amount, p.payment_mode, p.payment_details, p.date_paid,
-            b.fees_id, s.id AS student_id, s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
-            f.class AS class_name, f.academic_year, f.term, f.amount AS fee_amount
+          SELECT 
+              p.id AS payment_id, p.bill_id, p.amount AS payment_amount, 
+              p.payment_mode, p.payment_details, p.date_paid,
+              b.fees_id, 
+              s.id AS student_id, 
+              s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
+              c.class_name, c.id AS class_id, 
+              ay.year AS academic_year, ay.id AS year_id,
+              t.term, f.amount AS fee_amount, t.id AS term_id
           FROM payments p
           JOIN bills b ON p.bill_id = b.id
           JOIN fees f ON b.fees_id = f.id
           JOIN students s ON b.student_id = s.id
+          JOIN classes c ON f.class_id = c.id
+          JOIN academicYears ay ON f.year_id = ay.id
+          JOIN terms t ON f.term_id = t.id
           ORDER BY p.date_paid DESC, s.first_name, s.last_name;
-    `);
+     `);
       const records = stmt.all();
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getYearTermPayments(filter) {
+    try {
+      const stmt = this.db.prepare(`
+            SELECT 
+                p.id AS payment_id, p.bill_id, p.amount AS payment_amount, 
+                p.payment_mode, p.payment_details, p.date_paid,
+                b.fees_id, 
+                s.id AS student_id, 
+                s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
+                c.class_name, c.id AS class_id, 
+                ay.year AS academic_year, ay.id AS year_id,
+                t.term, f.amount AS fee_amount, t.id AS term_id
+            FROM payments p
+            JOIN bills b ON p.bill_id = b.id
+            JOIN fees f ON b.fees_id = f.id
+            JOIN students s ON b.student_id = s.id
+            JOIN classes c ON f.class_id = c.id
+            JOIN academicYears ay ON f.year_id = ay.id
+            JOIN terms t ON f.term_id = t.id
+            WHERE ay.id = ? AND t.id = ?
+            ORDER BY p.date_paid DESC, s.first_name, s.last_name;
+     `);
+      const records = stmt.all(filter.academicYearId, filter.termId);
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getStudentPayments(billId) {
+    try {
+      const stmt = this.db.prepare(`
+            SELECT 
+                p.id AS payment_id, p.bill_id, p.amount AS payment_amount, 
+                p.payment_mode, p.payment_details, p.date_paid,
+                b.fees_id, 
+                s.id AS student_id, 
+                s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
+                c.class_name, c.id AS class_id, 
+                ay.year AS academic_year, ay.id AS year_id,
+                t.term, f.amount AS fee_amount, t.id AS term_id
+            FROM payments p
+            JOIN bills b ON p.bill_id = b.id
+            JOIN fees f ON b.fees_id = f.id
+            JOIN students s ON b.student_id = s.id
+            JOIN classes c ON f.class_id = c.id
+            JOIN academicYears ay ON f.year_id = ay.id
+            JOIN terms t ON f.term_id = t.id
+            WHERE p.bill_id = ?
+            ORDER BY p.date_paid DESC;
+        `);
+
+      const records = stmt.all(billId);
       return { success: true, data: records };
     } catch (error) {
       console.error("Database Error: ", error);

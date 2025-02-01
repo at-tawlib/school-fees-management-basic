@@ -37,33 +37,40 @@ async function loadInitialData() {
     const classes = await dbHandler.getAllClasses();
     const academicYears = await dbHandler.getAllAcademicYears();
     const terms = await dbHandler.getAllTerms();
+    const settings = await dbHandler.getAllSettings();
 
     // Save data in electron-store
-    store.set(
-      "classes",
-      classes.data.map((classItem) => classItem.class_name)
-    );
-    store.set(
-      "academicYears",
-      academicYears.data.map((year) => year.year)
-    );
-    store.set(
-      "terms",
-      terms.data.map((term) => term.term)
-    );
-
-    console.log("Data loaded into local storage");
+    store.set("classes", classes.data);
+    store.set("academicYears", academicYears.data);
+    store.set("terms", terms.data);
+    store.set("settings", settings.data);
   } catch (error) {
     console.error("Failed to load initial data:", error);
   }
 }
+
+// Reload store data
+ipcMain.handle("reload-store-data", async () => {
+  await loadInitialData();
+});
+
+// update store classes
+ipcMain.handle("update-store-classes", (_, data) => {
+  store.delete("classes");
+  store.set("classes", data);
+});
 
 ipcMain.handle("get-initial-data", (_) => {
   return {
     classes: store.get("classes") || [],
     academicYears: store.get("academicYears") || [],
     terms: store.get("terms") || [],
+    settings: store.get("settings") || [],
   };
+});
+
+ipcMain.handle("get-store-settings", (_) => {
+  return store.get("settings") || [];
 });
 
 ipcMain.handle("get-store-classes", (_) => {
@@ -76,6 +83,16 @@ ipcMain.handle("get-store-years", (_) => {
 
 ipcMain.handle("get-store-terms", (_) => {
   return store.get("terms") || [];
+});
+
+// Set settings key, value
+ipcMain.handle("save-setting", (_, key, value, text) => {
+  try {
+    const result = dbHandler.saveSetting(key, value, text);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 });
 
 // Add class
@@ -276,12 +293,8 @@ ipcMain.handle("delete-fees", async (_, data) => {
 
 // Bill class students
 ipcMain.handle("bill-class-students", async (_, dataArray, feesId) => {
-  console.log("In main process: ", dataArray, feesId);
   try {
     const result = await dbHandler.billClassStudents(dataArray, feesId);
-    if (!result.success) {
-      throw new Error(result.message);
-    }
     return result;
   } catch (error) {
     return { success: false, message: error.message };
@@ -289,9 +302,9 @@ ipcMain.handle("bill-class-students", async (_, dataArray, feesId) => {
 });
 
 // Get bill by class and academic year
-ipcMain.handle("get-bill-by-class-year", async (_, data) => {
+ipcMain.handle("get-bill-details", async (_, data) => {
   try {
-    const result = await dbHandler.getBillByClassYear(data);
+    const result = await dbHandler.getBillDetails(data);
     if (!result.success) {
       throw new Error(result.message);
     }
@@ -376,6 +389,28 @@ ipcMain.handle("get-all-payments", async () => {
     if (!result.success) {
       throw new Error(result.message);
     }
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Get year term payments
+ipcMain.handle("get-year-term-payments", async (_, data) => {
+  try {
+    const result = await dbHandler.getYearTermPayments(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Get student payments
+ipcMain.handle("get-student-payments", async (_, data) => {
+  try {
+    const result = await dbHandler.getStudentPayments(data);
     return result;
   } catch (error) {
     console.log(error.message);

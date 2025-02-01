@@ -10,7 +10,7 @@
   --color-green: #38761d;
   --color-white: #f4f4f4;
   --text-color: #2c3e50; /* Dark Blue/Grey (same as secondary) */
-  --highlight-color: #e74c3c;
+  --highlight-color: #ddd;
   --neutral-color: #bdc3c7;
   --color-yellow: #fc8c05;
 }
@@ -18,6 +18,7 @@
 body {
   margin: 0;
   padding: 0;
+  color: var(--color-secondary);
 }
 
 /* Usage
@@ -107,7 +108,6 @@ th {
 .flex-row {
   display: flex;
   flex-direction: row;
-  width: 100%;
   gap: 2rem;
 }
 
@@ -135,21 +135,107 @@ th {
   align-items: start;
 }
 
-.justify-space-between {
+.j-space-between {
   justify-content: space-between;
+}
+
+.flex-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.flex-item label {
+  width: 30%;
+  font-size: large;
+}
+
+.flex-item input {
+  width: 60%;
+}
+
+.flex-item select {
+  width: 60%;
+}
+
+.flex-item span {
+  width: 60%;
 }
 
 .full-width {
   width: 100%;
 }
 
-/* ****************** CONTAINER CSS *************************** */
+.bold-text {
+  font-weight: 700;
+}
+/* ****************** CONTAINERS CSS *************************** */
 .container {
   margin: 0;
   display: flex;
   height: 100vh;
   overflow: hidden;
   background-color: var(--color-secondary);
+}
+
+.elevated-container {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
+}
+
+/* ************************ ROUNDED TABLE CSS ****************** */
+.table-rounded {
+  border-collapse: collapse;
+  width: 100%;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table-rounded th,
+.table-rounded td {
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.table-rounded th:nth-child(2),
+.table-rounded td:nth-child(2) {
+  text-align: left;
+}
+
+.table-rounded th {
+  background-color: var(--color-secondary);
+  font-weight: bold;
+  border: 0.1rem solid var(--text-color);
+}
+
+.table-rounded tr:last-child td {
+  border-bottom: none;
+}
+
+.table-rounded td {
+  /* border: 0.1rem solid var(--text-color); */
+  border: none;
+}
+
+/* Remove vertical borders completely */
+.table-rounded td,
+.table-rounded th {
+  border-left: none;
+  border-right: none;
+}
+
+.table-rounded tr:nth-of-type(odd) {
+  background-color: rgba(245, 247, 250, 0.5);
+}
+
+.table-rounded tr:hover {
+  background-color: var(--highlight-color);
+  cursor: pointer;
 }
 
 /* ****************** MAIN CONTENT *************************** */
@@ -239,11 +325,34 @@ header {
 }
 
 /* *************** STUDENTS ********************* */
-.addStudentsButtonContainer {
-  background-color: white;
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
+#studentsTable td:nth-child(2),
+#studentsTable th:nth-child(2),
+#studentsTable td:nth-child(3),
+#studentsTable th:nth-child(3),
+#studentsTable td:nth-child(4),
+#studentsTable th:nth-child(4) {
+  text-align: left;
+}
+
+#notBilledStudentClassTable thead tr th{
+  text-align: center;
+  background-color: var(--color-yellow);
+  color: white;
+}
+
+#notBilledStudentClassTableBody td:last-child {
+  text-align: end;
+}
+
+/* ************************** FEES ******************* */
+#feesTable td:last-child,
+#feesTable th:last-child {
+  text-align: end;
+}
+
+#feesTable td:nth-child(6),
+#feesTable th:nth-child(6) {
+  text-align: center;
 }
 
 /* ************** ADD CLASS CSS ******************** */
@@ -275,23 +384,22 @@ header {
 }
 
 .suggestion-list {
+  display: none;
   position: absolute;
   top: 100%;
   left: 0;
   background: white;
+  width: 100%;
   border: 1px solid #ccc;
   border-radius: 0.5rem;
   z-index: 10;
   list-style: none;
   margin: 0;
   padding: 0;
-  width: 100%;
-  display: none;
   font-size: medium;
   overflow-y: auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
 
 .suggestion-list li {
   padding: 0.5rem 1rem !important;
@@ -302,10 +410,96 @@ header {
   background-color: #f0f0f0;
 }
 
+.toggle-buttons {
+  display: flex;
+  gap: 0;
+}
+
+.toggle-btn {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  color: var(--color-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.toggle-btn.active {
+  background-color: var(--color-secondary);
+  color: #fff;
+  border-color: var(--color-secondary);
+}
+
+#studentToAddInput {
+  width: 100%;
+}
+
+#studentToAddSuggestionList {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  z-index: 1000;
+  max-height: 200px;
+  font-size: medium;
+  overflow-y: auto;
+  scrollbar-width: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#studentToAddSuggestionList li {
+  padding: 0.5rem 1rem !important;
+  cursor: pointer;
+}
+
+#studentToAddSuggestionList li:hover {
+  background-color: #f0f0f0;
+}
+
+#studentsToAddTableBody td:nth-child(2) {
+  text-align: end;
+}
+
+#billStudentsMessage {
+  line-height: 1.6;
+  color: #333;
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ddd;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-size: large;
+}
+#billStudentsMessage strong {
+  color: #000;
+  font-weight: 700;
+}
+#billStudentsMessage ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+#billStudentsMessage ul li {
+  margin-bottom: 5px;
+}
 /* ********************** BILL CSS *********************** */
 #billClassContainer select,
 #billClassContainer input {
   width: 100%;
+}
+
+/* ********************** SETTINGS PAGE ****************** */
+#settingsClassTableBody td:nth-child(3),
+#settingsYearTableBody td:nth-child(3) {
+  text-align: right;
 }
 
 /* *************** MODAL CSS *********************** */
@@ -392,27 +586,6 @@ header {
 #addStudentModal button {
   width: 8rem;
 }
-
-.form-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin: 1rem 0;
-}
-
-.form-item label {
-  width: 30%;
-  font-size: large;
-}
-
-.form-item input {
-  width: 60%;
-}
-
-.form-item select {
-  width: 60%;
-}
-
 /* *********************** TOAST CSS ************************ */
 .toast-container {
   width: 250px;
@@ -478,6 +651,17 @@ header {
   color: var(--color-red);
 }
 
+.color-green {
+  color: var(--color-green);
+}
+
+.color-blue {
+  color: var(--color-blue);
+}
+
+.color-secondary {
+  color: var(--color-secondary);
+}
 /* ************** BUTTONS CSS ******************************* */
 .outlined-button {
   display: inline-block;
@@ -528,55 +712,4 @@ header {
 .text-button:disabled {
   color: #ccc;
   cursor: not-allowed;
-}
-
-/* ************************ ROUNDED TABLE CSS ****************** */
-.table-rounded {
-  border-collapse: collapse;
-  width: 100%;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  background-color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.table-rounded th,
-.table-rounded td {
-  padding: 8px 12px;
-  text-align: center;
-}
-
-.table-rounded th:nth-child(2),
-.table-rounded td:nth-child(2) {
-  text-align: left;
-}
-
-.table-rounded th {
-  background-color: var(--color-secondary);
-  font-weight: bold;
-  border: 0.1rem solid var(--text-color);
-}
-
-.table-rounded tr:last-child td {
-  border-bottom: none;
-}
-
-.table-rounded td {
-  /* border: 0.1rem solid var(--text-color); */
-  border: none;
-}
-
-/* Remove vertical borders completely */
-.table-rounded td,
-.table-rounded th {
-  border-left: none;
-  border-right: none;
-}
-
-.table-rounded tr:nth-of-type(odd) {
-  background-color: rgba(245, 247, 250, 0.5);
-}
-
-.table-rounded tr:hover {
-  background-color: #9ca3af;
 }

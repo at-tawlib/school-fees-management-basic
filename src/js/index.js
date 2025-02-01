@@ -1,12 +1,10 @@
 import { setupStudentsClassSection } from "./student-class.js";
-import { setUpBillStudentsSection } from "./billing.js";
 import { CONTAINERS } from "./constants/constants.js";
-import { displayPaymentsTable } from "./payments.js";
-import { displayAcademicYearSettingsTable, displayClassSettingsTable } from "./settings.js";
+import { setUpPaymentsSection } from "./payments.js";
+import { initSettings } from "./settings.js";
 import { displayStudents } from "./student.js";
 import { showHideFeesContainer } from "./utils/show-fees-container.js";
-import { setUpViewBills } from "./view-bills.js";
-import { displayFeesTable } from "./view-fees.js";
+import { setUpFeesSection } from "./fees.js";
 
 const sectionHeaderTitle = document.getElementById("sectionHeaderTitle");
 
@@ -16,9 +14,10 @@ document.getElementById("navStudents").addEventListener("click", function () {
   displayStudents();
 });
 
-document.getElementById("navViewFees").addEventListener("click", async function () {
+document.getElementById("navFees").addEventListener("click", async function () {
   showHideFeesContainer(CONTAINERS.VIEW_FEES);
-  await displayFeesTable();
+  sectionHeaderTitle.textContent = "Fees";
+  setUpFeesSection();
 });
 
 document.getElementById("navClasses").addEventListener("click", function () {
@@ -27,24 +26,13 @@ document.getElementById("navClasses").addEventListener("click", function () {
   setupStudentsClassSection();
 });
 
-document.getElementById("navBillStudents").addEventListener("click", function () {
-  showHideFeesContainer(CONTAINERS.BILL_CLASS);
-  sectionHeaderTitle.textContent = "Bill Students";
-  setUpBillStudentsSection();
+document.getElementById("navPayments").addEventListener("click", function () {
+  showHideFeesContainer(CONTAINERS.PAYMENTS);
+  sectionHeaderTitle.textContent = "Payments";
+  setUpPaymentsSection();
 });
 
 document.getElementById("navSettings").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
-  displayClassSettingsTable();
-  displayAcademicYearSettingsTable();
-});
-
-document.getElementById("navViewBills").addEventListener("click", function () {
-  showHideFeesContainer(CONTAINERS.VIEW_BILLS);
-  setUpViewBills();
-});
-
-document.getElementById("navPayments").addEventListener("click", function () {
-  showHideFeesContainer(CONTAINERS.PAYMENTS);
-  displayPaymentsTable();
+  initSettings();
 });
