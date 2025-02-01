@@ -49,6 +49,17 @@ async function loadInitialData() {
   }
 }
 
+// Reload store data
+ipcMain.handle("reload-store-data", async () => {
+  await loadInitialData();
+});
+
+// update store classes
+ipcMain.handle("update-store-classes", (_, data) => {
+  store.delete("classes");
+  store.set("classes", data);
+});
+
 ipcMain.handle("get-initial-data", (_) => {
   return {
     classes: store.get("classes") || [],

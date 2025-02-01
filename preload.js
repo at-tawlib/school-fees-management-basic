@@ -35,6 +35,9 @@ contextBridge.exposeInMainWorld("store", {
   getInitialData: async () => {
     return await ipcRenderer.invoke("get-initial-data");
   },
+  reloadStore: async () => {
+    return await ipcRenderer.invoke("reload-store-data");
+  },
   getStoreClasses: async () => {
     return await ipcRenderer.invoke("get-store-classes");
   },
@@ -46,5 +49,8 @@ contextBridge.exposeInMainWorld("store", {
   },
   getStoreSettings: async () => {
     return await ipcRenderer.invoke("get-store-settings");
+  },
+  setStoreClasses: async (data) => {
+    return await ipcRenderer.invoke("update-store-classes", data);
   },
 });

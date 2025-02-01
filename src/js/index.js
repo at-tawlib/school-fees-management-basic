@@ -1,6 +1,6 @@
 import { setupStudentsClassSection } from "./student-class.js";
 import { CONTAINERS } from "./constants/constants.js";
-import { displayPaymentsTable, setUpPaymentsSection } from "./payments.js";
+import { setUpPaymentsSection } from "./payments.js";
 import { initSettings } from "./settings.js";
 import { displayStudents } from "./student.js";
 import { showHideFeesContainer } from "./utils/show-fees-container.js";

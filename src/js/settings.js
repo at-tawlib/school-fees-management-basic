@@ -43,6 +43,7 @@ document.getElementById("currentYearTermSaveBtn").addEventListener("click", asyn
     document.getElementById("settingsDefaultTerm").options[
       document.getElementById("settingsDefaultTerm").selectedIndex
     ].text;
+
   const termRes = await window.api.saveSetting(TERM, term, termText);
   if (!termRes.success) {
     showToast(termRes.message, "error");
@@ -52,6 +53,9 @@ document.getElementById("currentYearTermSaveBtn").addEventListener("click", asyn
   showToast("Year and term set successfully", "success");
   changeYearTermContainer.style.display = "none";
   defaultYearTermTextContainer.style.display = "";
+
+  const reload = await window.store.reloadStore();
+  initSettings();
 });
 
 document.getElementById("settingsAddClassBtn").addEventListener("click", async function () {
@@ -74,7 +78,9 @@ document.getElementById("settingsAddClassBtn").addEventListener("click", async f
   showToast("Class added successfully", "success");
   classInput.value = "";
   classInput.style.background = "";
-  displayClassSettingsTable();
+
+  const reload = await window.store.reloadStore();
+  initSettings();
 });
 
 document.getElementById("settingsAddYearBtn").addEventListener("click", async function () {
@@ -97,7 +103,9 @@ document.getElementById("settingsAddYearBtn").addEventListener("click", async fu
   showToast(response.message, "success");
   academicYearInput.value = "";
   academicYearInput.style.background = "";
-  displayAcademicYearSettingsTable();
+
+  const reload = await window.store.reloadStore();
+  initSettings();
 });
 
 export function initSettings() {
@@ -107,7 +115,6 @@ export function initSettings() {
 }
 
 async function setUpDefaultValues() {
-
   const academicYearSetting = await getDefaultYearSetting();
   const termSetting = await getDefaultTermSetting();
 
