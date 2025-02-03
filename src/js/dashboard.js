@@ -84,8 +84,6 @@ async function setUpClassSummary() {
     termId: termSetting.setting_value,
   });
 
-  console.log(classSummaryResp);
-
   if (!classSummaryResp.success) {
     showToast(classSummaryResp.message, "error");
     return;
@@ -104,6 +102,9 @@ async function setUpClassSummary() {
     row.insertCell().textContent = item.class_name;
     row.insertCell().textContent = item.students_count;
     row.insertCell().textContent = item.class_fee === 0 ? "No Fee" : fCurrency(item.class_fee);
+    row.insertCell().textContent = fCurrency(item.total_fees);
+    row.insertCell().textContent = fCurrency(item.total_paid);
+    row.insertCell().textContent = fCurrency(item.total_fees - item.total_paid);
   });
 }
 
