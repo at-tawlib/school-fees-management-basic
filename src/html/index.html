@@ -18,7 +18,7 @@
     <div class="container">
       <nav class="sidebar">
         <ul>
-          <li>Dashboard</li>
+          <li id="navDashboard">Dashboard</li>
           <li id="navStudents">Students</li>
           <li id="navFees">View Fees</li>
           <li id="navClasses">Students Classes</li>
@@ -32,6 +32,168 @@
       </header>
 
       <main>
+        <!-------------- DASHBOARD  SECTION ----------------------->
+        <section id="dashboardSection">
+          <div class="flex-row align-center">
+            <h2 id="dashboardTermYearTitle"></h2>
+            <button id="dashboardChangeYearTermBtn"><i class="fa-solid fa-edit"></i> Change</button>
+          </div>
+          <br />
+
+          <!-- Metrics -->
+          <div class="metrics">
+            <div class="metric-card">
+              <i class="fas fa-users color-blue"></i>
+              <div>
+                <h4 style="margin-bottom: 0.5rem">Total Students</h4>
+                <p id="totalStudentsMetric"></p>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <i class="fa-solid fa-sack-dollar color-yellow"></i>
+              <div>
+                <h4 style="margin-bottom: 0.5rem">Total Billed</h4>
+                <p id="totalFeesBilledMetric"></p>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <i class="fas fa-file-invoice-dollar color-green"></i>
+              <div>
+                <h4 style="margin-bottom: 0.5rem">Total Paid</h4>
+                <p id="totalFeesCollectedMetric"></p>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <i class="fa-solid fa-money-check-dollar color-red"></i>
+              <div>
+                <h4 style="margin-bottom: 0.5rem">Pending Payments</h4>
+                <p id="pendingPaymentsMetric"></p>
+              </div>
+            </div>
+          </div>
+          <hr style="margin: 1rem 0rem" />
+
+          <h2>Overview</h2>
+          <div class="flex-row align-start">
+            <!-- Students Summary -->
+            <table class="table-rounded elevated-container">
+              <tbody>
+                <tr>
+                  <th colspan="2">Students Summary</th>
+                </tr>
+                <tr>
+                  <td>Total students</td>
+                  <td id="totalStudentsOverview"></td>
+                </tr>
+                <tr>
+                  <td>Students with classes</td>
+                  <td id="studentsWithClassOverview"></td>
+                </tr>
+                <tr>
+                  <td>Students without classes</td>
+                  <td id="studentsWithoutClassOverview"></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Class Summary -->
+            <table class="table-rounded">
+              <tbody>
+                <tr>
+                  <th colspan="2">Class Summary</th>
+                </tr>
+                <tr>
+                  <td>Classes</td>
+                  <td id="totalClassesOverview"></td>
+                </tr>
+                <tr>
+                  <td>Classes with students</td>
+                  <td id="classesWithStudentsOverview"></td>
+                </tr>
+                <tr>
+                  <td>Classes without students</td>
+                  <td id="classesWithoutStudentsOverview"></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Fees Summary -->
+            <table class="table-rounded">
+              <tbody>
+                <tr>
+                  <th colspan="2">Fees Summary</th>
+                </tr>
+                <tr>
+                  <td>Total Fees Billed</td>
+                  <td id="totalFeesBilledOverview"></td>
+                </tr>
+                <tr>
+                  <td>Total Fees Collected</td>
+                  <td id="totalFeesCollectedOverview"></td>
+                </tr>
+                <tr>
+                  <td>Pending Payments</td>
+                  <td id="pendingPaymentsOverview"></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Billing Summary -->
+            <table class="table-rounded">
+              <tbody>
+                <tr>
+                  <th colspan="2">Billing Summary</th>
+                </tr>
+                <tr>
+                  <td>Billed / Unbilled classes</td>
+                  <td id="classesBilledUnbilledOverview"></td>
+                </tr>
+                <tr>
+                  <td>Billed / Unbilled Students</td>
+                  <td id="studentsBilledUnbilledOverview"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <hr style="margin: 1rem 0rem" />
+
+          <!-- Class Summary -->
+          <h2>Class Summary</h2>
+          <table class="table-rounded elevated-container">
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Students</th>
+                <th>Fees</th>
+                <th>Total Billed</th>
+                <th>Total Paid</th>
+                <th>Total Balance</th>
+              </tr>
+            </thead>
+            <tbody id="dashboardClassSummaryTableBody"></tbody>
+          </table>
+          <hr style="margin: 1rem 0rem" />
+
+          <!-- Recent Payments -->
+          <h2>Recent Payments</h2>
+          <table class="table-rounded">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Amount</th>
+                <th>Mode</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="dashboardRecentPaymentsTableBody"></tbody>
+          </table>
+        </section>
+
         <!-------------- STUDENTS  SECTION ----------------------->
         <section id="studentsView" style="display: none">
           <div class="flex-row align-start">
@@ -114,7 +276,7 @@
         </section>
 
         <!-- ------------ CLASSES / STUDENT CLASS SECTION ------------ -->
-        <section id="studentClassSection">
+        <section id="studentClassSection" style="display: none">
           <div class="flex-row align-start">
             <!-- Classes side bar (Classes, add class) -->
             <div class="flex-1 elevated-container">
@@ -169,7 +331,7 @@
                 <table id="notBilledStudentClassTable" class="table-rounded" style="display: none">
                   <thead>
                     <tr>
-                      <th colspan="7">Students Not Billed</th>
+                      <th colspan="3">Students Not Billed</th>
                     </tr>
                   </thead>
                   <tbody id="notBilledStudentClassTableBody"></tbody>
@@ -716,3 +878,6 @@
     <div id="toastContainer" class="toast-container"></div>
   </body>
 </html>
+
+<!-- TODO: USE THIS -->
+<!-- GH₵ 500,000 -->

@@ -179,6 +179,7 @@ document.getElementById("addStudentsSaveBtn").addEventListener("click", async fu
         const studentId = row.querySelector("input[name=studentId]").value;
         if (response.data.includes(studentId)) {
           row.style.background = "red"; // Highlight row in red
+          row.getElementsByTagName("i")[0].style.color = "white";
         }
       }
       showToast(response.message, "error");
@@ -189,7 +190,7 @@ document.getElementById("addStudentsSaveBtn").addEventListener("click", async fu
   }
 
   showToast("Records saved successfully", "success");
-  setupClassesSidebar();
+  setupStudentsClassSection();
 });
 
 document.getElementById("clearAddStudentsForm").addEventListener("click", () => {

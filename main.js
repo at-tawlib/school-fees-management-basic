@@ -418,6 +418,83 @@ ipcMain.handle("get-student-payments", async (_, data) => {
   }
 });
 
+// Get class summary
+ipcMain.handle("get-class-summary", async (_, data) => {
+  try {
+    const result = await dbHandler.getClassSummary(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Get student count
+ipcMain.handle("get-student-count", async (_, data) => {
+  try {
+    const result = await dbHandler.getStudentCount(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Get student billed count
+ipcMain.handle("get-student-billed-count", async (_, data) => {
+  try {
+    const result = await dbHandler.getStudentBilledCount(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Get total amount paid
+ipcMain.handle("get-total-amount-paid", async (_, data) => {
+  try {
+    const result = await dbHandler.getTotalAmountPaid(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Get class count
+ipcMain.handle("get-year-class-count", async (_, data) => {
+  try {
+    const result = await dbHandler.getYearClassCount(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Get total class count
+ipcMain.handle("get-total-class-count", async (_, data) => {
+  try {
+    const result = await dbHandler.getTotalClassCount(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Get unbilled classes
+ipcMain.handle("get-unbilled-classes", async (_, data) => {
+  try {
+    const result = await dbHandler.getUnbilledClasses(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
 // app.whenReady().then(createWindow);
 app.whenReady().then(async () => {
   try {

@@ -5,3 +5,5 @@ export function fCurrency(number) {
   });
   return formatter.format(number);
 }
+
+// TODO: Try and use this GH₵ symbol in the currency formatter

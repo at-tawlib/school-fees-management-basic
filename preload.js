@@ -28,6 +28,13 @@ contextBridge.exposeInMainWorld("api", {
   deleteFee: (data) => ipcRenderer.invoke("delete-fees", data),
   updateFeeAmount: (data) => ipcRenderer.invoke("update-fee-amount", data),
   getDistinctClasses: (data) => ipcRenderer.invoke("get-distinct-classes", data),
+  getClassSummary: (data) => ipcRenderer.invoke("get-class-summary", data),
+  getStudentCount: (data) => ipcRenderer.invoke("get-student-count", data),
+  getStudentBilledCount: (data) => ipcRenderer.invoke("get-student-billed-count", data),
+  getTotalAmountPaid: (data) => ipcRenderer.invoke("get-total-amount-paid", data),
+  getYearClassCount: (data) => ipcRenderer.invoke("get-year-class-count", data),
+  getTotalClassCount: (data) => ipcRenderer.invoke("get-total-class-count", data),
+  getUnbilledClasses: (data) => ipcRenderer.invoke("get-unbilled-classes", data),
 });
 
 contextBridge.exposeInMainWorld("store", {
