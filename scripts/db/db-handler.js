@@ -787,6 +787,148 @@ class DatabaseHandler {
     }
   }
 
+  getStudentCount(yearId) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT 
+          (SELECT COUNT(*) FROM students) AS total_students,
+          (SELECT COUNT(DISTINCT student_id) FROM studentClasses WHERE year_id = ?) AS students_with_class;
+        `);
+      const record = stmt.get(yearId);
+      return { success: true, data: record };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getYearClassCount(yearId) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT 
+          COUNT(DISTINCT class_id) AS total_classes
+        FROM studentClasses
+        WHERE year_id = ?;
+      `);
+      const record = stmt.get(yearId);
+      return { success: true, data: record };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getTotalClassCount() {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT COUNT(*) AS total_classes FROM classes;
+      `);
+      const record = stmt.get();
+      return { success: true, data: record };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getUnbilledClasses(filter) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT c.id AS class_id, c.class_name, ay.id AS year_id, ay.year AS academic_year
+        FROM classes c
+        JOIN academicYears ay ON c.id = ay.id
+        WHERE c.id NOT IN (
+          SELECT DISTINCT f.class_id
+          FROM fees f
+          WHERE f.year_id = ? AND f.term_id = ?
+        );
+      `);
+      const records = stmt.all(filter.academicYearId, filter.termId);
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  // getUnbilledClasses(yearId) {
+  //   try {
+  //     const stmt = this.db.prepare(`
+  //       SELECT c.id AS class_id, c.class_name, ay.id AS year_id, ay.year AS academic_year
+  //       FROM classes c
+  //       JOIN academicYears ay ON c.id = ay.id
+  //       WHERE c.id NOT IN (
+  //         SELECT DISTINCT f.class_id
+  //         FROM fees f
+  //         WHERE f.year_id = ?
+  //       );
+  //     `);
+  //     const records = stmt.all(yearId);
+  //     return { success: true, data: records };
+  //   } catch (error) {
+  //     console.error("Database Error: ", error);
+  //     return { success: false, message: error.message };
+  //   }
+  // }
+
+  getStudentBilledCount(filter) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT 
+          COUNT(DISTINCT b.student_id) AS total_students_billed, 
+          COALESCE(SUM(f.amount), 0) AS total_amount_billed
+        FROM bills b
+        JOIN fees f ON b.fees_id = f.id
+        WHERE f.term_id = ? AND f.year_id = ?;
+      `);
+      const record = stmt.get(filter.termId, filter.academicYearId);
+      return { success: true, data: record };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getTotalAmountPaid(filter) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT COALESCE(SUM(p.amount), 0) AS total_amount_paid
+        FROM payments p
+        JOIN bills b ON p.bill_id = b.id
+        JOIN fees f ON b.fees_id = f.id
+        WHERE f.term_id = ? AND f.year_id = ?;
+      `);
+      const record = stmt.get(filter.termId, filter.academicYearId);
+      return { success: true, data: record };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getClassSummary(filter) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT c.class_name, 
+          COUNT(DISTINCT sc.student_id) AS students_count, 
+          COALESCE(f.amount, 0) AS class_fee, 
+          COALESCE(SUM(p.amount), 0) AS total_paid, 
+          COALESCE(COUNT(DISTINCT sc.student_id) * f.amount, 0) AS total_fees
+        FROM classes c
+        LEFT JOIN studentClasses sc ON c.id = sc.class_id AND sc.year_id = ? 
+        LEFT JOIN fees f ON c.id = f.class_id AND f.term_id = ? AND f.year_id = ?
+        LEFT JOIN bills b ON sc.student_id = b.student_id AND b.fees_id = f.id
+        LEFT JOIN payments p ON b.id = p.bill_id
+        GROUP BY c.id, f.amount;
+        `);
+      const records = stmt.all(filter.academicYearId, filter.termId, filter.academicYearId);
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   // Close the database connection
   close() {
     this.db.close();
