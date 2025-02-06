@@ -18,9 +18,13 @@ const editFeesModal = document.getElementById("editFeesModal");
 
 // Event Listeners for Add Fees Modal
 document.getElementById("btnAddFees").addEventListener("click", function () {
+
+  const academicYear = filterFeesByAcademicYear.value;
+  const term = filterFeesByTerm.value;
+
   setUpClassSelect(addFeesModalClass);
-  setUpAcademicYearsSelect(addFeesModalYear);
-  setUpTermsSelect(addFeesModalTerm);
+  setUpAcademicYearsSelect(addFeesModalYear, false, academicYear);
+  setUpTermsSelect(addFeesModalTerm, false, term);
   addFeesModal.style.display = "block";
 });
 
@@ -31,10 +35,6 @@ document.getElementById("addFeesCloseXBtn").addEventListener("click", function (
 document.getElementById("cancelFeesModalBtn").addEventListener("click", function () {
   addFeesModal.style.display = "none";
 });
-
-// Event Listeners for Filtering
-filterFeesByAcademicYear.addEventListener("change", filterFeesTable);
-filterFeesByTerm.addEventListener("change", filterFeesTable);
 
 // Event Listener for Adding Fees
 document.getElementById("setFeesBtn").addEventListener("click", async () => {
@@ -49,9 +49,9 @@ document.getElementById("setFeesBtn").addEventListener("click", async () => {
   }
 
   const response = await window.api.addFees({
-    class: studentClass,
-    academicYear,
-    term,
+    classId: studentClass,
+    academicYearId: academicYear,
+    termId: term,
     amount: feesAmount,
   });
 
@@ -63,8 +63,12 @@ document.getElementById("setFeesBtn").addEventListener("click", async () => {
   showToast(response.message, "success");
   document.getElementById("feesAmount").value = "";
   addFeesModal.style.display = "none";
-  await displayFeesTable();
+  await setUpFeesSection();
 });
+
+// Event Listeners for Filtering
+filterFeesByAcademicYear.addEventListener("change", filterFeesTable);
+filterFeesByTerm.addEventListener("change", filterFeesTable);
 
 // Event Listener for Saving Edited Fees
 document.getElementById("saveEditFeesBtn").addEventListener("click", async () => {
@@ -88,7 +92,7 @@ document.getElementById("saveEditFeesBtn").addEventListener("click", async () =>
 
   showToast(response.message, "success");
   document.getElementById("editFeesModal").style.display = "none";
-  await displayFeesTable();
+  await setUpFeesSection();
 });
 
 // Event Listeners for Edit Fees Modal
@@ -241,7 +245,7 @@ async function handleDeleteFee(fee) {
   }
 
   showToast(deleteResponse.message, "success");
-  await displayFeesTable();
+  await setUpFeesSection();
 }
 
 export async function setUpFeesSection() {

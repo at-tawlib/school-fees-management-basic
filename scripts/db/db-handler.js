@@ -357,30 +357,6 @@ class DatabaseHandler {
     return result !== undefined; // Return true if a record exists
   }
 
-  getSingleFee(fee) {
-    try {
-      const stmt = this.db.prepare(`
-        SELECT * FROM fees
-        WHERE class_id = ? AND term_id = ? AND year_id = ?
-        LIMIT 1
-      `);
-
-      console.log(fee);
-      const result = stmt.get(fee.classId, fee.termId, fee.yearId);
-      if (!result) {
-        return {
-          success: false,
-          message: `No fee found for the selected class, year and term.`,
-        };
-      }
-
-      return { success: true, data: result };
-    } catch (error) {
-      console.error("Database Error: ", error);
-      return { success: false, message: error.message };
-    }
-  }
-
   getAllFees() {
     try {
       const stmt = this.db.prepare(`
@@ -401,6 +377,30 @@ class DatabaseHandler {
     }
   }
 
+  getSingleFee(fee) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT * FROM fees
+        WHERE class_id = ? AND term_id = ? AND year_id = ?
+        LIMIT 1
+      `);
+
+      console.log(fee);
+      const result = stmt.get(fee.classId, fee.termId, fee.academicYearId);
+      if (!result) {
+        return {
+          success: false,
+          message: `No fee found for the selected class, year and term.`,
+        };
+      }
+
+      return { success: true, data: result };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   addFees(data) {
     try {
       // Checks if fees exist for the class, term and academic year before adding
@@ -414,7 +414,7 @@ class DatabaseHandler {
       const stmt = this.db.prepare(`
           INSERT INTO fees (class_id, year_id, term_id, amount, created_at) VALUES (?, ?, ?, ?, ?)
         `);
-      stmt.run(data.class, data.academicYear, data.term, data.amount, new Date().toISOString());
+      stmt.run(data.classId, data.academicYearId, data.termId, data.amount, new Date().toISOString());
       return {
         success: true,
         message: "Fees added successfully.",
