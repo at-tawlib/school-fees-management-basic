@@ -50,7 +50,7 @@ document.getElementById("addStudentModalBtn").addEventListener("click", async fu
       showToast(result.message, "success");
       editingStudentId = null;
       addStudentModal.style.display = "none";
-      displayStudents();
+      initStudentsSection();
       return;
     }
 
@@ -67,7 +67,7 @@ document.getElementById("addStudentModalBtn").addEventListener("click", async fu
   if (result.success) {
     showToast(result.message, "success");
     addStudentModal.style.display = "none";
-    displayStudents();
+    initStudentsSection();
     return;
   }
   showToast(result.message, "error");
@@ -77,7 +77,6 @@ searchStudentInput.addEventListener("input", filterStudentsTable);
 studentClassFilter.addEventListener("change", filterStudentsTable);
 
 function editStudentRecord(student) {
-  console.log(student)
   addStudentModal.style.display = "block";
 
   firstNameInput.value = student.first_name;
@@ -100,7 +99,6 @@ export async function initStudentsSection() {
 
 async function displayStudents(yearId) {
   const response = await window.api.getStudentsByYear(yearId);
-  console.log(response);
   document.getElementById("searchStudentInput").value = "";
   studentsTableBody.innerHTML = "";
 
