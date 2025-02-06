@@ -73,6 +73,11 @@ ipcMain.handle("get-store-settings", (_) => {
   return store.get("settings") || [];
 });
 
+ipcMain.on('reload-app', () => {
+  const allWindows = BrowserWindow.getAllWindows();
+  allWindows.forEach(win => win.reload());
+});
+
 ipcMain.handle("get-store-classes", (_) => {
   return store.get("classes") || [];
 });
@@ -193,6 +198,16 @@ ipcMain.handle("get-all-students", async () => {
     if (!result.success) {
       throw new Error(result.message);
     }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// get students by year
+ipcMain.handle("get-students-by-year", async (_, year) => {
+  try {
+    const result = dbHandler.getStudentsByYear(year);
     return result;
   } catch (error) {
     return { success: false, message: error.message };
@@ -514,5 +529,11 @@ app.whenReady().then(async () => {
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
+  }
+});
+
+app.on("activate", () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
   }
 });

@@ -1,7 +1,6 @@
 /* Define color variables in the :root */
 :root {
   --color-primary: #41d87b;
-  --color-secondary: #ff6425;
   --color-secondary: #083a3c;
   --color-red: #cc0000;
   --color-red-light: #ff0000;
@@ -18,7 +17,6 @@
 body {
   margin: 0;
   padding: 0;
-  color: var(--color-secondary);
 }
 
 /* Usage
@@ -170,21 +168,6 @@ th {
 .bold-text {
   font-weight: 700;
 }
-/* ****************** CONTAINERS CSS *************************** */
-.container {
-  margin: 0;
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-  background-color: var(--color-secondary);
-}
-
-.elevated-container {
-  background-color: white;
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
-}
 
 /* ************************ ROUNDED TABLE CSS ****************** */
 .table-rounded {
@@ -238,10 +221,26 @@ th {
   cursor: pointer;
 }
 
-.plain-table-header{
+.plain-table-header {
   background-color: transparent !important;
   color: var(--color-secondary) !important;
   border: none !important;
+}
+
+/* ****************** CONTAINERS CSS *************************** */
+.container {
+  margin: 0;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #f4f4f4;
+}
+
+.elevated-container {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
 }
 
 /* ****************** MAIN CONTENT *************************** */
@@ -274,6 +273,7 @@ main {
   justify-content: space-between;
   width: 16rem;
   background-color: var(--color-secondary);
+  box-shadow: 0 2px 2px 1px rgba(36, 35, 35, 0.8);
   color: #fff;
   position: fixed;
   top: 0;
@@ -290,13 +290,30 @@ main {
 }
 
 .sidebar ul li:hover {
-  background-color: #555;
-  background-color: var(--color-primary);
+  background-color: #0c5c5f;
 }
 
 .sidebar li.active {
-  background-color: var(--color-primary);
+  background-color: #06292b;
   color: white;
+  border-radius: 5px;
+}
+
+.sidebar button.active {
+  background-color: #06292b;
+  color: white;
+}
+
+#navHeader {
+  height: 8rem;
+  background-color: #06292b;
+  color: white;
+  padding: 2rem 1rem;
+  border-bottom: 1px solid #e0d8d8;
+}
+
+#navHeader p {
+  padding: 0.2rem;
 }
 
 #navSettings {
@@ -323,11 +340,10 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: 0 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
   z-index: 1000;
-  background-color: #f4f4f4;
-  border-radius: 1rem;
-  margin: 1rem 2rem 1rem 2rem;
+  background-color: var(--color-secondary);
+  color: white;
 }
 /* ********************** DASHBOARD CSS ********************** */
 .metrics {
@@ -341,9 +357,14 @@ header {
   background-color: white;
   padding: 1.25rem;
   border-radius: 0.5rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
   display: flex;
   align-items: center;
+}
+
+.metric-card:hover {
+  background-color: var(--highlight-color);
+  cursor: pointer;
 }
 
 .metric-card i {

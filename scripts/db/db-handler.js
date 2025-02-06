@@ -179,10 +179,30 @@ class DatabaseHandler {
     }
   }
 
+  // TODO: not used anywhere remove
   getAllStudents() {
     try {
       const stmt = this.db.prepare(`SELECT * FROM students`);
       const records = stmt.all();
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getStudentsByYear(yearId) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT 
+          s.id AS student_id, s.first_name, s.last_name, s.other_names,
+          c.class_name, ay.year AS academic_year
+        FROM students s
+        LEFT JOIN studentClasses sc ON s.id = sc.student_id AND sc.year_id = ?
+        LEFT JOIN classes c ON sc.class_id = c.id
+        LEFT JOIN academicYears ay ON sc.year_id = ay.id;
+        `);
+      const records = stmt.all(yearId);
       return { success: true, data: records };
     } catch (error) {
       console.error("Database Error: ", error);

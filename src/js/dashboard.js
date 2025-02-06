@@ -22,6 +22,9 @@ export async function initDashboard() {
   const resultText = `${academicYearSetting.setting_text} Academic year, ${termSetting.setting_text} Term`;
   document.getElementById("dashboardTermYearTitle").textContent = resultText;
 
+  document.getElementById("navAcademicYear").textContent = `${academicYearSetting.setting_text} Academic year`;
+  document.getElementById("navTerm").textContent = `${termSetting.setting_text} Term`;
+
   const metricsData = await getMetricsData();
   await setUpMetrics(metricsData);
   await setUpOverview(metricsData);
