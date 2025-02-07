@@ -6,12 +6,23 @@ import { showToast } from "./utils/toast.js";
 const changeYearTermContainer = document.getElementById("changeYearTermContainer");
 const defaultYearTermTextContainer = document.getElementById("defaultYearTermTextContainer");
 
-document.getElementById("changeYearTermBtn").addEventListener("click", function () {
+document.getElementById("changeYearTermBtn").addEventListener("click", async function () {
+  const academicYearSetting = await getDefaultYearSetting();
+  const termSetting = await getDefaultTermSetting();
+
   changeYearTermContainer.style.display = "";
   defaultYearTermTextContainer.style.display = "none";
 
-  setUpAcademicYearsSelect(document.getElementById("settingsDefaultAcademicYear"), false);
-  setUpTermsSelect(document.getElementById("settingsDefaultTerm"), false);
+  setUpAcademicYearsSelect(
+    document.getElementById("settingsDefaultAcademicYear"),
+    false,
+    academicYearSetting.setting_value
+  );
+  setUpTermsSelect(
+    document.getElementById("settingsDefaultTerm"),
+    false,
+    termSetting.setting_value
+  );
 });
 
 document.getElementById("currentYearTermCancelBtn").addEventListener("click", function () {
