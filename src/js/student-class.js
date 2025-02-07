@@ -8,21 +8,22 @@ import { showToast } from "./utils/toast.js";
 const addClassTable = document.getElementById("addClassTable");
 const addStudentClassForm = document.getElementById("addStudentClassForm");
 const addClassFormClass = document.getElementById("addClassFormClass");
-const addClassFormYear = document.getElementById("addClassFormYear");
 const setClassButton = document.getElementById("setClassButton");
 const changeClassButton = document.getElementById("setChangeClassButton");
 const addClassForm = document.getElementById("addClassForm");
+
 const studentClassTitle = document.getElementById("studentClassTitle");
 const billStudentsMessage = document.getElementById("billStudentsMessage");
 const filterStudentsByAcademicYear = document.getElementById("filterStudentsByAcademicYear");
+
+const studentClassTableContainer = document.getElementById("studentClassContainer");
 const studentClassTable = document.getElementById("studentClassTable");
 const studentClassTableBody = document.getElementById("studentClassTableBody");
+const studentClassTableFoot = document.getElementById("studentClassTableFoot");
 const notBilledStudentClassTable = document.getElementById("notBilledStudentClassTable");
 const notBilledStudentClassTableBody = document.getElementById("notBilledStudentClassTableBody");
 
-const studentClassTableContainer = document.getElementById("studentClassContainer");
 const searchStudentClassInput = document.getElementById("searchStudentClassInput");
-
 const billClassModal = document.getElementById("billClassModal");
 const paymentHistoryModal = document.getElementById("paymentHistoryModal");
 
@@ -31,6 +32,7 @@ const studentsToAddTableBody = document.getElementById("studentsToAddTableBody")
 const studentToAddInput = document.getElementById("studentToAddInput");
 const studentToAddId = document.getElementById("studentToAddId");
 const studentToAddSuggestionList = document.getElementById("studentToAddSuggestionList");
+const paidStatusSelect = document.getElementById("paidStatusSelect");
 
 let studentsData = [];
 let currentClass = {};
@@ -45,7 +47,7 @@ export async function setupStudentsClassSection() {
   studentClassTableContainer.style.display = "none";
   await setUpAcademicYearsSelect(filterStudentsByAcademicYear);
   filterStudentsByAcademicYear.value = defaultYear.setting_value;
-  setupClassesSidebar(defaultYear.setting_value);
+  await setupClassesSidebar(defaultYear.setting_value);
 }
 
 async function setupClassesSidebar(year) {
@@ -68,24 +70,55 @@ async function setupClassesSidebar(year) {
       option.setAttribute("data-academic-year", cls.academic_year);
 
       // Add click event to fetch students for the selected class
-      option.addEventListener("click", () => {
+      option.addEventListener("click", async () => {
         currentClass = {
           classId: cls.class_id,
           className: cls.class_name,
           academicYear: cls.academic_year,
           academicYearId: cls.academic_year_id,
         };
-
-        displayClassStudentsTable(currentClass, classTerm);
+        await displayClassStudentsTable(currentClass, classTerm);
       });
 
       classesList.appendChild(option);
     });
   }
+
+  const classItems = document.querySelectorAll(".class-item");
+  classItems.forEach((item) => {
+    item.addEventListener("click", function () {
+      // Remove 'active' class from all items
+      classItems.forEach((el) => el.classList.remove("active"));
+
+      // Add 'active' class to the clicked item
+      this.classList.add("active");
+    });
+  });
 }
 
 filterStudentsByAcademicYear.addEventListener("change", async function () {
   await setupClassesSidebar(this.value);
+  addClassForm.style.display = "none";
+  studentClassTableContainer.style.display = "none";
+});
+
+paidStatusSelect.addEventListener("change", async function () {
+  if (this.value === "all") {
+    await displayClassStudentsTable(currentClass, classTerm);
+    return;
+  }
+
+  const rows = studentClassTableBody.getElementsByTagName("tr");
+  for (let row of rows) {
+    const arrears = Number(row.getAttribute("data-arrears"));
+    if (this.value === "withArrears" && arrears > 0) {
+      row.style.display = "";
+    } else if (this.value === "fullyPaid" && arrears <= 0) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+  }
 });
 
 // ************************** ADD STUDENTS TO CLASS FORM *******************************
@@ -93,7 +126,6 @@ document.getElementById("addClassButton").addEventListener("click", resetAddStud
 
 setClassButton.addEventListener("click", async function () {
   clearInputStyles(addClassFormClass);
-  clearInputStyles(addClassFormYear);
 
   if (addClassFormClass.value === "") {
     showToast("Please select a class", "error");
@@ -102,16 +134,9 @@ setClassButton.addEventListener("click", async function () {
     return;
   }
 
-  if (addClassFormYear.value === "") {
-    showToast("Please enter an academic year", "error");
-    addClassFormYear.style.border = "1px solid red";
-    addClassFormYear.style.backgroundColor = "rgba(255, 0, 0, 0.1)";
-    return;
-  }
-
   const resp = await window.api.checkClassExists({
-    className: addClassFormClass.value,
-    academicYear: addClassFormYear.value,
+    classId: addClassFormClass.value,
+    academicYearId: filterStudentsByAcademicYear.value,
   });
 
   if (!resp.success) {
@@ -131,13 +156,10 @@ setClassButton.addEventListener("click", async function () {
   setClassButton.style.display = "none";
   changeClassButton.style.display = "block";
   addClassFormClass.disabled = true;
-  addClassFormYear.disabled = true;
   addClassTable.style.display = "block";
 });
 
-changeClassButton.addEventListener("click", function () {
-  resetAddStudentForm();
-});
+changeClassButton.addEventListener("click", resetAddStudentForm);
 
 document.getElementById("addOneStudentRow").addEventListener("click", () => addClassRowToForm(1));
 document.getElementById("addTwoStudentRows").addEventListener("click", () => addClassRowToForm(2));
@@ -146,7 +168,6 @@ document.getElementById("addFiveStudentRows").addEventListener("click", () => ad
 document.getElementById("addStudentsSaveBtn").addEventListener("click", async function () {
   const records = [];
   const studentClass = addClassFormClass.value;
-  const academicYear = addClassFormYear.value;
   const rows = addStudentClassForm.getElementsByTagName("tr");
 
   // Collect student IDs
@@ -167,9 +188,9 @@ document.getElementById("addStudentsSaveBtn").addEventListener("click", async fu
 
   // Send data to backend
   const response = await window.api.addStudentToClass({
-    studentIds: records, // Pass all student IDs at once
+    studentIds: records,
     className: studentClass,
-    academicYear: academicYear,
+    academicYear: filterStudentsByAcademicYear.value,
   });
 
   if (!response.success) {
@@ -198,9 +219,9 @@ document.getElementById("clearAddStudentsForm").addEventListener("click", () => 
   addClassRowToForm(5);
 });
 
-document.getElementById("cancelAddStudentsForm").addEventListener("click", () => {
-  setupClassesSidebar();
-});
+document
+  .getElementById("cancelAddStudentsForm")
+  .addEventListener("click", async () => await setupStudentsClassSection());
 
 function addClassRowToForm(rowCount) {
   for (let i = 0; i < rowCount; i++) {
@@ -327,11 +348,8 @@ function resetAddStudentForm() {
   studentClassTableContainer.style.display = "none";
 
   setUpClassSelect(addClassFormClass);
-  setUpAcademicYearsSelect(addClassFormYear);
   addClassFormClass.disabled = false;
-  addClassFormYear.disabled = false;
   clearInput(addClassFormClass);
-  clearInput(addClassFormYear);
   setClassButton.style.display = "block";
   changeClassButton.style.display = "none";
   addClassTable.style.display = "none";
@@ -339,14 +357,13 @@ function resetAddStudentForm() {
 }
 
 // ******************************** STUDENT CLASS TABLE ********************************
-searchStudentClassInput.addEventListener("input", function () {
-  filterStudentsClassTable();
-});
+searchStudentClassInput.addEventListener("input", filterStudentsClassTable);
 
 export async function displayClassStudentsTable() {
   addClassForm.style.display = "none";
   studentClassTableContainer.style.display = "block";
   studentClassTableBody.innerHTML = "";
+  studentClassTableFoot.innerHTML = "";
   notBilledStudentClassTableBody.innerHTML = "";
   studentClassTitle.textContent = "";
   studentClassTitle.textContent = `${currentClass.className} (${currentClass.academicYear}) - ${classTerm.text} term`;
@@ -367,25 +384,39 @@ export async function displayClassStudentsTable() {
     return;
   }
 
+  // If data is not available get students by class and display them
   if (response.data.length === 0) {
-    studentClassTableBody.innerHTML = "";
-
-    // TODO: check if bill exists, if it does not show a message
-    const feeResp = await window.api.getSingleFee({
+    const studentsResp = await window.api.getStudentsByClass({
       classId: currentClass.classId,
-      yearId: currentClass.academicYearId,
-      termId: classTerm.value,
+      academicYearId: currentClass.academicYearId,
     });
 
-    if (!feeResp.success) {
-      showToast(feeResp.message || "An error occurred", "error");
-      notBilledStudentClassTable.style.display = "none";
-      studentClassTable.style.display = "none";
+    if (!studentsResp.success) {
+      showToast(studentsResp.message || "An error occurred", "error");
       return;
     }
 
-    studentClassTitle.textContent = `No students found for ${currentClass.className} for ${currentClass.academicYear} academic year.`;
-    showToast("No students found for this class", "error");
+    if (studentsResp.data.length === 0) {
+      studentClassTable.style.display = "none";
+      notBilledStudentClassTable.style.display = "none";
+      studentClassTitle.textContent = `No students found for ${currentClass.className} for ${currentClass.academicYear} academic year.`;
+      showToast("No students found for this class", "error");
+      return;
+    }
+
+    studentClassTable.style.display = "none";
+    notBilledStudentClassTable.style.display = "";
+    studentsResp.data.forEach((item, index) => {
+      const row = document.createElement("tr");
+      row.setAttribute("data-student-id", item.student_id);
+      row.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${item.student_name}</td>
+        <td>
+        </td>
+      `;
+      notBilledStudentClassTableBody.appendChild(row);
+    });
     return;
   }
 
@@ -395,6 +426,7 @@ export async function displayClassStudentsTable() {
 
     if (item.bill_id) {
       // TODO: use setAttribute to save the student id, fees id, and bill id
+      row.setAttribute("data-arrears", arrears);
       row.innerHTML = `
         <td>${billedCount + 1}</td>
         <td>${item.student_name}</td>
@@ -404,6 +436,7 @@ export async function displayClassStudentsTable() {
         <td class="color-blue bold-text">${fCurrency(item.fee_amount)}</td>
         <td class="color-green bold-text">${fCurrency(item.total_payments)}</td>
         <td class="color-red bold-text">${fCurrency(arrears)}</td>
+        <td>${arrears <= 0 ? '<i class="fa-regular fa-circle-check color-green"></i>' : ''}</td>
         <td>
           <div style="display: flex; justify-content: center">
             <button id="btnPayFees"  class="text-button" title="Pay school fees">
@@ -450,14 +483,36 @@ export async function displayClassStudentsTable() {
     }
   });
 
+  // Calculate the totals and display in the table foot
+  // Only sum if bill_id is not null or undefined
+  const totals = response.data.reduce(
+    (acc, curr) => {
+      if (curr.bill_id) {
+        acc.totalFeeAmount += curr.fee_amount;
+        acc.totalPayments += curr.total_payments;
+        acc.totalBalance += curr.balance;
+      }
+      return acc;
+    },
+    { totalFeeAmount: 0, totalPayments: 0, totalBalance: 0 }
+  );
+
+  studentClassTableFoot.innerHTML = `
+    <tr>
+      <th colspan="2" class="bold-text">Totals</th>
+      <th class="color-blue bold-text">${fCurrency(totals.totalFeeAmount)}</th>
+      <th class="color-green bold-text">${fCurrency(totals.totalPayments)}</th>
+      <th class="color-red bold-text">${fCurrency(totals.totalBalance)}</th>
+      <th></th>
+      <th></th>
+    </tr>
+  `;
+
   if (billedCount > 0) studentClassTable.style.display = "";
   else studentClassTable.style.display = "none";
 
-  if (notBilledCount <= 0) {
-    notBilledStudentClassTable.style.display = "none";
-  } else {
-    notBilledStudentClassTable.style.display = "";
-  }
+  if (notBilledCount <= 0) notBilledStudentClassTable.style.display = "none";
+  else notBilledStudentClassTable.style.display = "";
 }
 
 async function createTermButtons(activeTermId) {
@@ -474,12 +529,12 @@ async function createTermButtons(activeTermId) {
     if (t.id === activeTermId) button.classList.add("active");
 
     // Event listener
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       document.querySelectorAll(".toggle-btn").forEach((btn) => btn.classList.remove("active"));
       button.classList.add("active");
 
       classTerm = { text: t.term, value: t.id };
-      displayClassStudentsTable(currentClass, classTerm);
+      await displayClassStudentsTable(currentClass, classTerm);
     });
 
     termButtonsContainer.appendChild(button);
@@ -518,7 +573,7 @@ async function billSingleStudent(studentId, feesId) {
     return;
   }
 
-  displayClassStudentsTable(currentClass, classTerm);
+  await displayClassStudentsTable(currentClass, classTerm);
   showToast(billResp.message || "Student billed successfully", "success");
 }
 
@@ -531,7 +586,7 @@ document.getElementById("billClassBtn").addEventListener("click", async function
 
   const response = await window.api.getSingleFee({
     classId: currentClass.classId,
-    yearId: currentClass.academicYearId,
+    academicYearId: currentClass.academicYearId,
     termId: classTerm.value,
   });
 
@@ -557,13 +612,13 @@ document.getElementById("billClassBtn").addEventListener("click", async function
   billClassModal.style.display = "block";
 });
 
-document.getElementById("billClassCloseXBtn").addEventListener("click", function () {
-  billClassModal.style.display = "none";
-});
+document
+  .getElementById("billClassCloseXBtn")
+  .addEventListener("click", () => (billClassModal.style.display = "none"));
 
-document.getElementById("cancelBillClassModalBtn").addEventListener("click", function () {
-  billClassModal.style.display = "none";
-});
+document
+  .getElementById("cancelBillClassModalBtn")
+  .addEventListener("click", () => (billClassModal.style.display = "none"));
 
 document.getElementById("submitBillClassModalBtn").addEventListener("click", async function () {
   // get student ids from the table
@@ -578,17 +633,17 @@ document.getElementById("submitBillClassModalBtn").addEventListener("click", asy
 
   showToast(response.message || "Students billed successfully", "success");
   billClassModal.style.display = "none";
-  displayClassStudentsTable(currentClass, classTerm);
+  await displayClassStudentsTable(currentClass, classTerm);
 });
 
 // *********************** PAYMENT HISTORY MODAL ***************************
-document.getElementById("paymentHistoryClassCloseXBtn").addEventListener("click", function () {
-  paymentHistoryModal.style.display = "none";
-});
+document
+  .getElementById("paymentHistoryClassCloseXBtn")
+  .addEventListener("click", () => (paymentHistoryModal.style.display = "none"));
 
-document.getElementById("paymentHistoryOkModalBtn").addEventListener("click", function () {
-  paymentHistoryModal.style.display = "none";
-});
+document
+  .getElementById("paymentHistoryOkModalBtn")
+  .addEventListener("click", () => (paymentHistoryModal.style.display = "none"));
 
 async function showPaymentHistoryModal(data) {
   const response = await window.api.getStudentPayments(data.bill_id);
@@ -724,7 +779,7 @@ document.getElementById("addStudentsToClassModalBtn").addEventListener("click", 
   addStudentsToClassModal.style.display = "none";
   resetStudentToAddModal();
   showToast("Records saved successfully", "success");
-  displayClassStudentsTable(currentClass, classTerm);
+  await displayClassStudentsTable(currentClass, classTerm);
 });
 
 function resetStudentToAddModal() {

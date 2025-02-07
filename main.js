@@ -73,9 +73,9 @@ ipcMain.handle("get-store-settings", (_) => {
   return store.get("settings") || [];
 });
 
-ipcMain.on('reload-app', () => {
+ipcMain.on("reload-app", () => {
   const allWindows = BrowserWindow.getAllWindows();
-  allWindows.forEach(win => win.reload());
+  allWindows.forEach((win) => win.reload());
 });
 
 ipcMain.handle("get-store-classes", (_) => {
@@ -239,17 +239,13 @@ ipcMain.handle("check-class-exists", (event, data) => {
   }
 });
 
-// Get all classes students
-ipcMain.handle("get-all-classes-students", () => {
+// Get students in a class
+ipcMain.handle("get-students-by-class", async (_, data) => {
   try {
-    const result = dbHandler.getAllClassesStudents();
-    if (!result.success) {
-      throw new Error(result.error); // Rethrow the error for consistent error propagation
-    }
-    return result; // Send success response to the UI
+    const result = dbHandler.getStudentsByClass(data);
+    return result;
   } catch (error) {
-    console.error("Main Process Error: ", error);
-    return { success: false, error: error.message };
+    return { success: false, message: error.message };
   }
 });
 

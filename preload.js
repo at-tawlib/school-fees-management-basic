@@ -9,7 +9,7 @@ contextBridge.exposeInMainWorld("api", {
   updateStudent: (student) => ipcRenderer.invoke("update-student", student),
   addStudentToClass: (data) => ipcRenderer.invoke("add-student-to-class", data),
   checkClassExists: (data) => ipcRenderer.invoke("check-class-exists", data),
-  getAllClassesStudents: () => ipcRenderer.invoke("get-all-classes-students"),
+  getStudentsByClass: (data) => ipcRenderer.invoke("get-students-by-class", data),
   addFees: (data) => ipcRenderer.invoke("add-fees", data),
   getAllFees: (data) => ipcRenderer.invoke("get-all-fees", data),
   billStudent: (data) => ipcRenderer.invoke("bill-student", data),

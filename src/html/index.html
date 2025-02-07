@@ -27,7 +27,7 @@
             <li id="navDashboard" class="active">Dashboard</li>
             <li id="navStudents">Students</li>
             <li id="navFees">View Fees</li>
-            <li id="navClasses">Students Classes</li>
+            <li id="navClasses">Students Fees</li>
             <li id="navPayments">Payments</li>
           </ul>
         </div>
@@ -206,8 +206,25 @@
 
         <!-------------- STUDENTS  SECTION ----------------------->
         <section id="studentsView" style="display: none">
-          <div class="flex-row align-start">
-            <div class="flex-3">
+          <div class="grid-container">
+            <div>
+              <h3 id="totalStudentsNumber"></h3>
+              <table class="table-rounded">
+                <thead>
+                  <tr>
+                    <th>Class</th>
+                    <th>Students</th>
+                  </tr>
+                </thead>
+                <tbody id="studentsClassSummaryTableBody"></tbody>
+              </table>
+              <br />
+              <button id="addStudentBtn" class="full-width">
+                <i class="fa-solid fa-plus"></i> Add Student
+              </button>
+            </div>
+
+            <div>
               <div class="flex-row align-center">
                 <input
                   type="text"
@@ -238,30 +255,30 @@
                 </table>
               </div>
             </div>
-
-            <div class="flex-1">
-              <h3 id="totalStudentsNumber"></h3>
-              <table class="table-rounded">
-                <thead>
-                  <tr>
-                    <th>Class</th>
-                    <th>Students</th>
-                  </tr>
-                </thead>
-                <tbody id="studentsClassSummaryTableBody"></tbody>
-              </table>
-              <br />
-              <button id="addStudentBtn" class="full-width">
-                <i class="fa-solid fa-plus"></i> Add Student
-              </button>
-            </div>
           </div>
         </section>
 
         <!-- -------------- VIEW FEES ----------------------- -->
         <section id="viewFeesSection" style="display: none">
-          <div class="flex-row align-start">
-            <div class="flex-3">
+          <div class="grid-container">
+            <div class="elevated-container">
+              <h3>Filter Fees</h3>
+              <div class="flex-item">
+                <label for="filterFeesByAcademicYear">Year:</label>
+                <select id="filterFeesByAcademicYear"></select>
+              </div>
+
+              <div class="flex-item">
+                <label for="filterFeesByTerm">Term:</label>
+                <select id="filterFeesByTerm"></select>
+              </div>
+              <hr style="margin: 1rem 0rem" />
+              <button id="btnAddFees" class="full-width">
+                <i class="fa-solid fa-plus"></i> Add fees
+              </button>
+            </div>
+
+            <div>
               <table id="feesTable" class="table-rounded">
                 <thead id="feesTableHead">
                   <tr>
@@ -277,35 +294,14 @@
                 <tbody id="feesTableBody"></tbody>
               </table>
             </div>
-
-            <div class="flex-1 elevated-container">
-              <h3>Filter Fees</h3>
-              <div class="flex-item">
-                <label for="filterFeesByAcademicYear">Year:</label>
-                <select id="filterFeesByAcademicYear"></select>
-              </div>
-
-              <div class="flex-item">
-                <label for="filterFeesByTerm">Term:</label>
-                <select id="filterFeesByTerm"></select>
-              </div>
-
-              <br />
-              <br />
-              <br />
-              <hr style="margin: 1rem 0rem" />
-              <button id="btnAddFees" class="full-width">
-                <i class="fa-solid fa-plus"></i> Add fees
-              </button>
-            </div>
           </div>
         </section>
 
         <!-- ------------ CLASSES / STUDENT CLASS SECTION ------------ -->
         <section id="studentClassSection" style="display: none">
-          <div class="flex-row align-start">
+          <div class="grid-container">
             <!-- Classes side bar (Classes, add class) -->
-            <div class="flex-1 elevated-container">
+            <div class="elevated-container">
               <div class="flex-item">
                 <label for="filterStudentsByAcademicYear">Year:</label>
                 <select id="filterStudentsByAcademicYear"></select>
@@ -318,7 +314,7 @@
               </button>
             </div>
 
-            <div class="flex-3">
+            <div>
               <!-- Student class table -->
               <div id="studentClassContainer">
                 <div class="flex-row j-space-between">
@@ -332,10 +328,21 @@
                     </button>
                   </div>
                 </div>
-                <br />
+                <hr style="margin: 1rem 0rem" />
 
                 <div class="flex-row j-space-between">
-                  <input type="text" id="searchStudentClassInput" placeholder="Search by name..." />
+                  <div class="flex-row">
+                    <input
+                      type="text"
+                      id="searchStudentClassInput"
+                      placeholder="Search by name..."
+                    />
+                    <select name="paidStatusSelect" id="paidStatusSelect">
+                      <option value="all">All</option>
+                      <option value="fullyPaid">Fully Paid</option>
+                      <option value="withArrears">With Arrears</option>
+                    </select>
+                  </div>
 
                   <div id="term-buttons" class="toggle-buttons"></div>
                 </div>
@@ -348,10 +355,12 @@
                       <th>Fees</th>
                       <th>Paid</th>
                       <th>Balance</th>
+                      <th>Status</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody id="studentClassTableBody"></tbody>
+                  <tfoot id="studentClassTableFoot"></tfoot>
                 </table>
 
                 <table id="notBilledStudentClassTable" class="table-rounded" style="display: none">
@@ -369,9 +378,6 @@
                 <div class="flex-row align-center">
                   <label for="addClassFormClass"><h3>Select Class:</h3></label>
                   <select name="addClassFormClass" id="addClassFormClass" required></select>
-
-                  <label for="addClassFormYear"><h3>Academic year:</h3></label>
-                  <select name="addClassFormYear" id="addClassFormYear" required></select>
 
                   <button id="setClassButton">Set Class</button>
                   <button id="setChangeClassButton" style="display: none">Change Class</button>
@@ -444,9 +450,6 @@
 
         <!-------------- PAYMENTS  SECTION ----------------------->
         <section id="paymentsSection" style="display: none">
-          <h2 style="text-align: center">Fees Payments</h2>
-          <hr style="margin: 1rem 0rem" />
-
           <div>
             <div class="flex-row align-center">
               <label for="paymentAcademicYear"><h3>Year:</h3></label>
