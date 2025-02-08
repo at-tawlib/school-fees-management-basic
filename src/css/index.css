@@ -1,7 +1,9 @@
 /* Define color variables in the :root */
 :root {
   --color-primary: #41d87b;
-  --color-secondary: #083a3c;
+  --color-secondary: #1D347A;
+  --color-secondary-dark: #152659;
+  --color-secondary-light: #4F65A0;
   --color-red: #cc0000;
   --color-red-light: #ff0000;
   --color-red-dark: #660000;
@@ -50,7 +52,6 @@ select {
   border-radius: 0.5rem;
   font-weight: inherit;
   line-height: inherit;
-  /* border-color: rgba(209, 213, 219, 1); */
   border-color: #eaeaea;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
@@ -221,6 +222,10 @@ th {
   cursor: pointer;
 }
 
+.table-rounded tfoot th {
+  background-color: var(--color-secondary-dark);
+}
+
 .plain-table-header {
   background-color: transparent !important;
   color: var(--color-secondary) !important;
@@ -300,11 +305,11 @@ main {
 }
 
 .sidebar ul li:hover {
-  background-color: #0c5c5f;
+  background-color: var(--color-secondary-light);
 }
 
 .sidebar li.active {
-  background-color: #06292b;
+  background-color: var(--color-secondary-dark);
   color: white;
   border-radius: 5px;
 }
@@ -316,7 +321,7 @@ main {
 
 #navHeader {
   height: 8rem;
-  background-color: #06292b;
+  background-color: var(--color-secondary-light);
   color: white;
   padding: 2rem 1rem;
   border-bottom: 1px solid #e0d8d8;

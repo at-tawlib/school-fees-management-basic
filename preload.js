@@ -61,6 +61,10 @@ contextBridge.exposeInMainWorld("store", {
   setStoreClasses: async (data) => {
     return await ipcRenderer.invoke("update-store-classes", data);
   },
+  // For use in dev to clear the store data
+  clearStore: async () => {
+    return await ipcRenderer.invoke("clear-store");
+  }
 });
 
 contextBridge.exposeInMainWorld("app", {

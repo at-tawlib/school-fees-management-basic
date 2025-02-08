@@ -384,63 +384,74 @@
                 </div>
 
                 <div id="addClassTable" style="display: none">
-                  <div>
-                    <table class="table-rounded">
+                  <div class="flex-row align-start">
+                    <div class="flex-3">
+                      <table class="table-rounded">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody id="addStudentClassForm">
+                          <!-- Students List -->
+                        </tbody>
+                      </table>
+
+                      <div class="flex-row">
+                        <button id="addOneStudentRow" title="Add Row">
+                          <i class="fa-solid fa-plus"></i> Add Row
+                        </button>
+
+                        <button id="addTwoStudentRows" title="Add 2 Rows">
+                          <i class="fa-solid fa-plus"></i> Add 2 Rows
+                        </button>
+
+                        <button id="addFiveStudentRows" title="Add 5 Rows">
+                          <i class="fa-solid fa-plus"></i> Add 5 Rows
+                        </button>
+                        <br />
+                      </div>
+
+                      <hr style="border: none; border-top: 2px solid #ccc; margin: 20px 0" />
+
+                      <div class="flex-row">
+                        <button
+                          id="addStudentsSaveBtn"
+                          class="bg-green"
+                          title="Save records"
+                          type="submit"
+                        >
+                          <i class="fa-solid fa-save"></i> Save Records
+                        </button>
+                        <button
+                          id="clearAddStudentsForm"
+                          class="bg-yellow"
+                          title="Clear All"
+                          type="submit"
+                        >
+                          <i class="fa-solid fa-eraser"></i> Clear
+                        </button>
+                        <button
+                          id="cancelAddStudentsForm"
+                          class="bg-red"
+                          title="Cancel"
+                          type="submit"
+                        >
+                          <i class="fa-solid fa-close"></i> Cancel
+                        </button>
+                      </div>
+                    </div>
+
+                    <table class="table-rounded flex-1">
                       <thead>
                         <tr>
-                          <th>#</th>
-                          <th>Name</th>
-                          <th></th>
+                          <th>No Class Students</th>
                         </tr>
                       </thead>
-                      <tbody id="addStudentClassForm">
-                        <!-- Students List -->
-                      </tbody>
+                      <tbody id="noClassStudentsTableBody"></tbody>
                     </table>
-
-                    <div class="flex-row">
-                      <button id="addOneStudentRow" title="Add Row">
-                        <i class="fa-solid fa-plus"></i> Add Row
-                      </button>
-
-                      <button id="addTwoStudentRows" title="Add 2 Rows">
-                        <i class="fa-solid fa-plus"></i> Add 2 Rows
-                      </button>
-
-                      <button id="addFiveStudentRows" title="Add 5 Rows">
-                        <i class="fa-solid fa-plus"></i> Add 5 Rows
-                      </button>
-                      <br />
-                    </div>
-
-                    <hr style="border: none; border-top: 2px solid #ccc; margin: 20px 0" />
-
-                    <div class="flex-row">
-                      <button
-                        id="addStudentsSaveBtn"
-                        class="bg-green"
-                        title="Save records"
-                        type="submit"
-                      >
-                        <i class="fa-solid fa-save"></i> Save Records
-                      </button>
-                      <button
-                        id="clearAddStudentsForm"
-                        class="bg-yellow"
-                        title="Clear All"
-                        type="submit"
-                      >
-                        <i class="fa-solid fa-eraser"></i> Clear
-                      </button>
-                      <button
-                        id="cancelAddStudentsForm"
-                        class="bg-red"
-                        title="Cancel"
-                        type="submit"
-                      >
-                        <i class="fa-solid fa-close"></i> Cancel
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>

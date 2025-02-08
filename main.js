@@ -49,6 +49,11 @@ async function loadInitialData() {
   }
 }
 
+// IPC to clear store
+ipcMain.handle("clear-store", () => {
+  store.clear();
+});
+
 // Reload store data
 ipcMain.handle("reload-store-data", async () => {
   await loadInitialData();

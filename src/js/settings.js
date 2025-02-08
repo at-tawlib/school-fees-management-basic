@@ -7,8 +7,21 @@ const changeYearTermContainer = document.getElementById("changeYearTermContainer
 const defaultYearTermTextContainer = document.getElementById("defaultYearTermTextContainer");
 
 document.getElementById("changeYearTermBtn").addEventListener("click", async function () {
-  const academicYearSetting = await getDefaultYearSetting();
-  const termSetting = await getDefaultTermSetting();
+  let academicYearSetting = (await getDefaultYearSetting()) || null;
+  let termSetting = (await getDefaultTermSetting()) || null;
+
+  if (!academicYearSetting) {
+    const yearResp = await window.api.getAllAcademicYears();
+    if (!yearResp.success) {
+      showToast(yearResp.message, "error");
+      return;
+    }
+
+    if (yearResp.data.length === 0) {
+      showToast("Add an academic year first.", "error");
+      return;
+    }
+  }
 
   changeYearTermContainer.style.display = "";
   defaultYearTermTextContainer.style.display = "none";
@@ -16,12 +29,12 @@ document.getElementById("changeYearTermBtn").addEventListener("click", async fun
   setUpAcademicYearsSelect(
     document.getElementById("settingsDefaultAcademicYear"),
     false,
-    academicYearSetting.setting_value
+    academicYearSetting?.setting_value || null
   );
   setUpTermsSelect(
     document.getElementById("settingsDefaultTerm"),
     false,
-    termSetting.setting_value
+    termSetting?.setting_value || null
   );
 });
 

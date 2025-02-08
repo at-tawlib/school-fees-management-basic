@@ -19,13 +19,28 @@ export async function initDashboard() {
   academicYearSetting = await getDefaultYearSetting();
   termSetting = await getDefaultTermSetting();
 
+  if (!academicYearSetting || !termSetting) {
+    showToast("Set up the current term and academic year.", "error");
+    showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
+    sectionHeaderTitle.textContent = "Settings";
+    initSettings();
+    return;
+  }
+
   const resultText = `${academicYearSetting.setting_text} Academic year, ${termSetting.setting_text} Term`;
   document.getElementById("dashboardTermYearTitle").textContent = resultText;
 
-  document.getElementById("navAcademicYear").textContent = `${academicYearSetting.setting_text} Academic year`;
+  document.getElementById(
+    "navAcademicYear"
+  ).textContent = `${academicYearSetting.setting_text} Academic year`;
   document.getElementById("navTerm").textContent = `${termSetting.setting_text} Term`;
 
   const metricsData = await getMetricsData();
+
+  if (!metricsData) {
+    return;
+  }
+
   await setUpMetrics(metricsData);
   await setUpOverview(metricsData);
   await setUpClassSummary();
@@ -117,19 +132,24 @@ async function setUpRecentPayments() {
     termId: termSetting.setting_value,
   });
 
+  console.log(recentPaymentsResp, academicYearSetting.setting_value, termSetting.setting_value);  
+
   if (!recentPaymentsResp.success) {
     showToast(recentPaymentsResp.message, "error");
     return;
   }
 
-  const recentPayments = recentPaymentsResp.data.splice(0, 10);
-  const recentPaymentsTable = document.getElementById("dashboardRecentPaymentsTableBody");
-  recentPaymentsTable.innerHTML = "";
-
-  if (recentPaymentsResp.data.length === 0) {
+  let recentPayments = recentPaymentsResp.data;
+  if (recentPayments.length === 0) {
     recentPaymentsTable.insertRow().insertCell().textContent = "No recent payments";
     return;
   }
+
+  if (recentPayments.length > 10) {
+    recentPayments = recentPayments.splice(0, 10);
+  }
+  const recentPaymentsTable = document.getElementById("dashboardRecentPaymentsTableBody");
+  recentPaymentsTable.innerHTML = "";
 
   recentPayments.forEach((item) => {
     const row = recentPaymentsTable.insertRow();

@@ -152,6 +152,7 @@ setClassButton.addEventListener("click", async function () {
   await setStudentsData();
   addStudentClassForm.innerHTML = "";
   addClassRowToForm(5);
+  await setupNoClassStudentsTable();
 
   setClassButton.style.display = "none";
   changeClassButton.style.display = "block";
@@ -179,6 +180,7 @@ document.getElementById("addStudentsSaveBtn").addEventListener("click", async fu
 
     if (!row || !studentId || !studentName) {
       row.style.background = "red";
+      row.getElementsByTagName("i")[0].style.color = "white";
       showToast("Please select a student", "error");
       return;
     }
@@ -271,8 +273,20 @@ function resetAddStudentsFormRowNumbers() {
 }
 
 async function setStudentsData() {
-  const response = await window.api.getAllStudents();
-  studentsData = response.data;
+  const response = await window.api.getStudentsByYear(filterStudentsByAcademicYear.value);
+
+  if (!response.success) {
+    showToast(response.message || "An error occurred", "error");
+    return;
+  }
+
+  if (response.data.length === 0) {
+    showToast("No students found for this academic year", "error");
+    return;
+  }
+
+  const studentsWithoutClass = response.data.filter((student) => student.class_name === null);
+  studentsData = studentsWithoutClass;
 }
 
 function attachAutoSuggestEventListeners(input, hiddenInput, suggestionList, data) {
@@ -308,7 +322,7 @@ function attachAutoSuggestEventListeners(input, hiddenInput, suggestionList, dat
           // Add click event to populate input and hide suggestions
           li.addEventListener("click", function () {
             input.value = fullName; // Set the input value
-            hiddenInput.value = match.id; // Set the hidden id value
+            hiddenInput.value = match.student_id; // Set the hidden id value
             suggestionList.style.display = "none"; // Hide suggestions
           });
 
@@ -341,6 +355,19 @@ function clearInputStyles(input) {
 function clearInput(input) {
   input.value = "";
   input.disabled = false;
+}
+
+async function setupNoClassStudentsTable() {
+  const tableBody = document.getElementById("noClassStudentsTableBody");
+  tableBody.innerHTML = "";
+  studentsData.forEach((student, index) => {
+    const row = document.createElement("tr");
+    row.setAttribute("data-student-id", student.id);
+    row.innerHTML = `
+      <td>${student.first_name} ${student.other_names} ${student.last_name}</td>
+    `;
+    tableBody.appendChild(row);
+  });
 }
 
 function resetAddStudentForm() {
@@ -436,7 +463,7 @@ export async function displayClassStudentsTable() {
         <td class="color-blue bold-text">${fCurrency(item.fee_amount)}</td>
         <td class="color-green bold-text">${fCurrency(item.total_payments)}</td>
         <td class="color-red bold-text">${fCurrency(arrears)}</td>
-        <td>${arrears <= 0 ? '<i class="fa-regular fa-circle-check color-green"></i>' : ''}</td>
+        <td>${arrears <= 0 ? '<i class="fa-regular fa-circle-check color-green"></i>' : ""}</td>
         <td>
           <div style="display: flex; justify-content: center">
             <button id="btnPayFees"  class="text-button" title="Pay school fees">
