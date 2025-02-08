@@ -28,6 +28,10 @@ document.getElementById("navRefreshBtn").addEventListener("click", function () {
   window.app.reloadApp();
 });
 
+document.getElementById("navAbout").addEventListener("click", function () {
+  document.getElementById("aboutModal").style.display = "block";
+});
+
 document.getElementById("navDashboard").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.DASHBOARD);
   sectionHeaderTitle.textContent = "Dashboard";
@@ -66,6 +70,10 @@ document.getElementById("navSettings").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
   sectionHeaderTitle.textContent = "Settings";
   initSettings();
+});
+
+document.getElementById("aboutCloseXBtn").addEventListener("click", function () {
+  document.getElementById("aboutModal").style.display = "none";
 });
 
 window.onload = function () {
