@@ -1,3 +1,5 @@
+import { getDefaultYearSetting } from "./utils/get-settings.js";
+import { setUpClassSelect } from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
 const addStudentModal = document.getElementById("addStudentModal");
@@ -7,7 +9,7 @@ const otherNamesInput = document.getElementById("studentOtherNameInput");
 const totalStudentsNumber = document.getElementById("totalStudentsNumber");
 const searchStudentInput = document.getElementById("searchStudentInput");
 const studentsTableBody = document.getElementById("studentsTableBody");
-const tableRows = studentsTableBody.getElementsByTagName("tr");
+const studentClassFilter = document.getElementById("studentClassFilter");
 let editingStudentId = null;
 
 document.getElementById("addStudentBtn").addEventListener("click", function () {
@@ -48,7 +50,7 @@ document.getElementById("addStudentModalBtn").addEventListener("click", async fu
       showToast(result.message, "success");
       editingStudentId = null;
       addStudentModal.style.display = "none";
-      displayStudents();
+      initStudentsSection();
       return;
     }
 
@@ -65,15 +67,14 @@ document.getElementById("addStudentModalBtn").addEventListener("click", async fu
   if (result.success) {
     showToast(result.message, "success");
     addStudentModal.style.display = "none";
-    displayStudents();
+    initStudentsSection();
     return;
   }
   showToast(result.message, "error");
 });
 
-searchStudentInput.addEventListener("input", function () {
-  filterStudentsTable();
-});
+searchStudentInput.addEventListener("input", filterStudentsTable);
+studentClassFilter.addEventListener("change", filterStudentsTable);
 
 function editStudentRecord(student) {
   addStudentModal.style.display = "block";
@@ -81,11 +82,24 @@ function editStudentRecord(student) {
   firstNameInput.value = student.first_name;
   lastNameInput.value = student.last_name;
   otherNamesInput.value = student.other_names;
-  editingStudentId = student.id;
+  editingStudentId = student.student_id;
 }
 
-export async function displayStudents() {
-  const response = await window.api.getAllStudents();
+export async function initStudentsSection() {
+  const academicYearSetting = await getDefaultYearSetting();
+
+  await setUpClassSelect(studentClassFilter, true);
+  const noClassOption = document.createElement("option");
+  noClassOption.value = "none";
+  noClassOption.text = "No Class";
+  studentClassFilter.appendChild(noClassOption);
+
+  await displayStudents(academicYearSetting.setting_value);
+}
+
+async function displayStudents(yearId) {
+  const response = await window.api.getStudentsByYear(yearId);
+  document.getElementById("searchStudentInput").value = "";
   studentsTableBody.innerHTML = "";
 
   if (response.success === false) {
@@ -100,13 +114,20 @@ export async function displayStudents() {
 
   totalStudentsNumber.textContent = `Total Number Of Students: ${response.data.length}`;
 
-  response.data.forEach((student) => {
+  response.data.forEach((student, index) => {
     const row = document.createElement("tr");
+    row.setAttribute("data-id", student.id);
+    row.setAttribute(
+      "data-name",
+      `${student.first_name} ${student.last_name} ${student.other_names}`
+    );
+    row.setAttribute("data-class", student?.class_name || "No Class");
     row.innerHTML = `
-        <td>${student.id}</td>
+        <td>${index + 1}</td>
         <td>${student.first_name}</td>
         <td>${student.last_name}</td>
         <td>${student.other_names}</td>
+        <td>${student?.class_name ? student.class_name : "No Class"}</td>
         <td> 
           <div id="btnEditStudent" class="text-button">
             <i class="fa-solid fa-pen-to-square"></i> Edit
@@ -114,33 +135,74 @@ export async function displayStudents() {
         </td>
       `;
 
+    // Add background colour if class_name is null
+    if (!student.class_name) row.style.backgroundColor = "#ffe6e6";
+
     row.querySelector("#btnEditStudent").addEventListener("click", () => {
       editStudentRecord(student);
     });
+
     studentsTableBody.appendChild(row);
   });
+
+  await displayClassStats(response.data);
 }
 
 function filterStudentsTable() {
   const searchValue = searchStudentInput.value.toLowerCase();
 
-  for (let row of tableRows) {
-    const cells = row.getElementsByTagName("td");
-    const firstNameCell = cells[1]?.textContent.toLowerCase();
-    const lastNameCell = cells[2]?.textContent.toLowerCase();
-    const otherNamesCell = cells[3]?.textContent.toLowerCase();
+  const tableRows = studentsTableBody.querySelectorAll("tr");
+  const selectedClassOption = studentClassFilter.options[studentClassFilter.selectedIndex];
+  const selectedClassText = selectedClassOption.text.toLowerCase();
 
-    if (!firstNameCell && !lastNameCell && !otherNamesCell) return;
+  tableRows.forEach((row) => {
+    const rowName = row.getAttribute("data-name").toLowerCase();
+    const rowClass = row.getAttribute("data-class").toLowerCase();
 
-    // Check if search value is included in the name
-    if (
-      firstNameCell.includes(searchValue) ||
-      lastNameCell.includes(searchValue) ||
-      otherNamesCell.includes(searchValue)
-    ) {
+    const classMatch = selectedClassText === "all" || rowClass.includes(selectedClassText);
+    const nameMatch = rowName.includes(searchValue);
+
+    // Show or hide row based on filter match
+    if (classMatch && nameMatch) {
       row.style.display = "";
     } else {
       row.style.display = "none";
     }
+  });
+}
+
+async function displayClassStats(data) {
+  const classResp = await window.api.getAllClass();
+  if (!classResp.success) {
+    showToast(classResp.message, "error");
+    return;
   }
+
+  const classData = classResp.data;
+  const groupedStudents = data.reduce((acc, student) => {
+    const className = student.class_name || "No Class";
+    if (acc[className]) {
+      acc[className]++;
+    } else {
+      acc[className] = 1;
+    }
+    return acc;
+  }, {});
+
+  // Arrange grouped data to match class order from the database
+  const arrangedClasses = classData.map((cls) => ({
+    class_name: cls.class_name,
+    student_count: groupedStudents[cls.class_name] || 0,
+  }));
+
+  // Include "No Class" separately
+  arrangedClasses.push({ class_name: "No Class", student_count: groupedStudents["No Class"] || 0 });
+
+  const classStatsTable = document.getElementById("studentsClassSummaryTableBody");
+  classStatsTable.innerHTML = "";
+  arrangedClasses.forEach((item) => {
+    const row = classStatsTable.insertRow();
+    row.insertCell().textContent = item.class_name;
+    row.insertCell().textContent = item.student_count;
+  });
 }

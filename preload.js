@@ -4,11 +4,12 @@ contextBridge.exposeInMainWorld("api", {
   saveSetting: (key, value, text) => ipcRenderer.invoke("save-setting", key, value, text),
   getAllSettings: () => ipcRenderer.invoke("get-all-settings"),
   getAllStudents: () => ipcRenderer.invoke("get-all-students"),
+  getStudentsByYear: (year) => ipcRenderer.invoke("get-students-by-year", year),
   insertStudent: (student) => ipcRenderer.invoke("insert-student", student),
   updateStudent: (student) => ipcRenderer.invoke("update-student", student),
   addStudentToClass: (data) => ipcRenderer.invoke("add-student-to-class", data),
   checkClassExists: (data) => ipcRenderer.invoke("check-class-exists", data),
-  getAllClassesStudents: () => ipcRenderer.invoke("get-all-classes-students"),
+  getStudentsByClass: (data) => ipcRenderer.invoke("get-students-by-class", data),
   addFees: (data) => ipcRenderer.invoke("add-fees", data),
   getAllFees: (data) => ipcRenderer.invoke("get-all-fees", data),
   billStudent: (data) => ipcRenderer.invoke("bill-student", data),
@@ -60,4 +61,12 @@ contextBridge.exposeInMainWorld("store", {
   setStoreClasses: async (data) => {
     return await ipcRenderer.invoke("update-store-classes", data);
   },
+  // For use in dev to clear the store data
+  clearStore: async () => {
+    return await ipcRenderer.invoke("clear-store");
+  }
+});
+
+contextBridge.exposeInMainWorld("app", {
+  reloadApp: () => ipcRenderer.send('reload-app')
 });

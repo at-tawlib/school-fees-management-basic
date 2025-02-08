@@ -17,18 +17,28 @@
   <body>
     <div class="container">
       <nav class="sidebar">
-        <ul>
-          <li id="navDashboard">Dashboard</li>
-          <li id="navStudents">Students</li>
-          <li id="navFees">View Fees</li>
-          <li id="navClasses">Students Classes</li>
-          <li id="navPayments">Payments</li>
-        </ul>
+        <div>
+          <div id="navHeader">
+            <h3>School Fees Tracker</h3>
+            <p id="navAcademicYear"></p>
+            <p id="navTerm"></p>
+          </div>
+          <ul>
+            <li id="navDashboard" class="active">Dashboard</li>
+            <li id="navStudents">Students</li>
+            <li id="navFees">View Fees</li>
+            <li id="navClasses">Students Fees</li>
+            <li id="navPayments">Payments</li>
+          </ul>
+        </div>
         <button id="navSettings"><i class="fa-solid fa-gears"></i> Settings</button>
       </nav>
 
       <header>
         <h2 id="sectionHeaderTitle">Students</h2>
+        <button id="navRefreshBtn" class="text-button" title="Refresh App" style="color: white">
+          <i class="fa-solid fa-sync"></i> Refresh
+        </button>
       </header>
 
       <main>
@@ -77,7 +87,7 @@
           <hr style="margin: 1rem 0rem" />
 
           <h2>Overview</h2>
-          <div class="flex-row align-start">
+          <div class="metrics">
             <!-- Students Summary -->
             <table class="table-rounded elevated-container">
               <tbody>
@@ -100,7 +110,7 @@
             </table>
 
             <!-- Class Summary -->
-            <table class="table-rounded">
+            <table class="table-rounded elevated-container">
               <tbody>
                 <tr>
                   <th colspan="2">Class Summary</th>
@@ -121,7 +131,7 @@
             </table>
 
             <!-- Fees Summary -->
-            <table class="table-rounded">
+            <table class="table-rounded elevated-container">
               <tbody>
                 <tr>
                   <th colspan="2">Fees Summary</th>
@@ -142,7 +152,7 @@
             </table>
 
             <!-- Billing Summary -->
-            <table class="table-rounded">
+            <table class="table-rounded elevated-container">
               <tbody>
                 <tr>
                   <th colspan="2">Billing Summary</th>
@@ -196,14 +206,37 @@
 
         <!-------------- STUDENTS  SECTION ----------------------->
         <section id="studentsView" style="display: none">
-          <div class="flex-row align-start">
-            <div class="flex-3">
-              <input
-                type="text"
-                id="searchStudentInput"
-                class="full-width"
-                placeholder="Search by name..."
-              />
+          <div class="grid-container">
+            <div>
+              <h3 id="totalStudentsNumber"></h3>
+              <table class="table-rounded">
+                <thead>
+                  <tr>
+                    <th>Class</th>
+                    <th>Students</th>
+                  </tr>
+                </thead>
+                <tbody id="studentsClassSummaryTableBody"></tbody>
+              </table>
+              <br />
+              <button id="addStudentBtn" class="full-width">
+                <i class="fa-solid fa-plus"></i> Add Student
+              </button>
+            </div>
+
+            <div>
+              <div class="flex-row align-center">
+                <input
+                  type="text"
+                  id="searchStudentInput"
+                  class="full-width"
+                  placeholder="Search by name..."
+                />
+
+                <label for="studentClassFilter"><h3>Class:</h3></label>
+                <select name="studentClassFilter" id="studentClassFilter" required></select>
+              </div>
+
               <div>
                 <table id="studentsTable" class="table-rounded">
                   <thead>
@@ -212,6 +245,7 @@
                       <th>First Name</th>
                       <th>Last Name</th>
                       <th>Other Names</th>
+                      <th>Class</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -221,21 +255,30 @@
                 </table>
               </div>
             </div>
-
-            <div class="flex-1 elevated-container">
-              <h3 id="totalStudentsNumber"></h3>
-              <br />
-              <button id="addStudentBtn" class="full-width">
-                <i class="fa-solid fa-plus"></i> Add Student
-              </button>
-            </div>
           </div>
         </section>
 
         <!-- -------------- VIEW FEES ----------------------- -->
         <section id="viewFeesSection" style="display: none">
-          <div class="flex-row align-start">
-            <div class="flex-3">
+          <div class="grid-container">
+            <div class="elevated-container">
+              <h3>Filter Fees</h3>
+              <div class="flex-item">
+                <label for="filterFeesByAcademicYear">Year:</label>
+                <select id="filterFeesByAcademicYear"></select>
+              </div>
+
+              <div class="flex-item">
+                <label for="filterFeesByTerm">Term:</label>
+                <select id="filterFeesByTerm"></select>
+              </div>
+              <hr style="margin: 1rem 0rem" />
+              <button id="btnAddFees" class="full-width">
+                <i class="fa-solid fa-plus"></i> Add fees
+              </button>
+            </div>
+
+            <div>
               <table id="feesTable" class="table-rounded">
                 <thead id="feesTableHead">
                   <tr>
@@ -251,35 +294,14 @@
                 <tbody id="feesTableBody"></tbody>
               </table>
             </div>
-
-            <div class="flex-1 elevated-container">
-              <h3>Filter Fees</h3>
-              <div class="flex-item">
-                <label for="filterFeesByAcademicYear">Year:</label>
-                <select id="filterFeesByAcademicYear"></select>
-              </div>
-
-              <div class="flex-item">
-                <label for="filterFeesByTerm">Term:</label>
-                <select id="filterFeesByTerm"></select>
-              </div>
-
-              <br />
-              <br />
-              <br />
-              <hr style="margin: 1rem 0rem" />
-              <button id="btnAddFees" class="full-width">
-                <i class="fa-solid fa-plus"></i> Add fees
-              </button>
-            </div>
           </div>
         </section>
 
         <!-- ------------ CLASSES / STUDENT CLASS SECTION ------------ -->
         <section id="studentClassSection" style="display: none">
-          <div class="flex-row align-start">
+          <div class="grid-container">
             <!-- Classes side bar (Classes, add class) -->
-            <div class="flex-1 elevated-container">
+            <div class="elevated-container">
               <div class="flex-item">
                 <label for="filterStudentsByAcademicYear">Year:</label>
                 <select id="filterStudentsByAcademicYear"></select>
@@ -292,7 +314,7 @@
               </button>
             </div>
 
-            <div class="flex-3">
+            <div>
               <!-- Student class table -->
               <div id="studentClassContainer">
                 <div class="flex-row j-space-between">
@@ -306,10 +328,21 @@
                     </button>
                   </div>
                 </div>
-                <br />
+                <hr style="margin: 1rem 0rem" />
 
                 <div class="flex-row j-space-between">
-                  <input type="text" id="searchStudentClassInput" placeholder="Search by name..." />
+                  <div class="flex-row">
+                    <input
+                      type="text"
+                      id="searchStudentClassInput"
+                      placeholder="Search by name..."
+                    />
+                    <select name="paidStatusSelect" id="paidStatusSelect">
+                      <option value="all">All</option>
+                      <option value="fullyPaid">Fully Paid</option>
+                      <option value="withArrears">With Arrears</option>
+                    </select>
+                  </div>
 
                   <div id="term-buttons" class="toggle-buttons"></div>
                 </div>
@@ -322,10 +355,12 @@
                       <th>Fees</th>
                       <th>Paid</th>
                       <th>Balance</th>
+                      <th>Status</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody id="studentClassTableBody"></tbody>
+                  <tfoot id="studentClassTableFoot"></tfoot>
                 </table>
 
                 <table id="notBilledStudentClassTable" class="table-rounded" style="display: none">
@@ -344,71 +379,79 @@
                   <label for="addClassFormClass"><h3>Select Class:</h3></label>
                   <select name="addClassFormClass" id="addClassFormClass" required></select>
 
-                  <label for="addClassFormYear"><h3>Academic year:</h3></label>
-                  <select name="addClassFormYear" id="addClassFormYear" required></select>
-
                   <button id="setClassButton">Set Class</button>
                   <button id="setChangeClassButton" style="display: none">Change Class</button>
                 </div>
 
                 <div id="addClassTable" style="display: none">
-                  <div>
-                    <table class="table-rounded">
+                  <div class="flex-row align-start">
+                    <div class="flex-3">
+                      <table class="table-rounded">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody id="addStudentClassForm">
+                          <!-- Students List -->
+                        </tbody>
+                      </table>
+
+                      <div class="flex-row">
+                        <button id="addOneStudentRow" title="Add Row">
+                          <i class="fa-solid fa-plus"></i> Add Row
+                        </button>
+
+                        <button id="addTwoStudentRows" title="Add 2 Rows">
+                          <i class="fa-solid fa-plus"></i> Add 2 Rows
+                        </button>
+
+                        <button id="addFiveStudentRows" title="Add 5 Rows">
+                          <i class="fa-solid fa-plus"></i> Add 5 Rows
+                        </button>
+                        <br />
+                      </div>
+
+                      <hr style="border: none; border-top: 2px solid #ccc; margin: 20px 0" />
+
+                      <div class="flex-row">
+                        <button
+                          id="addStudentsSaveBtn"
+                          class="bg-green"
+                          title="Save records"
+                          type="submit"
+                        >
+                          <i class="fa-solid fa-save"></i> Save Records
+                        </button>
+                        <button
+                          id="clearAddStudentsForm"
+                          class="bg-yellow"
+                          title="Clear All"
+                          type="submit"
+                        >
+                          <i class="fa-solid fa-eraser"></i> Clear
+                        </button>
+                        <button
+                          id="cancelAddStudentsForm"
+                          class="bg-red"
+                          title="Cancel"
+                          type="submit"
+                        >
+                          <i class="fa-solid fa-close"></i> Cancel
+                        </button>
+                      </div>
+                    </div>
+
+                    <table class="table-rounded flex-1">
                       <thead>
                         <tr>
-                          <th>#</th>
-                          <th>Name</th>
-                          <th></th>
+                          <th>No Class Students</th>
                         </tr>
                       </thead>
-                      <tbody id="addStudentClassForm">
-                        <!-- Students List -->
-                      </tbody>
+                      <tbody id="noClassStudentsTableBody"></tbody>
                     </table>
-
-                    <div class="flex-row">
-                      <button id="addOneStudentRow" title="Add Row">
-                        <i class="fa-solid fa-plus"></i> Add Row
-                      </button>
-
-                      <button id="addTwoStudentRows" title="Add 2 Rows">
-                        <i class="fa-solid fa-plus"></i> Add 2 Rows
-                      </button>
-
-                      <button id="addFiveStudentRows" title="Add 5 Rows">
-                        <i class="fa-solid fa-plus"></i> Add 5 Rows
-                      </button>
-                      <br />
-                    </div>
-
-                    <hr style="border: none; border-top: 2px solid #ccc; margin: 20px 0" />
-
-                    <div class="flex-row">
-                      <button
-                        id="addStudentsSaveBtn"
-                        class="bg-green"
-                        title="Save records"
-                        type="submit"
-                      >
-                        <i class="fa-solid fa-save"></i> Save Records
-                      </button>
-                      <button
-                        id="clearAddStudentsForm"
-                        class="bg-yellow"
-                        title="Clear All"
-                        type="submit"
-                      >
-                        <i class="fa-solid fa-eraser"></i> Clear
-                      </button>
-                      <button
-                        id="cancelAddStudentsForm"
-                        class="bg-red"
-                        title="Cancel"
-                        type="submit"
-                      >
-                        <i class="fa-solid fa-close"></i> Cancel
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -418,9 +461,6 @@
 
         <!-------------- PAYMENTS  SECTION ----------------------->
         <section id="paymentsSection" style="display: none">
-          <h2 style="text-align: center">Fees Payments</h2>
-          <hr style="margin: 1rem 0rem" />
-
           <div>
             <div class="flex-row align-center">
               <label for="paymentAcademicYear"><h3>Year:</h3></label>
@@ -500,9 +540,9 @@
 
             <br />
             <br />
-            <div class="flex-row">
+            <div class="grid-container grid-1">
               <!-- Classes Section -->
-              <div class="elevated-container flex-1">
+              <div class="elevated-container">
                 <h3>Manage Classes</h3>
                 <table id="settingsClassTable" class="table-rounded">
                   <tbody id="settingsClassTableBody"></tbody>
@@ -521,7 +561,7 @@
               </div>
 
               <!-- Academic Years Section -->
-              <div class="elevated-container flex-1">
+              <div class="elevated-container">
                 <h3>Manage Academic Years</h3>
                 <table id="settingsYearTable" class="table-rounded">
                   <tbody id="settingsYearTableBody"></tbody>

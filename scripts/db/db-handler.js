@@ -179,10 +179,30 @@ class DatabaseHandler {
     }
   }
 
+  // TODO: not used anywhere remove
   getAllStudents() {
     try {
       const stmt = this.db.prepare(`SELECT * FROM students`);
       const records = stmt.all();
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getStudentsByYear(yearId) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT 
+          s.id AS student_id, s.first_name, s.last_name, s.other_names,
+          c.class_name, ay.year AS academic_year
+        FROM students s
+        LEFT JOIN studentClasses sc ON s.id = sc.student_id AND sc.year_id = ?
+        LEFT JOIN classes c ON sc.class_id = c.id
+        LEFT JOIN academicYears ay ON sc.year_id = ay.id;
+        `);
+      const records = stmt.all(yearId);
       return { success: true, data: records };
     } catch (error) {
       console.error("Database Error: ", error);
@@ -258,15 +278,19 @@ class DatabaseHandler {
     }
   }
 
-  getAllClassesStudents() {
+  getStudentsByClass(filter) {
     try {
       const stmt = this.db.prepare(`
-          SELECT s.id AS student_id, s.first_name, s.last_name, s.other_names, c.class_name, c.academic_year
-          FROM  students s
-          JOIN studentClasses c
-          ON s.id = c.student_id
+        SELECT s.id AS student_id, 
+          s.first_name || ' ' || COALESCE(s.other_names, '') || ' ' || s.last_name  AS student_name,
+          c.class_id, cl.class_name, c.year_id, ay.year 
+        FROM students s
+        JOIN studentClasses c ON s.id = c.student_id
+        JOIN classes cl ON c.class_id = cl.id
+        JOIN academicYears ay ON c.year_id = ay.id
+        WHERE c.year_id = ? AND c.class_id = ?;
         `);
-      const records = stmt.all();
+      const records = stmt.all(filter.academicYearId, filter.classId);
       return { success: true, data: records };
     } catch (error) {
       console.error("Database Error: ", error);
@@ -317,7 +341,7 @@ class DatabaseHandler {
           WHERE class_id = ? AND year_id = ?
         ) AS data_exists;
       `);
-      const result = stmt.get(filter.className, filter.academicYear);
+      const result = stmt.get(filter.classId, filter.academicYearId);
       return { success: true, exists: !!result.data_exists };
     } catch (error) {
       console.error("Database Error: ", error);
@@ -335,30 +359,6 @@ class DatabaseHandler {
 
     const result = stmt.get(fee.class, fee.term, fee.academicYear);
     return result !== undefined; // Return true if a record exists
-  }
-
-  getSingleFee(fee) {
-    try {
-      const stmt = this.db.prepare(`
-        SELECT * FROM fees
-        WHERE class_id = ? AND term_id = ? AND year_id = ?
-        LIMIT 1
-      `);
-
-      console.log(fee);
-      const result = stmt.get(fee.classId, fee.termId, fee.yearId);
-      if (!result) {
-        return {
-          success: false,
-          message: `No fee found for the selected class, year and term.`,
-        };
-      }
-
-      return { success: true, data: result };
-    } catch (error) {
-      console.error("Database Error: ", error);
-      return { success: false, message: error.message };
-    }
   }
 
   getAllFees() {
@@ -381,6 +381,30 @@ class DatabaseHandler {
     }
   }
 
+  getSingleFee(fee) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT * FROM fees
+        WHERE class_id = ? AND term_id = ? AND year_id = ?
+        LIMIT 1
+      `);
+
+      console.log(fee);
+      const result = stmt.get(fee.classId, fee.termId, fee.academicYearId);
+      if (!result) {
+        return {
+          success: false,
+          message: `No fee found for the selected class, year and term.`,
+        };
+      }
+
+      return { success: true, data: result };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   addFees(data) {
     try {
       // Checks if fees exist for the class, term and academic year before adding
@@ -394,7 +418,7 @@ class DatabaseHandler {
       const stmt = this.db.prepare(`
           INSERT INTO fees (class_id, year_id, term_id, amount, created_at) VALUES (?, ?, ?, ?, ?)
         `);
-      stmt.run(data.class, data.academicYear, data.term, data.amount, new Date().toISOString());
+      stmt.run(data.classId, data.academicYearId, data.termId, data.amount, new Date().toISOString());
       return {
         success: true,
         message: "Fees added successfully.",
@@ -564,7 +588,7 @@ class DatabaseHandler {
       const stmt = this.db.prepare(`
         SELECT 
             s.id AS student_id, 
-            s.first_name || ' ' || s.last_name || ' ' || COALESCE(s.other_names, '') AS student_name,
+            s.first_name || ' ' || COALESCE(s.other_names, '') || ' ' || s.last_name  AS student_name,
             f.id AS fees_id, 
             f.amount AS fee_amount, 
             b.id AS bill_id, 
@@ -675,7 +699,7 @@ class DatabaseHandler {
     try {
       const stmt = this.db.prepare(`
           SELECT s.id AS student_id,
-            s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
+            s.first_name || ' ' || IFNULL(s.other_names, '') || ' ' || s.last_name AS student_name,
             c.class_name, c.academic_year,
             f.id AS fees_id, f.term, f.amount AS fee_amount,
             b.id AS bill_id, COUNT(b.id) AS is_billed,
@@ -705,7 +729,7 @@ class DatabaseHandler {
               p.payment_mode, p.payment_details, p.date_paid,
               b.fees_id, 
               s.id AS student_id, 
-              s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
+              s.first_name || ' ' || IFNULL(s.other_names, '') || ' ' || s.last_name AS student_name,
               c.class_name, c.id AS class_id, 
               ay.year AS academic_year, ay.id AS year_id,
               t.term, f.amount AS fee_amount, t.id AS term_id
@@ -734,7 +758,7 @@ class DatabaseHandler {
                 p.payment_mode, p.payment_details, p.date_paid,
                 b.fees_id, 
                 s.id AS student_id, 
-                s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
+                s.first_name || ' ' || IFNULL(s.other_names, '') || ' ' || s.last_name AS student_name,
                 c.class_name, c.id AS class_id, 
                 ay.year AS academic_year, ay.id AS year_id,
                 t.term, f.amount AS fee_amount, t.id AS term_id
@@ -764,7 +788,7 @@ class DatabaseHandler {
                 p.payment_mode, p.payment_details, p.date_paid,
                 b.fees_id, 
                 s.id AS student_id, 
-                s.first_name || ' ' || s.last_name || ' ' || IFNULL(s.other_names, '') AS student_name,
+                s.first_name || ' ' || IFNULL(s.other_names, '') || ' ' ||  s.last_name AS student_name,
                 c.class_name, c.id AS class_id, 
                 ay.year AS academic_year, ay.id AS year_id,
                 t.term, f.amount AS fee_amount, t.id AS term_id

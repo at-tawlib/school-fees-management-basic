@@ -49,6 +49,11 @@ async function loadInitialData() {
   }
 }
 
+// IPC to clear store
+ipcMain.handle("clear-store", () => {
+  store.clear();
+});
+
 // Reload store data
 ipcMain.handle("reload-store-data", async () => {
   await loadInitialData();
@@ -71,6 +76,11 @@ ipcMain.handle("get-initial-data", (_) => {
 
 ipcMain.handle("get-store-settings", (_) => {
   return store.get("settings") || [];
+});
+
+ipcMain.on("reload-app", () => {
+  const allWindows = BrowserWindow.getAllWindows();
+  allWindows.forEach((win) => win.reload());
 });
 
 ipcMain.handle("get-store-classes", (_) => {
@@ -199,6 +209,16 @@ ipcMain.handle("get-all-students", async () => {
   }
 });
 
+// get students by year
+ipcMain.handle("get-students-by-year", async (_, year) => {
+  try {
+    const result = dbHandler.getStudentsByYear(year);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // Add student to class
 // TODO: remove the try-catch block and handle errors in the renderer process
 ipcMain.handle("add-student-to-class", (_, data) => {
@@ -224,17 +244,13 @@ ipcMain.handle("check-class-exists", (event, data) => {
   }
 });
 
-// Get all classes students
-ipcMain.handle("get-all-classes-students", () => {
+// Get students in a class
+ipcMain.handle("get-students-by-class", async (_, data) => {
   try {
-    const result = dbHandler.getAllClassesStudents();
-    if (!result.success) {
-      throw new Error(result.error); // Rethrow the error for consistent error propagation
-    }
-    return result; // Send success response to the UI
+    const result = dbHandler.getStudentsByClass(data);
+    return result;
   } catch (error) {
-    console.error("Main Process Error: ", error);
-    return { success: false, error: error.message };
+    return { success: false, message: error.message };
   }
 });
 
@@ -514,5 +530,11 @@ app.whenReady().then(async () => {
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
+  }
+});
+
+app.on("activate", () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
   }
 });

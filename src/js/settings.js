@@ -6,12 +6,36 @@ import { showToast } from "./utils/toast.js";
 const changeYearTermContainer = document.getElementById("changeYearTermContainer");
 const defaultYearTermTextContainer = document.getElementById("defaultYearTermTextContainer");
 
-document.getElementById("changeYearTermBtn").addEventListener("click", function () {
+document.getElementById("changeYearTermBtn").addEventListener("click", async function () {
+  let academicYearSetting = (await getDefaultYearSetting()) || null;
+  let termSetting = (await getDefaultTermSetting()) || null;
+
+  if (!academicYearSetting) {
+    const yearResp = await window.api.getAllAcademicYears();
+    if (!yearResp.success) {
+      showToast(yearResp.message, "error");
+      return;
+    }
+
+    if (yearResp.data.length === 0) {
+      showToast("Add an academic year first.", "error");
+      return;
+    }
+  }
+
   changeYearTermContainer.style.display = "";
   defaultYearTermTextContainer.style.display = "none";
 
-  setUpAcademicYearsSelect(document.getElementById("settingsDefaultAcademicYear"), false);
-  setUpTermsSelect(document.getElementById("settingsDefaultTerm"), false);
+  setUpAcademicYearsSelect(
+    document.getElementById("settingsDefaultAcademicYear"),
+    false,
+    academicYearSetting?.setting_value || null
+  );
+  setUpTermsSelect(
+    document.getElementById("settingsDefaultTerm"),
+    false,
+    termSetting?.setting_value || null
+  );
 });
 
 document.getElementById("currentYearTermCancelBtn").addEventListener("click", function () {
