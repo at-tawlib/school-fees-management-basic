@@ -10,7 +10,7 @@ function getDbPath() {
 
   if (app.isPackaged) {
     // Paths for production
-    const sourceDbPath = path.join(process.join(process.resourcesPath, dbFileName));
+    const sourceDbPath = path.join(process.resourcesPath, dbFileName);
     cachedDbPath = path.join(app.getPath("userData"), dbFileName);
 
     // Copy the database file only if it doesn't already exist in the target directory
