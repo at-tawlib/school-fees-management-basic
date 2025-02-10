@@ -1,14 +1,34 @@
 const path = require("path");
-require("dotenv").config();
+const fs = require("fs");
 const { app } = require("electron");
 
-function getDbPath() {
-  const isDev = process.env.NODE_ENV !== "production";
+let cachedDbPath = null;
 
-  // For production builds, you should store the database in the app's userData directory
-  if (isDev)
-    return path.join(__dirname, "../database/schoolFeesTracker.db");
-  return path.join(app.getPath("userData"), "schoolFeesTracker.db");
+function getDbPath() {
+  const dbFileName = "schoolFeesTracker.db";
+  if (cachedDbPath) return cachedDbPath;
+
+  if (app.isPackaged) {
+    // Paths for production
+    const sourceDbPath = path.join(process.join(process.resourcesPath, dbFileName));
+    cachedDbPath = path.join(app.getPath("userData"), dbFileName);
+
+    // Copy the database file only if it doesn't already exist in the target directory
+    if (!fs.existsSync(cachedDbPath)) {
+      try {
+        fs.copyFileSync(sourceDbPath, cachedDbPath);
+        console.log("Database copied to:", cachedDbPath);
+      } catch (err) {
+        console.error("Failed to copy database:", err);
+        throw err; // Rethrow the error to handle it in the calling code
+      }
+    }
+  } else {
+    // Paths for development
+    cachedDbPath = path.join(__dirname, "../database", dbFileName);
+  }
+
+  return cachedDbPath;
 }
 
 module.exports = { getDbPath };

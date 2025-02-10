@@ -715,6 +715,7 @@ header {
   border-radius: 0.5rem;
   border: 1px solid #ddd;
   font-size: medium;
+  padding: 1rem;
 }
 
 /* *********************** TOAST CSS ************************ */

@@ -1,17 +1,20 @@
-const { FusesPlugin } = require('@electron-forge/plugin-fuses');
-const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const { FusesPlugin } = require("@electron-forge/plugin-fuses");
+const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 
 module.exports = {
   packagerConfig: {
     asar: true,
+     executableName: 'school-fees-management-basic',
+    extraResource: ["./database/schoolFeesTracker.db"],
+    icon: "./src/assets/icons/icon",
   },
   rebuildConfig: {},
   makers: [
     {
       name: "@electron-forge/maker-squirrel",
       config: {
-        name: "school-fees-management",
         overwrite: true,
+        setupIcon: "./src/assets/icons/icon.ico",
       },
     },
     {
@@ -21,22 +24,21 @@ module.exports = {
     {
       name: "@electron-forge/maker-deb",
       config: {
-        name: "school-fees-management",
         overwrite: true,
+        setupIcon: "./src/assets/icons/icon.png",
       },
     },
     {
       name: "@electron-forge/maker-rpm",
       config: {
-        name: "school-fees-management",
         overwrite: true,
       },
     },
     {
       name: "@electron-forge/maker-dmg",
       config: {
-        name: "school-fees-management",
         overwrite: true,
+        setupIcon: "./src/assets/icons/icon.icns",
       },
     },
   ],
