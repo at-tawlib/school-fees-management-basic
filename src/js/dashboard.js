@@ -8,6 +8,7 @@ import { showToast } from "./utils/toast.js";
 
 let academicYearSetting;
 let termSetting;
+const recentPaymentsTable = document.getElementById("dashboardRecentPaymentsTableBody");
 
 document.getElementById("dashboardChangeYearTermBtn").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
@@ -132,8 +133,6 @@ async function setUpRecentPayments() {
     termId: termSetting.setting_value,
   });
 
-  console.log(recentPaymentsResp, academicYearSetting.setting_value, termSetting.setting_value);  
-
   if (!recentPaymentsResp.success) {
     showToast(recentPaymentsResp.message, "error");
     return;
@@ -148,7 +147,7 @@ async function setUpRecentPayments() {
   if (recentPayments.length > 10) {
     recentPayments = recentPayments.splice(0, 10);
   }
-  const recentPaymentsTable = document.getElementById("dashboardRecentPaymentsTableBody");
+
   recentPaymentsTable.innerHTML = "";
 
   recentPayments.forEach((item) => {
@@ -225,7 +224,6 @@ async function getMetricsData() {
     };
   } catch (error) {
     showToast(error.message, "error");
-    console.error("Error fetching metrics data:", error);
     return null;
   }
 }

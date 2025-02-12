@@ -3,7 +3,6 @@ const { contextBridge, ipcRenderer } = require("electron");
 contextBridge.exposeInMainWorld("api", {
   saveSetting: (key, value, text) => ipcRenderer.invoke("save-setting", key, value, text),
   getAllSettings: () => ipcRenderer.invoke("get-all-settings"),
-  getAllStudents: () => ipcRenderer.invoke("get-all-students"),
   getStudentsByYear: (year) => ipcRenderer.invoke("get-students-by-year", year),
   insertStudent: (student) => ipcRenderer.invoke("insert-student", student),
   updateStudent: (student) => ipcRenderer.invoke("update-student", student),
@@ -36,6 +35,7 @@ contextBridge.exposeInMainWorld("api", {
   getYearClassCount: (data) => ipcRenderer.invoke("get-year-class-count", data),
   getTotalClassCount: (data) => ipcRenderer.invoke("get-total-class-count", data),
   getUnbilledClasses: (data) => ipcRenderer.invoke("get-unbilled-classes", data),
+  checkIfClassBilled: (data) => ipcRenderer.invoke("check-class-billed", data),
 });
 
 contextBridge.exposeInMainWorld("store", {

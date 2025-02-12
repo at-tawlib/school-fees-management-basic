@@ -179,18 +179,6 @@ class DatabaseHandler {
     }
   }
 
-  // TODO: not used anywhere remove
-  getAllStudents() {
-    try {
-      const stmt = this.db.prepare(`SELECT * FROM students`);
-      const records = stmt.all();
-      return { success: true, data: records };
-    } catch (error) {
-      console.error("Database Error: ", error);
-      return { success: false, message: error.message };
-    }
-  }
-
   getStudentsByYear(yearId) {
     try {
       const stmt = this.db.prepare(`
@@ -349,18 +337,6 @@ class DatabaseHandler {
     }
   }
 
-  // TODO: not used anywhere remove
-  feeExists(fee) {
-    const stmt = this.db.prepare(`
-        SELECT 1 FROM fees
-        WHERE class = ? AND term = ? AND academic_year = ?
-        LIMIT 1
-    `);
-
-    const result = stmt.get(fee.class, fee.term, fee.academicYear);
-    return result !== undefined; // Return true if a record exists
-  }
-
   getAllFees() {
     try {
       const stmt = this.db.prepare(`
@@ -389,7 +365,6 @@ class DatabaseHandler {
         LIMIT 1
       `);
 
-      console.log(fee);
       const result = stmt.get(fee.classId, fee.termId, fee.academicYearId);
       if (!result) {
         return {
@@ -418,7 +393,13 @@ class DatabaseHandler {
       const stmt = this.db.prepare(`
           INSERT INTO fees (class_id, year_id, term_id, amount, created_at) VALUES (?, ?, ?, ?, ?)
         `);
-      stmt.run(data.classId, data.academicYearId, data.termId, data.amount, new Date().toISOString());
+      stmt.run(
+        data.classId,
+        data.academicYearId,
+        data.termId,
+        data.amount,
+        new Date().toISOString()
+      );
       return {
         success: true,
         message: "Fees added successfully.",
@@ -494,6 +475,23 @@ class DatabaseHandler {
     } catch (error) {
       console.error("Database Error: ", error);
       return { success: false, message: error.message };
+    }
+  }
+
+  checkIfClassBilled(feesId) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM bills 
+          WHERE fees_id = ?
+        ) AS data_exists;
+      `);
+      const result = stmt.get(feesId);
+      return { success: true, exists: !!result.data_exists };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, error: error.message };
     }
   }
 
@@ -874,26 +872,6 @@ class DatabaseHandler {
       return { success: false, message: error.message };
     }
   }
-
-  // getUnbilledClasses(yearId) {
-  //   try {
-  //     const stmt = this.db.prepare(`
-  //       SELECT c.id AS class_id, c.class_name, ay.id AS year_id, ay.year AS academic_year
-  //       FROM classes c
-  //       JOIN academicYears ay ON c.id = ay.id
-  //       WHERE c.id NOT IN (
-  //         SELECT DISTINCT f.class_id
-  //         FROM fees f
-  //         WHERE f.year_id = ?
-  //       );
-  //     `);
-  //     const records = stmt.all(yearId);
-  //     return { success: true, data: records };
-  //   } catch (error) {
-  //     console.error("Database Error: ", error);
-  //     return { success: false, message: error.message };
-  //   }
-  // }
 
   getStudentBilledCount(filter) {
     try {

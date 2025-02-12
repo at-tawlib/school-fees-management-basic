@@ -1,0 +1,3 @@
+1. Check if current term and academic year for billing a student is the default term and academic year. If it is not, don't allow student to be billed
+2. Check if some students have been billed for the current year and term, if some are billed, show a modal of the list of billed students and asks to proceed
+3. Fixed bug of wrongful billing of class with the classId instead of the feeId

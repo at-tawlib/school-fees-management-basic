@@ -195,20 +195,6 @@ ipcMain.handle("update-student", (event, student) => {
   }
 });
 
-// get all students
-ipcMain.handle("get-all-students", async () => {
-  try {
-    const result = dbHandler.getAllStudents();
-
-    if (!result.success) {
-      throw new Error(result.message);
-    }
-    return result;
-  } catch (error) {
-    return { success: false, message: error.message };
-  }
-});
-
 // get students by year
 ipcMain.handle("get-students-by-year", async (_, year) => {
   try {
@@ -301,6 +287,16 @@ ipcMain.handle("delete-fees", async (_, data) => {
     if (!result.success) {
       throw new Error(result.message);
     }
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// Check if class has been billed
+ipcMain.handle("check-class-billed", async (_, data) => {
+  try {
+    const result = await dbHandler.checkIfClassBilled(data);
     return result;
   } catch (error) {
     return { success: false, message: error.message };
