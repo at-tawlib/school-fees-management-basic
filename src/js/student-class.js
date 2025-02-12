@@ -37,11 +37,18 @@ const paidStatusSelect = document.getElementById("paidStatusSelect");
 let studentsData = [];
 let currentClass = {};
 let classTerm = {};
+let currentFees = {};
 
 export async function setupStudentsClassSection() {
   const defaultYear = await getDefaultYearSetting();
   const defaultTerm = await getDefaultTermSetting();
   classTerm = { text: defaultTerm.setting_text, value: defaultTerm.setting_value };
+
+  console.log("class term: ", classTerm);
+  console.log("currentFees: ", currentFees);
+  console.log("currentClass: ", currentClass);
+  console.log("studentsData: ", studentsData);
+  console.log("*************************************");
 
   addClassForm.style.display = "none";
   studentClassTableContainer.style.display = "none";
@@ -77,7 +84,11 @@ async function setupClassesSidebar(year) {
           academicYear: cls.academic_year,
           academicYearId: cls.academic_year_id,
         };
-        await displayClassStudentsTable(currentClass, classTerm);
+
+        console.log("Current class: ", currentClass);
+        console.log("Current term: ", classTerm);
+        console.log("*************************************");
+        await displayClassStudentsTable();
       });
 
       classesList.appendChild(option);
@@ -86,11 +97,9 @@ async function setupClassesSidebar(year) {
 
   const classItems = document.querySelectorAll(".class-item");
   classItems.forEach((item) => {
+    // Remove 'active' class from all items and add to the clicked item
     item.addEventListener("click", function () {
-      // Remove 'active' class from all items
       classItems.forEach((el) => el.classList.remove("active"));
-
-      // Add 'active' class to the clicked item
       this.classList.add("active");
     });
   });
@@ -104,7 +113,7 @@ filterStudentsByAcademicYear.addEventListener("change", async function () {
 
 paidStatusSelect.addEventListener("change", async function () {
   if (this.value === "all") {
-    await displayClassStudentsTable(currentClass, classTerm);
+    await displayClassStudentsTable();
     return;
   }
 
@@ -491,6 +500,7 @@ export async function displayClassStudentsTable() {
       billedCount += 1;
     } else {
       row.setAttribute("data-student-id", item.student_id);
+      row.setAttribute("data-student-name", item.student_name);
       row.innerHTML = `
         <td>${notBilledCount + 1}</td>
         <td>${item.student_name}</td>
@@ -561,7 +571,7 @@ async function createTermButtons(activeTermId) {
       button.classList.add("active");
 
       classTerm = { text: t.term, value: t.id };
-      await displayClassStudentsTable(currentClass, classTerm);
+      await displayClassStudentsTable();
     });
 
     termButtonsContainer.appendChild(button);
@@ -594,13 +604,25 @@ function filterStudentsClassTable() {
 }
 
 async function billSingleStudent(studentId, feesId) {
+  // To bill a student, first check if the selected term and academic year is the current term and academic year
+  const defaultTerm = await getDefaultTermSetting();
+  const defaultYear = await getDefaultYearSetting();
+
+  if (
+    Number(defaultTerm.setting_value) !== Number(classTerm.value) ||
+    Number(defaultYear.setting_value) !== Number(currentClass.academicYearId)
+  ) {
+    showToast("You can only bill students for the current term and academic year", "error");
+    return;
+  }
+
   const billResp = await window.api.billStudent({ studentId, feesId });
   if (!billResp.success) {
     showToast(billResp.message || "An error occurred", "error");
     return;
   }
 
-  await displayClassStudentsTable(currentClass, classTerm);
+  await displayClassStudentsTable();
   showToast(billResp.message || "Student billed successfully", "success");
 }
 
@@ -608,6 +630,18 @@ async function billSingleStudent(studentId, feesId) {
 document.getElementById("billClassBtn").addEventListener("click", async function () {
   if (!currentClass.className || !currentClass.academicYear || !classTerm.text) {
     showToast("Please select a class, academic year and term", "error");
+    return;
+  }
+
+  // To bill a class, first check if the selected term and academic year is the current term and academic year
+  const defaultTerm = await getDefaultTermSetting();
+  const defaultYear = await getDefaultYearSetting();
+
+  if (
+    Number(defaultTerm.setting_value) !== Number(classTerm.value) ||
+    Number(defaultYear.setting_value) !== Number(currentClass.academicYearId)
+  ) {
+    showToast("You can only bill students for the current term and academic year", "error");
     return;
   }
 
@@ -622,8 +656,46 @@ document.getElementById("billClassBtn").addEventListener("click", async function
     return;
   }
 
-  currentClass.id = response.data.id;
+  if (response.data.length === 0) {
+    showToast("No fee details found for the selected class", "error");
+    return;
+  }
+
+  currentClass.id = response.data.class_id;
   currentClass.amount = response.data.amount;
+  currentFees = response.data;
+
+  // Check if some students in the class has already been billed
+  const checkBilled = await window.api.checkIfClassBilled(currentFees.id);
+  if (!checkBilled.success) {
+    showToast(checkBilled.message || "An error occurred", "error");
+    return;
+  }
+
+  if (checkBilled.exists) {
+    const rows = notBilledStudentClassTableBody.getElementsByTagName("tr");
+    if (rows.length === 0) {
+      showToast("All students in this class have been billed", "error");
+      return;
+    }
+
+    const namesArray = Array.from(rows).map((row) => row.getAttribute("data-student-name"));
+    const message = `
+    <p>Some students in <strong>${
+      currentClass.className
+    }</strong> have already been billed for the selected term and academic year.</p>
+    <p>The following students however have not been billed:</p>
+    <ul>
+      ${namesArray.map((name) => `<li class="color-green">${name}</li>`).join("")}
+    </ul>
+
+    <p><strong>Do you want to proceed?</strong></p>
+  `;
+
+    billStudentsMessage.innerHTML = message;
+    billClassModal.style.display = "block";
+    return;
+  }
 
   const message = `
       <p>You are about to bill students in <strong>${currentClass.className}</strong> with the following details:</p>
@@ -639,28 +711,31 @@ document.getElementById("billClassBtn").addEventListener("click", async function
   billClassModal.style.display = "block";
 });
 
-document
-  .getElementById("billClassCloseXBtn")
-  .addEventListener("click", () => (billClassModal.style.display = "none"));
+document.getElementById("billClassCloseXBtn").addEventListener("click", () => {
+  currentFees = {};
+  billClassModal.style.display = "none";
+});
 
-document
-  .getElementById("cancelBillClassModalBtn")
-  .addEventListener("click", () => (billClassModal.style.display = "none"));
+document.getElementById("cancelBillClassModalBtn").addEventListener("click", () => {
+  currentFees = {};
+  billClassModal.style.display = "none";
+});
 
 document.getElementById("submitBillClassModalBtn").addEventListener("click", async function () {
   // get student ids from the table
   const rows = notBilledStudentClassTableBody.getElementsByTagName("tr");
   const idsArray = Array.from(rows).map((row) => row.getAttribute("data-student-id"));
 
-  const response = await window.api.billClassStudents(idsArray, currentClass.id);
+  const response = await window.api.billClassStudents(idsArray, currentFees.id);
   if (!response.success) {
     showToast(response.message || "An error occurred", "error");
     return;
   }
 
   showToast(response.message || "Students billed successfully", "success");
+  currentFees = {};
   billClassModal.style.display = "none";
-  await displayClassStudentsTable(currentClass, classTerm);
+  await displayClassStudentsTable();
 });
 
 // *********************** PAYMENT HISTORY MODAL ***************************
@@ -806,7 +881,7 @@ document.getElementById("addStudentsToClassModalBtn").addEventListener("click", 
   addStudentsToClassModal.style.display = "none";
   resetStudentToAddModal();
   showToast("Records saved successfully", "success");
-  await displayClassStudentsTable(currentClass, classTerm);
+  await displayClassStudentsTable();
 });
 
 function resetStudentToAddModal() {
