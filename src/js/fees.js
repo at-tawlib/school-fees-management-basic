@@ -1,3 +1,4 @@
+import { fCurrency } from "./utils/format-currency.js";
 import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
 import {
   setUpAcademicYearsSelect,
@@ -18,7 +19,6 @@ const editFeesModal = document.getElementById("editFeesModal");
 
 // Event Listeners for Add Fees Modal
 document.getElementById("btnAddFees").addEventListener("click", function () {
-
   const academicYear = filterFeesByAcademicYear.value;
   const term = filterFeesByTerm.value;
 
@@ -142,7 +142,6 @@ async function displayFeesTable() {
   }
 
   feesTableBody.innerHTML = "";
-
   response.data.forEach((record, index) => {
     const row = document.createElement("tr");
 
@@ -164,7 +163,7 @@ async function displayFeesTable() {
         <td>${record.class_name} </td>
         <td>${record.academic_year} </td>
         <td>${record.term} </td>
-        <td>${record.amount} </td>
+        <td>${fCurrency(record.amount)} </td>
         <td>${record.total_students_billed} </td>
         <td>
           <div style="display: flex; justify-content: center">
