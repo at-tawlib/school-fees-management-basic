@@ -134,6 +134,7 @@ feesTableBody.addEventListener("click", (event) => {
 
 // Function to Display Fees Table
 async function displayFeesTable() {
+  // TODO: get fees for a particular year and term, and display them in the table
   const response = await window.api.getAllFees();
 
   if (!response.success) {

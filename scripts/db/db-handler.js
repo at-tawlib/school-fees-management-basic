@@ -478,6 +478,30 @@ class DatabaseHandler {
     }
   }
 
+  applyDiscount(data) {
+    try {
+      const stmt = this.db.prepare(`
+        UPDATE bills SET discount_amount = ? WHERE id = ?
+      `);
+      const result = stmt.run(data.discountAmount, data.billId);
+
+      if (result.changes === 0) {
+        return {
+          success: false,
+          message: "No matching bill found. Discount not applied.",
+        };
+      }
+
+      return {
+        success: true,
+        message: "Discount applied successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   checkIfClassBilled(feesId) {
     try {
       const stmt = this.db.prepare(`

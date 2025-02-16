@@ -36,6 +36,7 @@ contextBridge.exposeInMainWorld("api", {
   getTotalClassCount: (data) => ipcRenderer.invoke("get-total-class-count", data),
   getUnbilledClasses: (data) => ipcRenderer.invoke("get-unbilled-classes", data),
   checkIfClassBilled: (data) => ipcRenderer.invoke("check-class-billed", data),
+  applyDiscount: (data) => ipcRenderer.invoke("apply-discount", data),
 });
 
 contextBridge.exposeInMainWorld("store", {

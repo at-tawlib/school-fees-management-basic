@@ -507,6 +507,12 @@ ipcMain.handle("get-unbilled-classes", async (_, data) => {
   }
 });
 
+// Apply discount
+ipcMain.handle("apply-discount", async (_, data) => {
+  const result = await dbHandler.applyDiscount(data);
+  return result;
+});
+
 // app.whenReady().then(createWindow);
 app.whenReady().then(async () => {
   try {

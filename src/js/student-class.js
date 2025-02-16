@@ -34,6 +34,8 @@ const studentToAddId = document.getElementById("studentToAddId");
 const studentToAddSuggestionList = document.getElementById("studentToAddSuggestionList");
 const paidStatusSelect = document.getElementById("paidStatusSelect");
 
+const applyDiscountModal = document.getElementById("applyDiscountModal");
+
 let studentsData = [];
 let currentClass = {};
 let classTerm = {};
@@ -43,12 +45,6 @@ export async function setupStudentsClassSection() {
   const defaultYear = await getDefaultYearSetting();
   const defaultTerm = await getDefaultTermSetting();
   classTerm = { text: defaultTerm.setting_text, value: defaultTerm.setting_value };
-
-  console.log("class term: ", classTerm);
-  console.log("currentFees: ", currentFees);
-  console.log("currentClass: ", currentClass);
-  console.log("studentsData: ", studentsData);
-  console.log("*************************************");
 
   addClassForm.style.display = "none";
   studentClassTableContainer.style.display = "none";
@@ -484,6 +480,12 @@ export async function displayClassStudentsTable() {
             <button id="btnPaymentsHistory"  class="text-button" title="Payment history">
               <i class="fa-solid fa-eye"></i>
             </button>
+
+            <div style="border-left: 1px solid #ccc; height: 24px;"></div>
+
+            <button id="btnApplyDiscount"  class="text-button" title="Apply Discount">
+              <i class="fa-solid fa-percent"></i>
+            </button>
           </div>
         </td>
     `;
@@ -494,6 +496,10 @@ export async function displayClassStudentsTable() {
 
       row.querySelector("#btnPaymentsHistory").addEventListener("click", () => {
         showPaymentHistoryModal(item);
+      });
+
+      row.querySelector("#btnApplyDiscount").addEventListener("click", () => {
+        openApplyDiscountModal(item, currentClass, classTerm);
       });
 
       studentClassTableBody.appendChild(row);
@@ -781,6 +787,54 @@ async function showPaymentHistoryModal(data) {
 
   document.getElementById("paymentModalTotalPaidText").textContent = fCurrency(data.total_payments);
   document.getElementById("paymentModalBalanceText").textContent = fCurrency(data.balance);
+}
+
+// **************** ADD DISCOUNT MODAL ************************
+document
+  .getElementById("discountModalCloseXBtn")
+  .addEventListener("click", () => (applyDiscountModal.style.display = "none"));
+
+document
+  .getElementById("cancelDiscountModalBtn")
+  .addEventListener("click", () => (applyDiscountModal.style.display = "none"));
+
+document.getElementById("submitDiscountModalBtn").addEventListener("click", async () => {
+  const discountAmount = document.getElementById("discountAmountInput").value;
+  const billId = document.getElementById("modalDiscountBillId").value;
+
+  if (!discountAmount || isNaN(discountAmount)) {
+    showToast("Please enter a discount amount", "error");
+    return;
+  }
+
+  const response = await window.api.applyDiscount({ billId, discountAmount });
+
+  if (!response.success) {
+    showToast(response.message || "An error occurred", "error");
+    return;
+  }
+
+  showToast(response.message || "Discount applied successfully", "success");
+  applyDiscountModal.style.display = "none";
+  await displayClassStudentsTable();
+});
+
+async function openApplyDiscountModal(item, currentClass, classTerm) {
+  if (!item || !currentClass || !classTerm) {
+    showToast("An error occurred. Please try again", "error");
+    return;
+  }
+
+  document.getElementById("modalDiscountBillId").value = item.bill_id;
+  document.getElementById("applyDiscountStudentName").textContent = item.student_name;
+  document.getElementById(
+    "modalDiscountClass"
+  ).textContent = `${currentClass.className} - ${classTerm.text} Term, ${currentClass.academicYear}`;
+  document.getElementById("applyDiscountModalFees").textContent = fCurrency(item.fee_amount);
+  document.getElementById("applyDiscountModalPaid").textContent = fCurrency(item.total_payments);
+  document.getElementById("applyDiscountModalArrears").textContent = fCurrency(item.balance);
+  document.getElementById("discountAmountInput").value = "";
+  applyDiscountModal.style.display = "block";
 }
 
 // **************** ADD STUDENTS TO CLASS MODAL ************************
