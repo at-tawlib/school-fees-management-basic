@@ -51,12 +51,12 @@ document.getElementById("submitPayment").addEventListener("click", async () => {
     return;
   }
 
-  if(paymentAmount > arrears) {
+  if (paymentAmount > arrears) {
     paymentAmountField.style.border = "1px solid red";
     showToast("Amount to pay cannot be greater than the current arrears", "error");
     return;
   }
-  
+
   const response = await window.api.makePayment({
     studentId,
     billId,
@@ -114,6 +114,12 @@ export function openStudentPaymentModal(details, currentFee, classTerm) {
   feesText.textContent = fCurrency(details.fee_amount);
   paidText.textContent = fCurrency(details.total_payments);
   arrearsText.textContent = fCurrency(arrears);
+
+  if (details.discount_amount > 0)
+    document.getElementById("discountText").textContent = `(Discount ${fCurrency(
+      details.discount_amount
+    )})`;
+  else document.getElementById("discountText").textContent = "";
 
   if (arrears <= 0) {
     document.getElementById("makePaymentForm").style.display = "none";

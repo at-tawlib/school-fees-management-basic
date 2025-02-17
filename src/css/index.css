@@ -1,9 +1,9 @@
 /* Define color variables in the :root */
 :root {
   --color-primary: #41d87b;
-  --color-secondary: #1D347A;
+  --color-secondary: #1d347a;
   --color-secondary-dark: #152659;
-  --color-secondary-light: #4F65A0;
+  --color-secondary-light: #4f65a0;
   --color-red: #cc0000;
   --color-red-light: #ff0000;
   --color-red-dark: #660000;
@@ -651,6 +651,14 @@ header {
   cursor: pointer;
 }
 
+.modal-color-background {
+  color: #333;
+  background-color:rgba(92, 205, 233, 0.1);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ddd;
+}
+
 /* Animation for fading in and out */
 @keyframes fadeIn {
   from {
@@ -700,7 +708,7 @@ header {
   height: 100vh;
   overflow-y: auto;
   scrollbar-width: none;
-  background-color: rgba(0, 0, 0, 0.5); 
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 #aboutModal p {

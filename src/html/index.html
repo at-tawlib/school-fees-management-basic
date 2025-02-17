@@ -865,6 +865,7 @@
           <label>Arrears</label>
           <span id="makePaymentModalArrears"></span>
         </div>
+        <h4 class="color-green" id="discountText"></h4>
 
         <br />
 
@@ -872,7 +873,7 @@
           Bill has been fully paid.
         </h3>
 
-        <form id="makePaymentForm" style="display: none">
+        <form id="makePaymentForm" class="modal-color-background" style="display: none">
           <h3>Make payment</h3>
 
           <div class="flex-item">
@@ -920,7 +921,6 @@
       </div>
     </div>
 
-
     <!-- Add Discount Modal -->
     <div id="applyDiscountModal" class="modal">
       <div class="modal-container">
@@ -936,6 +936,7 @@
         <div class="flex-item">
           <label><h3>Fees:</h3></label>
           <span id="applyDiscountModalFees"></span>
+          <span id="discountModalHiddenFeeAmount" style="display: none;"></span>
         </div>
         <div class="flex-item">
           <label>Paid</label>
@@ -947,7 +948,14 @@
         </div>
         <br />
 
-        <form id="applyDiscountForm">
+        <div class="flex-row align-center" id="alreadyDiscountContainer">
+          <h3 class="color-green" id="alreadyDiscountText"></h3>
+          <button id="editDiscountBtn" class="text-button">
+            <i class="fa-solid fa-pen-to-square"></i> Edit
+          </button>
+        </div>
+
+        <form id="applyDiscountForm" class="modal-color-background">
           <h3>Apply Discount</h3>
           <div class="flex-item">
             <label for="discountAmountInput">Discount Amount</label>
