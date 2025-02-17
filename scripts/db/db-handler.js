@@ -612,10 +612,11 @@ class DatabaseHandler {
             s.id AS student_id, 
             s.first_name || ' ' || COALESCE(s.other_names, '') || ' ' || s.last_name  AS student_name,
             f.id AS fees_id, 
-            f.amount AS fee_amount, 
+            (f.amount - COALESCE(b.discount_amount, 0)) AS fee_amount,
             b.id AS bill_id, 
             COALESCE(SUM(p.amount), 0) AS total_payments, 
-            (f.amount - COALESCE(SUM(p.amount), 0)) AS balance
+            (f.amount - COALESCE(SUM(p.amount), 0) - COALESCE(b.discount_amount, 0)) AS balance,
+            b.discount_amount AS discount_amount
         FROM students s
         JOIN studentClasses sc ON s.id = sc.student_id
         JOIN classes c ON sc.class_id = c.id
@@ -626,7 +627,7 @@ class DatabaseHandler {
         LEFT JOIN payments p ON b.id = p.bill_id
         WHERE sc.class_id = ? AND ay.id = ? AND t.id = ?
         GROUP BY s.id, s.first_name, s.last_name, s.other_names, f.id, f.amount, b.id
-        ORDER BY s.first_name, s.last_name;
+        ORDER BY s.first_name, s.last_name
       `);
 
       const records = stmt.all(filter.classId, filter.yearId, filter.term);

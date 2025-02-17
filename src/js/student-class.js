@@ -80,10 +80,6 @@ async function setupClassesSidebar(year) {
           academicYear: cls.academic_year,
           academicYearId: cls.academic_year_id,
         };
-
-        console.log("Current class: ", currentClass);
-        console.log("Current term: ", classTerm);
-        console.log("*************************************");
         await displayClassStudentsTable();
       });
 
@@ -411,6 +407,8 @@ export async function displayClassStudentsTable() {
     term: classTerm.value,
   });
 
+  console.log(response);
+
   if (!response.success) {
     showToast(response.message || "An error occurred", "error");
     return;
@@ -501,6 +499,8 @@ export async function displayClassStudentsTable() {
       row.querySelector("#btnApplyDiscount").addEventListener("click", () => {
         openApplyDiscountModal(item, currentClass, classTerm);
       });
+
+      if (item.discount_amount > 0) row.style.background = "rgba(0, 255, 0, 0.1)";
 
       studentClassTableBody.appendChild(row);
       billedCount += 1;
