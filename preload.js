@@ -37,6 +37,7 @@ contextBridge.exposeInMainWorld("api", {
   getUnbilledClasses: (data) => ipcRenderer.invoke("get-unbilled-classes", data),
   checkIfClassBilled: (data) => ipcRenderer.invoke("check-class-billed", data),
   applyDiscount: (data) => ipcRenderer.invoke("apply-discount", data),
+  getTotalDiscountGiven: (data) => ipcRenderer.invoke("get-total-discount-given", data),
 });
 
 contextBridge.exposeInMainWorld("store", {
@@ -65,9 +66,9 @@ contextBridge.exposeInMainWorld("store", {
   // For use in dev to clear the store data
   clearStore: async () => {
     return await ipcRenderer.invoke("clear-store");
-  }
+  },
 });
 
 contextBridge.exposeInMainWorld("app", {
-  reloadApp: () => ipcRenderer.send('reload-app')
+  reloadApp: () => ipcRenderer.send("reload-app"),
 });

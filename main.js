@@ -513,6 +513,12 @@ ipcMain.handle("apply-discount", async (_, data) => {
   return result;
 });
 
+// Get total discount given
+ipcMain.handle("get-total-discount-given", async (_, data) => {
+  const result = await dbHandler.getTotalDiscountGiven(data);
+  return result;
+});
+
 // app.whenReady().then(createWindow);
 app.whenReady().then(async () => {
   try {

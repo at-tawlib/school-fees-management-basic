@@ -53,7 +53,7 @@
             <h2 id="dashboardTermYearTitle"></h2>
             <button id="dashboardChangeYearTermBtn"><i class="fa-solid fa-edit"></i> Change</button>
           </div>
-          <br />
+          <hr style="margin: 1rem 0rem" />
 
           <!-- Metrics -->
           <div class="metrics">
@@ -86,6 +86,14 @@
               <div>
                 <h4 style="margin-bottom: 0.5rem">Pending Payments</h4>
                 <p id="pendingPaymentsMetric"></p>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <i class="fa-solid fa-percent color-yellow"></i>
+              <div>
+                <h4 style="margin-bottom: 0.5rem">Discounts Given</h4>
+                <p id="discountGivenMetrics"></p>
               </div>
             </div>
           </div>
@@ -184,6 +192,7 @@
                 <th>Students</th>
                 <th>Fees</th>
                 <th>Total Billed</th>
+                <th>Discounts</th>
                 <th>Total Paid</th>
                 <th>Total Balance</th>
               </tr>

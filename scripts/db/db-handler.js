@@ -916,6 +916,25 @@ class DatabaseHandler {
     }
   }
 
+  getTotalDiscountGiven(filter){
+    try {
+      const stmt = this.db.prepare(`
+        SELECT 
+          COALESCE(SUM(b.discount_amount), 0) AS total_discount
+        FROM bills b
+        JOIN fees f ON b.fees_id = f.id
+        WHERE f.year_id = ? AND f.term_id = ?;
+      `);
+      const record = stmt.get(filter.academicYearId, filter.termId);
+      return { success: true, data: record };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+
+
+  }
+
   getTotalAmountPaid(filter) {
     try {
       const stmt = this.db.prepare(`
@@ -940,7 +959,8 @@ class DatabaseHandler {
           COUNT(DISTINCT sc.student_id) AS students_count, 
           COALESCE(f.amount, 0) AS class_fee, 
           COALESCE(SUM(p.amount), 0) AS total_paid, 
-          COALESCE(COUNT(DISTINCT sc.student_id) * f.amount, 0) AS total_fees
+          COALESCE(COUNT(DISTINCT sc.student_id) * f.amount, 0) AS total_fees,
+          COALESCE(SUM(b.discount_amount), 0) AS total_discount
         FROM classes c
         LEFT JOIN studentClasses sc ON c.id = sc.class_id AND sc.year_id = ? 
         LEFT JOIN fees f ON c.id = f.class_id AND f.term_id = ? AND f.year_id = ?
