@@ -38,6 +38,7 @@ contextBridge.exposeInMainWorld("api", {
   checkIfClassBilled: (data) => ipcRenderer.invoke("check-class-billed", data),
   applyDiscount: (data) => ipcRenderer.invoke("apply-discount", data),
   getTotalDiscountGiven: (data) => ipcRenderer.invoke("get-total-discount-given", data),
+  deletePayment: (data) => ipcRenderer.invoke("delete-payment", data),
 });
 
 contextBridge.exposeInMainWorld("store", {
@@ -71,4 +72,10 @@ contextBridge.exposeInMainWorld("store", {
 
 contextBridge.exposeInMainWorld("app", {
   reloadApp: () => ipcRenderer.send("reload-app"),
+});
+
+contextBridge.exposeInMainWorld("dialog", {
+  showConfirmationDialog: async (message) => {
+    return await ipcRenderer.invoke("show-confirmation-dialog", message);
+  },
 });

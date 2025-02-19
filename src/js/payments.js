@@ -93,7 +93,49 @@ export async function displayPaymentsTable() {
         <td>${payment.payment_mode}</td>
         <td>${payment.payment_details}</td>
         <td>${formatDate(payment.date_paid)}</td>
-        <td></td>
+        <td>
+         <div style="display: flex; justify-content: center">
+            <button id="btnPaymentView"  class="text-button" title="View Payment">
+              <i class="fa-solid fa-eye color-green"></i>
+            </button>
+
+            <button id="btnPaymentEdit"  class="text-button" title="Edit Payment">
+              <i class="fa-solid fa-edit"></i>
+            </button>
+
+            <button id="bntPaymentDelete"  class="text-button" title="Delete Payment">
+              <i class="fa-solid fa-trash color-red"></i>
+            </button>
+          </div>
+        </td>
       `;
+
+    row.querySelector("#btnPaymentView").addEventListener("click", () => {
+      handleViewPayment(payment);
+    });
+
+    row.querySelector("#btnPaymentEdit").addEventListener("click", () => {
+      handleEditPayment(payment);
+    });
+
+    row.querySelector("#bntPaymentDelete").addEventListener("click", async () => {
+      await handleDeletePayment(payment.payment_id);
+    });
   });
 }
+
+const handleDeletePayment = async (paymentId) => {
+  const confirmed = await window.dialog.showConfirmationDialog(
+    "Do you really want to delete this payment?"
+  );
+
+  if (confirmed) {
+    const response = await window.api.deletePayment(paymentId);
+    if (!response.success) {
+      showToast(response.message || "An error occurred", "error");
+      return;
+    }
+    showToast(response.message || "Payment deleted successfully", "success");
+    await displayPaymentsTable();
+  }
+};

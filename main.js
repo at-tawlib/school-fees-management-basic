@@ -380,6 +380,17 @@ ipcMain.handle("make-payment", async (_, data) => {
   }
 });
 
+// Delete payment
+ipcMain.handle("delete-payment", async (_, data) => {
+  try {
+    const result = await dbHandler.deletePayment(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
 // Get students bill summary
 ipcMain.handle("get-students-bill-summary", async (_, data) => {
   try {
@@ -517,6 +528,19 @@ ipcMain.handle("apply-discount", async (_, data) => {
 ipcMain.handle("get-total-discount-given", async (_, data) => {
   const result = await dbHandler.getTotalDiscountGiven(data);
   return result;
+});
+
+// Handle confirmation dialog with custom message
+ipcMain.handle("show-confirmation-dialog", async (_, message) => {
+  const result = await dialog.showMessageBox(mainWindow, {
+    type: "question",
+    buttons: ["No", "Yes"],
+    defaultId: 1,
+    title: "Confirmation",
+    message: message || "Are you sure you want to proceed?", // Default message
+  });
+
+  return result.response === 1; // Returns true if "Yes" is clicked, otherwise false
 });
 
 // app.whenReady().then(createWindow);

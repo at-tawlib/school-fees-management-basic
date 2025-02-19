@@ -662,6 +662,22 @@ class DatabaseHandler {
     }
   }
 
+  deletePayment(paymentId) {
+    try {
+      const stmt = this.db.prepare(`
+          DELETE FROM payments WHERE id = ?
+        `);
+      stmt.run(paymentId);
+      return {
+        success: true,
+        message: "Payment deleted successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   // TODO: remove this function not use
   /**
    * Fetches detailed student billing information for a specific class, academic year, and term.
@@ -916,7 +932,7 @@ class DatabaseHandler {
     }
   }
 
-  getTotalDiscountGiven(filter){
+  getTotalDiscountGiven(filter) {
     try {
       const stmt = this.db.prepare(`
         SELECT 
@@ -931,8 +947,6 @@ class DatabaseHandler {
       console.error("Database Error: ", error);
       return { success: false, message: error.message };
     }
-
-
   }
 
   getTotalAmountPaid(filter) {
