@@ -39,6 +39,7 @@ contextBridge.exposeInMainWorld("api", {
   applyDiscount: (data) => ipcRenderer.invoke("apply-discount", data),
   getTotalDiscountGiven: (data) => ipcRenderer.invoke("get-total-discount-given", data),
   deletePayment: (data) => ipcRenderer.invoke("delete-payment", data),
+  getSingleBillDetails: (data) => ipcRenderer.invoke("get-single-bill-details", data),
 });
 
 contextBridge.exposeInMainWorld("store", {

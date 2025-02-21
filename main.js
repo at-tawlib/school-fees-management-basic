@@ -325,6 +325,17 @@ ipcMain.handle("get-bill-details", async (_, data) => {
     return { success: false, message: error.message };
   }
 });
+
+// Get single bill details
+ipcMain.handle("get-single-bill-details", async (_, data) => {
+  try {
+    const result = await dbHandler.getSingleBillDetails(data);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // get all student fees
 ipcMain.handle("get-all-fees", async () => {
   try {

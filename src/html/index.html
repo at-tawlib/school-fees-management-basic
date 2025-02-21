@@ -778,7 +778,7 @@
         <br />
         <h3 id="paymentHistoryFeesText" class="color-blue"></h3>
 
-        <table class="table-rounded">
+        <table>
           <thead>
             <tr>
               <th>#</th>
@@ -790,6 +790,17 @@
           </thead>
           <tbody id="paymentHistoryTableBody"></tbody>
         </table>
+
+
+        <div class="flex-item">
+          <label class="bold-text">Total Fees: </label>
+          <span id="paymentHistoryModalFees" class="color-blue bold-text"></span>
+        </div>
+
+        <div id="paymentHistoryModalDiscountContainer" class="flex-item" style="display: none;">
+          <label class="bold-text">Discount: </label>
+          <span id="paymentHistoryModalDiscount" class="color-green bold-text"></span>
+        </div>
 
         <div class="flex-item">
           <label class="bold-text">Total Paid: </label>

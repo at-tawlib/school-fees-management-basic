@@ -638,6 +638,39 @@ class DatabaseHandler {
     }
   }
 
+  getSingleBillDetails(filter) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT 
+          s.id AS student_id, 
+          s.first_name || ' ' || COALESCE(s.other_names, '') || ' ' || s.last_name AS student_name,
+          f.id AS fees_id, 
+          (f.amount - COALESCE(b.discount_amount, 0)) AS fee_amount,
+          b.id AS bill_id, 
+          COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p.bill_id = b.id), 0) AS total_payments, 
+          (f.amount - COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p.bill_id = b.id), 0) - COALESCE(b.discount_amount, 0)) AS balance,
+          b.discount_amount AS discount_amount
+        FROM students s
+        JOIN studentClasses sc ON s.id = sc.student_id
+        JOIN fees f ON sc.class_id = f.class_id AND sc.year_id = f.year_id
+        LEFT JOIN bills b ON s.id = b.student_id AND b.fees_id = f.id
+        WHERE s.id = ? AND sc.class_id = ? AND f.year_id = ? AND f.term_id = ?
+        ORDER BY s.first_name, s.last_name;
+  `);
+
+      const records = stmt.all(
+        filter.studentId,
+        filter.classId,
+        filter.academicYearId,
+        filter.termId
+      );
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error in getBillDetails: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   makePayment(data) {
     try {
       const stmt = this.db.prepare(`
