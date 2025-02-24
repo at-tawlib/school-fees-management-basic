@@ -129,8 +129,13 @@ async function displayStudents(yearId) {
         <td>${student.other_names}</td>
         <td>${student?.class_name ? student.class_name : "No Class"}</td>
         <td> 
-          <div id="btnEditStudent" class="text-button">
-            <i class="fa-solid fa-pen-to-square"></i> Edit
+          <div style="display: flex; justify-content: center">
+            <button id="btnEditStudent" class="text-button" title="Edit Student">
+              <i class="fa-solid fa-pen-to-square"></i> Edit
+            </button>
+            <button id="btnDeleteStudent" class="text-button" title="Delete Student" style="color:red">
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
           </div>
         </td>
       `;
@@ -140,6 +145,20 @@ async function displayStudents(yearId) {
 
     row.querySelector("#btnEditStudent").addEventListener("click", () => {
       editStudentRecord(student);
+    });
+
+    row.querySelector("#btnDeleteStudent").addEventListener("click", async () => {
+      const confirmDelete = confirm("Are you sure you want to delete this student?");
+
+      if (!confirmDelete) return;
+      const result = await window.api.deleteStudent(student.student_id);
+      console.log(result);
+      if (result.success) {
+        showToast(result.message, "success");
+        initStudentsSection();
+        return;
+      }
+      showToast(result.message, "error");
     });
 
     studentsTableBody.appendChild(row);

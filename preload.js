@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld("api", {
   getAllSettings: () => ipcRenderer.invoke("get-all-settings"),
   getStudentsByYear: (year) => ipcRenderer.invoke("get-students-by-year", year),
   insertStudent: (student) => ipcRenderer.invoke("insert-student", student),
+  deleteStudent: (id) => ipcRenderer.invoke("delete-student", id),
   updateStudent: (student) => ipcRenderer.invoke("update-student", student),
   addStudentToClass: (data) => ipcRenderer.invoke("add-student-to-class", data),
   checkClassExists: (data) => ipcRenderer.invoke("check-class-exists", data),

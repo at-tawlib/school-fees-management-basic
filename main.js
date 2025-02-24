@@ -180,6 +180,12 @@ ipcMain.handle("insert-student", (event, student) => {
   }
 });
 
+// Delete student
+ipcMain.handle("delete-student", (event, studentId) => {
+  const result = dbHandler.deleteStudent(studentId);
+  return result;
+});
+
 // Update student
 ipcMain.handle("update-student", (event, student) => {
   try {

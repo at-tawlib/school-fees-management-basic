@@ -179,6 +179,49 @@ class DatabaseHandler {
     }
   }
 
+  deleteStudent(studentId) {
+    try {
+      const stmt = this.db.prepare(`
+          DELETE FROM students WHERE id = ?
+      `);
+      const result = stmt.run(studentId);
+
+      if (result.changes === 0) {
+        return {
+          success: false,
+          message: "No student found with the given ID.",
+        };
+      }
+
+      return {
+        success: true,
+        message: "Student deleted successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+
+      // Handle common SQLite errors
+      if (error.message.includes("FOREIGN KEY constraint failed")) {
+        return {
+          success: false,
+          message: "Cannot delete student. This student is linked to other records.",
+        };
+      } else if (error.message.includes("database is locked")) {
+        return {
+          success: false,
+          message: "Database is currently in use. Please try again later.",
+        };
+      } else if (error.message.includes("SQLITE_CORRUPT")) {
+        return {
+          success: false,
+          message: "Database file is corrupted. Please restore from backup.",
+        };
+      }
+
+      return { success: false, message: "An unexpected error occurred." };
+    }
+  }
+
   getStudentsByYear(yearId) {
     try {
       const stmt = this.db.prepare(`
