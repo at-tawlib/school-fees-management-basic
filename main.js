@@ -16,7 +16,6 @@ async function loadStore() {
 function createWindow() {
   mainWindow = new BrowserWindow({
     title: "School Fees Tracker",
-    fullscreen: true,
     height: 800,
     width: 1200,
     resizable: true,
