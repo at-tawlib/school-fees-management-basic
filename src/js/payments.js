@@ -1,3 +1,5 @@
+import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
+import { openUpdatePaymentModal } from "./modals/update-payment-modal.js";
 import { showPaymentHistoryModal } from "./student-class.js";
 import { fCurrency } from "./utils/format-currency.js";
 import { formatDate } from "./utils/format-date.js";
@@ -130,38 +132,8 @@ export async function displayPaymentsTable() {
   });
 }
 
-const handleViewPayment = (payment) => {
-  //   {
-  //     "student_id": 4,
-  //     "student_name": "Aminu  Dramani",
-  //     "fees_id": 4,
-  //     "fee_amount": 1000,
-  //     "bill_id": 87,
-  //     "total_payments": 1000,
-  //     "balance": 0,
-  //     "discount_amount": 0
-  // }
-
-  //   {
-  //     "payment_id": 47,
-  //     "bill_id": 99,
-  //     "payment_amount": 500,
-  //     "payment_mode": "MOMO",
-  //     "payment_details": "55",
-  //     "date_paid": "2025-02-19T10:59:00.238Z",
-  //     "fees_id": 6,
-  //     "student_id": 20,
-  //     "student_name": "Triple 'H'  Big Man",
-  //     "class_name": "Grade 3",
-  //     "class_id": 3,
-  //     "academic_year": "2024/2025",
-  //     "year_id": 1,
-  //     "term": "Third",
-  //     "fee_amount": 1000,
-  //     "term_id": 3
-  // }
-
-  console.log(payment);
+const handleEditPayment = (payment) => {
+  openUpdatePaymentModal(payment);
 };
 
 const handleDeletePayment = async (paymentId) => {

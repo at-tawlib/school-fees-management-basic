@@ -396,6 +396,17 @@ ipcMain.handle("make-payment", async (_, data) => {
   }
 });
 
+// Update payment
+ipcMain.handle("update-payment", async (_, data) => {
+  try {
+    const result = await dbHandler.updatePayment(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
 // Delete payment
 ipcMain.handle("delete-payment", async (_, data) => {
   try {
@@ -536,14 +547,25 @@ ipcMain.handle("get-unbilled-classes", async (_, data) => {
 
 // Apply discount
 ipcMain.handle("apply-discount", async (_, data) => {
-  const result = await dbHandler.applyDiscount(data);
-  return result;
+  try {
+    const result = await dbHandler.applyDiscount(data);
+
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
 });
 
 // Get total discount given
 ipcMain.handle("get-total-discount-given", async (_, data) => {
-  const result = await dbHandler.getTotalDiscountGiven(data);
-  return result;
+  try {
+    const result = await dbHandler.getTotalDiscountGiven(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
 });
 
 // Handle confirmation dialog with custom message

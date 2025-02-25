@@ -8,3 +8,4 @@
 8. Update payments section. Added the view, delete and edit payment button. 
 9. Implemented delete payment in the payments section
 10. Implement view payment history in payment section
+11. Add option to delete student to the student section

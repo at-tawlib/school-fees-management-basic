@@ -738,6 +738,22 @@ class DatabaseHandler {
     }
   }
 
+  updatePayment(data) {
+    try {
+      const stmt = this.db.prepare(`
+          UPDATE payments SET amount = ?, payment_mode = ?, payment_details = ? WHERE id = ?
+        `);
+      stmt.run(data.amount, data.paymentMode, data.paymentDetails, data.paymentId);
+      return {
+        success: true,
+        message: "Payment updated successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   deletePayment(paymentId) {
     try {
       const stmt = this.db.prepare(`
