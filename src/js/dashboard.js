@@ -52,7 +52,7 @@ function setUpMetrics(metricsData) {
   document.getElementById("totalStudentsMetric").textContent = metricsData.totalStudents;
 
   document.getElementById("totalFeesBilledMetric").textContent = fCurrency(
-    metricsData.totalFeesBilled
+    metricsData.totalFeesBilled - metricsData.totalDiscountGiven
   );
 
   document.getElementById("totalFeesCollectedMetric").textContent = fCurrency(
@@ -60,7 +60,11 @@ function setUpMetrics(metricsData) {
   );
 
   document.getElementById("pendingPaymentsMetric").textContent = fCurrency(
-    metricsData.totalFeesBilled - metricsData.totalAmountPaid
+    metricsData.totalFeesBilled - metricsData.totalAmountPaid - metricsData.totalDiscountGiven
+  );
+
+  document.getElementById("discountGivenMetrics").textContent = fCurrency(
+    metricsData.totalDiscountGiven
   );
 }
 
@@ -79,13 +83,13 @@ async function setUpOverview(metricsData) {
 
   // Fees Overview summary
   document.getElementById("totalFeesBilledOverview").textContent = fCurrency(
-    metricsData.totalFeesBilled
+    metricsData.totalFeesBilled - metricsData.totalDiscountGiven
   );
   document.getElementById("totalFeesCollectedOverview").textContent = fCurrency(
     metricsData.totalAmountPaid
   );
   document.getElementById("pendingPaymentsOverview").textContent = fCurrency(
-    metricsData.totalFeesBilled - metricsData.totalAmountPaid
+    metricsData.totalFeesBilled - metricsData.totalAmountPaid - metricsData.totalDiscountGiven
   );
 
   // Billed students overview summary
@@ -121,9 +125,12 @@ async function setUpClassSummary() {
     row.insertCell().textContent = item.class_name;
     row.insertCell().textContent = item.students_count;
     row.insertCell().textContent = item.class_fee === 0 ? "No Fee" : fCurrency(item.class_fee);
-    row.insertCell().textContent = fCurrency(item.total_fees);
+    row.insertCell().textContent = fCurrency(item.total_fees - item.total_discount);
+    row.insertCell().textContent = fCurrency(item.total_discount);
     row.insertCell().textContent = fCurrency(item.total_paid);
-    row.insertCell().textContent = fCurrency(item.total_fees - item.total_paid);
+    row.insertCell().textContent = fCurrency(
+      item.total_fees - item.total_paid - item.total_discount
+    );
   });
 }
 
@@ -210,6 +217,13 @@ async function getMetricsData() {
     }
     const { total_amount_paid: totalAmountPaid } = totalAmountPaidResp.data;
 
+    // Fetch total discount given
+    const totalDiscountResp = await window.api.getTotalDiscountGiven({ termId, academicYearId });
+    if (!totalDiscountResp.success) {
+      throw new Error(totalDiscountResp.message);
+    }
+    const { total_discount: totalDiscountGiven } = totalDiscountResp.data;
+
     // Return the metrics data
     return {
       totalStudents,
@@ -221,6 +235,7 @@ async function getMetricsData() {
       yearClasses,
       unbilledClassesCount: unbilledClasses.length,
       unbilledClasses,
+      totalDiscountGiven,
     };
   } catch (error) {
     showToast(error.message, "error");

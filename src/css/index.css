@@ -1,9 +1,9 @@
 /* Define color variables in the :root */
 :root {
   --color-primary: #41d87b;
-  --color-secondary: #1D347A;
+  --color-secondary: #1d347a;
   --color-secondary-dark: #152659;
-  --color-secondary-light: #4F65A0;
+  --color-secondary-light: #4f65a0;
   --color-red: #cc0000;
   --color-red-light: #ff0000;
   --color-red-dark: #660000;
@@ -175,7 +175,7 @@ th {
 .table-rounded {
   border-collapse: collapse;
   width: 100%;
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   overflow: hidden;
   background-color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -200,6 +200,7 @@ th {
 
 .table-rounded tr:last-child td {
   border-bottom: none;
+  text-align: center;
 }
 
 .table-rounded td {
@@ -222,8 +223,14 @@ th {
   cursor: pointer;
 }
 
+.table-rounded td:last-child,
+.table-rounded th:last-child {
+  text-align: center;
+}
+
 .table-rounded tfoot th {
-  background-color: var(--color-secondary-dark);
+  background-color: var(--color-yellow);
+  border: none;
 }
 
 .plain-table-header {
@@ -243,7 +250,7 @@ th {
 
 .elevated-container {
   background-color: white;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   padding: 1rem;
   box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
 }
@@ -443,7 +450,7 @@ header {
 /* ************************** FEES ******************* */
 #feesTable td:last-child,
 #feesTable th:last-child {
-  text-align: end;
+  text-align: center;
 }
 
 #feesTable td:nth-child(6),
@@ -651,6 +658,14 @@ header {
   cursor: pointer;
 }
 
+.modal-color-background {
+  color: #333;
+  background-color:rgba(92, 205, 233, 0.1);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ddd;
+}
+
 /* Animation for fading in and out */
 @keyframes fadeIn {
   from {
@@ -700,7 +715,7 @@ header {
   height: 100vh;
   overflow-y: auto;
   scrollbar-width: none;
-  background-color: rgba(0, 0, 0, 0.5); 
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 #aboutModal p {

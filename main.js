@@ -16,7 +16,6 @@ async function loadStore() {
 function createWindow() {
   mainWindow = new BrowserWindow({
     title: "School Fees Tracker",
-    fullscreen: true,
     height: 800,
     width: 1200,
     resizable: true,
@@ -181,6 +180,16 @@ ipcMain.handle("insert-student", (event, student) => {
   }
 });
 
+// Delete student
+ipcMain.handle("delete-student", (event, studentId) => {
+  try {
+    const result = dbHandler.deleteStudent(studentId);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // Update student
 ipcMain.handle("update-student", (event, student) => {
   try {
@@ -210,6 +219,16 @@ ipcMain.handle("get-students-by-year", async (_, year) => {
 ipcMain.handle("add-student-to-class", (_, data) => {
   try {
     const result = dbHandler.addStudentToClass(data);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// Remove student from class
+ipcMain.handle("remove-student-from-class", (_, data) => {
+  try {
+    const result = dbHandler.removeStudentFromClass(data);
     return result;
   } catch (error) {
     return { success: false, message: error.message };
@@ -313,6 +332,16 @@ ipcMain.handle("bill-class-students", async (_, dataArray, feesId) => {
   }
 });
 
+// Delete bill
+ipcMain.handle("delete-bill", async (_, data) => {
+  try {
+    const result = await dbHandler.deleteBill(data);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // Get bill by class and academic year
 ipcMain.handle("get-bill-details", async (_, data) => {
   try {
@@ -325,6 +354,17 @@ ipcMain.handle("get-bill-details", async (_, data) => {
     return { success: false, message: error.message };
   }
 });
+
+// Get single bill details
+ipcMain.handle("get-single-bill-details", async (_, data) => {
+  try {
+    const result = await dbHandler.getSingleBillDetails(data);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // get all student fees
 ipcMain.handle("get-all-fees", async () => {
   try {
@@ -373,6 +413,28 @@ ipcMain.handle("make-payment", async (_, data) => {
     if (!result.success) {
       throw new Error(result.message);
     }
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Update payment
+ipcMain.handle("update-payment", async (_, data) => {
+  try {
+    const result = await dbHandler.updatePayment(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Delete payment
+ipcMain.handle("delete-payment", async (_, data) => {
+  try {
+    const result = await dbHandler.deletePayment(data);
     return result;
   } catch (error) {
     console.log(error.message);
@@ -505,6 +567,42 @@ ipcMain.handle("get-unbilled-classes", async (_, data) => {
     console.log(error.message);
     return { success: false, message: error.message };
   }
+});
+
+// Apply discount
+ipcMain.handle("apply-discount", async (_, data) => {
+  try {
+    const result = await dbHandler.applyDiscount(data);
+
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Get total discount given
+ipcMain.handle("get-total-discount-given", async (_, data) => {
+  try {
+    const result = await dbHandler.getTotalDiscountGiven(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Handle confirmation dialog with custom message
+ipcMain.handle("show-confirmation-dialog", async (_, message) => {
+  const result = await dialog.showMessageBox(mainWindow, {
+    type: "question",
+    buttons: ["No", "Yes"],
+    defaultId: 1,
+    title: "Confirmation",
+    message: message || "Are you sure you want to proceed?", // Default message
+  });
+
+  return result.response === 1; // Returns true if "Yes" is clicked, otherwise false
 });
 
 // app.whenReady().then(createWindow);

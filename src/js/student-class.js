@@ -34,6 +34,8 @@ const studentToAddId = document.getElementById("studentToAddId");
 const studentToAddSuggestionList = document.getElementById("studentToAddSuggestionList");
 const paidStatusSelect = document.getElementById("paidStatusSelect");
 
+const applyDiscountModal = document.getElementById("applyDiscountModal");
+
 let studentsData = [];
 let currentClass = {};
 let classTerm = {};
@@ -43,12 +45,6 @@ export async function setupStudentsClassSection() {
   const defaultYear = await getDefaultYearSetting();
   const defaultTerm = await getDefaultTermSetting();
   classTerm = { text: defaultTerm.setting_text, value: defaultTerm.setting_value };
-
-  console.log("class term: ", classTerm);
-  console.log("currentFees: ", currentFees);
-  console.log("currentClass: ", currentClass);
-  console.log("studentsData: ", studentsData);
-  console.log("*************************************");
 
   addClassForm.style.display = "none";
   studentClassTableContainer.style.display = "none";
@@ -84,10 +80,6 @@ async function setupClassesSidebar(year) {
           academicYear: cls.academic_year,
           academicYearId: cls.academic_year_id,
         };
-
-        console.log("Current class: ", currentClass);
-        console.log("Current term: ", classTerm);
-        console.log("*************************************");
         await displayClassStudentsTable();
       });
 
@@ -476,13 +468,19 @@ export async function displayClassStudentsTable() {
         <td>
           <div style="display: flex; justify-content: center">
             <button id="btnPayFees"  class="text-button" title="Pay school fees">
-              <i class="fa-brands fa-amazon-pay"></i>
+              <i class="fa-brands fa-amazon-pay color-blue"></i>
             </button>
 
-            <div style="border-left: 1px solid #ccc; height: 24px;"></div>
-
             <button id="btnPaymentsHistory"  class="text-button" title="Payment history">
-              <i class="fa-solid fa-eye"></i>
+              <i class="fa-solid fa-eye color-green"></i>
+            </button>
+
+            <button id="btnApplyDiscount"  class="text-button" title="Apply Discount">
+              <i class="fa-solid fa-percent color-yellow"></i>
+            </button>
+
+            <button id="btnUnbillStudent" title="Unbill student" class="text-button">
+              <i class="fa-solid fa-link-slash color-red"></i>
             </button>
           </div>
         </td>
@@ -496,6 +494,27 @@ export async function displayClassStudentsTable() {
         showPaymentHistoryModal(item);
       });
 
+      row.querySelector("#btnApplyDiscount").addEventListener("click", () => {
+        openApplyDiscountModal(item, currentClass, classTerm);
+      });
+
+      row.querySelector("#btnUnbillStudent").addEventListener("click", async () => {
+        const confirmUnbill = confirm(`Are you sure you want to unbill ${item.student_name}?`);
+        if (!confirmUnbill) return;
+
+        const response = await window.api.deleteBill(item.bill_id);
+        console.log(response);
+        if (!response.success) {
+          showToast(response.message || "An error occurred", "error");
+          return;
+        }
+
+        showToast(response.message || "Student unbilled successfully", "success");
+        await displayClassStudentsTable();
+      });
+
+      if (item.discount_amount > 0) row.style.background = "rgba(0, 255, 0, 0.1)";
+
       studentClassTableBody.appendChild(row);
       billedCount += 1;
     } else {
@@ -505,14 +524,40 @@ export async function displayClassStudentsTable() {
         <td>${notBilledCount + 1}</td>
         <td>${item.student_name}</td>
         <td>
-          <button class="bg-green text-button">
+          <button class="bg-green text-button" title="Bill student">
             <i class="fa-solid fa-money-bill-wave"></i> Bill Student
+          </button>
+          <button id="btnRemoveStudent" class="text-button" title="Remove student from class">
+            <i class="fa-solid fa-user-slash color-red"></i>
+            <span class="color-red">Remove Student from class</span>
           </button>
         </td>
       `;
 
       row.querySelector("button").addEventListener("click", () => {
         billSingleStudent(item.student_id, item.fees_id);
+      });
+
+      row.querySelector("#btnRemoveStudent").addEventListener("click", async () => {
+        const confirmRemove = confirm(
+          `Are you sure you want to remove ${item.student_name} from this class?`
+        );
+        console.log(item);
+        if (!confirmRemove) return;
+
+        const response = await window.api.removeStudentFromClass({
+          studentId: item.student_id,
+          classId: currentClass.classId,
+          academicYearId: currentClass.academicYearId,
+        });
+
+        if (!response.success) {
+          showToast(response.message || "An error occurred", "error");
+          return;
+        }
+
+        showToast(response.message || "Student removed successfully", "success");
+        await displayClassStudentsTable();
       });
 
       notBilledStudentClassTableBody.appendChild(row);
@@ -747,7 +792,14 @@ document
   .getElementById("paymentHistoryOkModalBtn")
   .addEventListener("click", () => (paymentHistoryModal.style.display = "none"));
 
-async function showPaymentHistoryModal(data) {
+export const showPaymentHistoryModal = async (data, classDetails = null) => {
+  const discountContainer = document.getElementById("paymentHistoryModalDiscountContainer");
+  const discountText = document.getElementById("paymentHistoryModalDiscount");
+  const classYearText = document.getElementById("paymentHistoryFeesText");
+  const feesText = document.getElementById("paymentHistoryModalFees");
+  const paidText = document.getElementById("paymentModalTotalPaidText");
+  const balanceText = document.getElementById("paymentModalBalanceText");
+
   const response = await window.api.getStudentPayments(data.bill_id);
   if (!response.success) {
     showToast(response.message || "An error occurred", "error");
@@ -755,15 +807,12 @@ async function showPaymentHistoryModal(data) {
   }
 
   if (response.data.length === 0) {
-    showToast("No payment history found for this student", "error");
+    showToast("No payment history found for this student", "success");
     return;
   }
 
   paymentHistoryModal.style.display = "block";
   document.getElementById("paymentHistoryStudentName").textContent = data.student_name;
-  document.getElementById(
-    "paymentHistoryFeesText"
-  ).textContent = `${currentClass.className} - ${classTerm.text} Term, ${currentClass.academicYear}`;
 
   const tableBody = document.getElementById("paymentHistoryTableBody");
   tableBody.innerHTML = "";
@@ -779,8 +828,122 @@ async function showPaymentHistoryModal(data) {
     `;
   });
 
-  document.getElementById("paymentModalTotalPaidText").textContent = fCurrency(data.total_payments);
-  document.getElementById("paymentModalBalanceText").textContent = fCurrency(data.balance);
+  if (classDetails) {
+    const studentBillResp = await window.api.getSingleBillDetails({
+      studentId: data.student_id,
+      classId: data.class_id,
+      academicYearId: data.year_id,
+      termId: data.term_id,
+    });
+
+    if (!studentBillResp.success) {
+      showToast(studentBillResp.message || "An error occurred fetching payment history", "error");
+      return;
+    }
+
+    if (studentBillResp.data.length <= 0) {
+      showToast("No payment history found for this student", "success");
+      return;
+    }
+
+    const stdBill = studentBillResp.data[0];
+
+    if (stdBill.discount_amount > 0) {
+      discountContainer.style.display = "";
+      discountText.textContent = fCurrency(stdBill.discount_amount);
+    } else {
+      discountContainer.style.display = "none";
+    }
+
+    classYearText.textContent = `${data.class_name} - ${data.term} Term, ${data.academic_year}`;
+    paidText.textContent = fCurrency(stdBill.total_payments);
+    balanceText.textContent = fCurrency(stdBill.balance);
+    feesText.textContent = fCurrency(stdBill.fee_amount + stdBill.discount_amount);
+  } else {
+    classYearText.textContent = `${currentClass.className} - ${classTerm.text} Term, ${currentClass.academicYear}`;
+    if (data.discount_amount > 0) {
+      discountContainer.style.display = "";
+      discountText.textContent = fCurrency(data.discount_amount);
+    } else {
+      discountContainer.style.display = "none";
+    }
+
+    feesText.textContent = fCurrency(data.fee_amount + data.discount_amount);
+    paidText.textContent = fCurrency(data.total_payments);
+    balanceText.textContent = fCurrency(data.balance);
+  }
+};
+
+// **************** ADD DISCOUNT MODAL ************************
+document
+  .getElementById("discountModalCloseXBtn")
+  .addEventListener("click", () => (applyDiscountModal.style.display = "none"));
+
+document
+  .getElementById("cancelDiscountModalBtn")
+  .addEventListener("click", () => (applyDiscountModal.style.display = "none"));
+
+document.getElementById("submitDiscountModalBtn").addEventListener("click", async () => {
+  const discountAmount = document.getElementById("discountAmountInput").value;
+  const billId = document.getElementById("modalDiscountBillId").value;
+  const feesAmount = document.getElementById("discountModalHiddenFeeAmount").value;
+
+  if (!discountAmount || isNaN(discountAmount)) {
+    showToast("Please enter a discount amount", "error");
+    return;
+  }
+
+  if (discountAmount > feesAmount) {
+    showToast("Discount amount cannot be greater than the fee amount", "error");
+    return;
+  }
+
+  const response = await window.api.applyDiscount({ billId, discountAmount });
+
+  if (!response.success) {
+    showToast(response.message || "An error occurred", "error");
+    return;
+  }
+
+  showToast(response.message || "Discount applied successfully", "success");
+  applyDiscountModal.style.display = "none";
+  await displayClassStudentsTable();
+});
+
+document.getElementById("editDiscountBtn").addEventListener("click", () => {
+  document.getElementById("applyDiscountForm").style.display = "";
+});
+
+async function openApplyDiscountModal(item, currentClass, classTerm) {
+  if (!item || !currentClass || !classTerm) {
+    showToast("An error occurred. Please try again", "error");
+    return;
+  }
+
+  document.getElementById("discountModalHiddenFeeAmount").value = item.fee_amount;
+  document.getElementById("modalDiscountBillId").value = item.bill_id;
+  document.getElementById("applyDiscountStudentName").textContent = item.student_name;
+  document.getElementById(
+    "modalDiscountClass"
+  ).textContent = `${currentClass.className} - ${classTerm.text} Term, ${currentClass.academicYear}`;
+  document.getElementById("applyDiscountModalFees").textContent = fCurrency(item.fee_amount);
+  document.getElementById("applyDiscountModalPaid").textContent = fCurrency(item.total_payments);
+  document.getElementById("applyDiscountModalArrears").textContent = fCurrency(item.balance);
+  document.getElementById("discountAmountInput").value = "";
+
+  if (item.discount_amount > 0) {
+    document.getElementById("applyDiscountForm").style.display = "none";
+    document.getElementById("alreadyDiscountContainer").style.display = "";
+    document.getElementById(
+      "alreadyDiscountText"
+    ).textContent = `Student already has a discount of ${fCurrency(item.discount_amount)}`;
+    document.getElementById("discountAmountInput").value = item.discount_amount;
+  } else {
+    document.getElementById("applyDiscountForm").style.display = "";
+    document.getElementById("alreadyDiscountContainer").style.display = "none";
+  }
+
+  applyDiscountModal.style.display = "block";
 }
 
 // **************** ADD STUDENTS TO CLASS MODAL ************************

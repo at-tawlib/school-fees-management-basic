@@ -1,3 +1,6 @@
+import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
+import { openUpdatePaymentModal } from "./modals/update-payment-modal.js";
+import { showPaymentHistoryModal } from "./student-class.js";
 import { fCurrency } from "./utils/format-currency.js";
 import { formatDate } from "./utils/format-date.js";
 import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
@@ -93,7 +96,58 @@ export async function displayPaymentsTable() {
         <td>${payment.payment_mode}</td>
         <td>${payment.payment_details}</td>
         <td>${formatDate(payment.date_paid)}</td>
-        <td></td>
+        <td>
+         <div style="display: flex; justify-content: center">
+            <button id="btnPaymentView"  class="text-button" title="View Payment">
+              <i class="fa-solid fa-eye color-green"></i>
+            </button>
+
+            <button id="btnPaymentEdit"  class="text-button" title="Edit Payment">
+              <i class="fa-solid fa-edit"></i>
+            </button>
+
+            <button id="bntPaymentDelete"  class="text-button" title="Delete Payment">
+              <i class="fa-solid fa-trash color-red"></i>
+            </button>
+          </div>
+        </td>
       `;
+
+    row.querySelector("#btnPaymentView").addEventListener("click", async () => {
+      const classDetails = {
+        className: payment.class_name,
+        academicYear: payment.academic_year,
+        term: payment.term,
+      };
+      await showPaymentHistoryModal(payment, classDetails);
+    });
+
+    row.querySelector("#btnPaymentEdit").addEventListener("click", () => {
+      handleEditPayment(payment);
+    });
+
+    row.querySelector("#bntPaymentDelete").addEventListener("click", async () => {
+      await handleDeletePayment(payment.payment_id);
+    });
   });
 }
+
+const handleEditPayment = (payment) => {
+  openUpdatePaymentModal(payment);
+};
+
+const handleDeletePayment = async (paymentId) => {
+  const confirmed = await window.dialog.showConfirmationDialog(
+    "Do you really want to delete this payment?"
+  );
+
+  if (confirmed) {
+    const response = await window.api.deletePayment(paymentId);
+    if (!response.success) {
+      showToast(response.message || "An error occurred", "error");
+      return;
+    }
+    showToast(response.message || "Payment deleted successfully", "success");
+    await displayPaymentsTable();
+  }
+};

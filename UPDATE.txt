@@ -1,3 +1,12 @@
 1. Check if current term and academic year for billing a student is the default term and academic year. If it is not, don't allow student to be billed
 2. Check if some students have been billed for the current year and term, if some are billed, show a modal of the list of billed students and asks to proceed
 3. Fixed bug of wrongful billing of class with the classId instead of the feeId
+4. Improve currency formatting to conditionally display decimals and use GH₵ symbol
+5. Enhance view of amount in the fees using the fCurrency function
+6. Added error handlers to make sure the payment amount does not exceed the arrears
+7. Added option to add discount and recalculate fees stats with the discount
+8. Update payments section. Added the view, delete and edit payment button. 
+9. Implemented delete payment in the payments section
+10. Implement view payment history in payment section
+11. Add option to delete student to the student section
+12. Implement modal to update payment

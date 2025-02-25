@@ -14,6 +14,7 @@ const arrearsText = document.getElementById("makePaymentModalArrears");
 
 let selectedFee = null;
 let selectedTerm = null;
+let arrears = null;
 
 document.getElementById("cancelPaymentModalBtn").addEventListener("click", () => {
   modal.style.display = "none";
@@ -32,6 +33,8 @@ document.getElementById("submitPayment").addEventListener("click", async () => {
   const paymentMode = paymentModeSelect.value;
   const paymentDetails = paymentDetailsField.value;
 
+  paymentAmountField.style.border = "";
+
   if (!studentId || !billId || !paymentAmount || !paymentMode) {
     showToast("Please fill all the fields", "error");
     return;
@@ -42,7 +45,18 @@ document.getElementById("submitPayment").addEventListener("click", async () => {
     return;
   }
 
-  // TODO: make sure the amount to pay is not greater than the current arrears
+  if (paymentAmount <= 0 || isNaN(paymentAmount)) {
+    paymentAmountField.style.border = "1px solid red";
+    showToast("Please provide a valid payment amount", "error");
+    return;
+  }
+
+  if (paymentAmount > arrears) {
+    paymentAmountField.style.border = "1px solid red";
+    showToast("Amount to pay cannot be greater than the current arrears", "error");
+    return;
+  }
+
   const response = await window.api.makePayment({
     studentId,
     billId,
@@ -79,6 +93,7 @@ function clearPaymentModalFields() {
 }
 
 export function openStudentPaymentModal(details, currentFee, classTerm) {
+  console.log(details, currentFee, classTerm);
   selectedFee = currentFee;
   selectedTerm = classTerm;
 
@@ -93,12 +108,18 @@ export function openStudentPaymentModal(details, currentFee, classTerm) {
     "modalStudentClass"
   ).textContent = `Pay fees for ${currentFee.className} - ${classTerm.text} term, ${currentFee.academicYear}`;
 
-  const arrears = details.fee_amount - (details.total_payments ?? 0);
+  arrears = details.fee_amount - (details.total_payments ?? 0);
   studentIdElement.textContent = details.student_id;
   billIdElement.textContent = details.bill_id;
   feesText.textContent = fCurrency(details.fee_amount);
   paidText.textContent = fCurrency(details.total_payments);
   arrearsText.textContent = fCurrency(arrears);
+
+  if (details.discount_amount > 0)
+    document.getElementById("discountText").textContent = `(Discount ${fCurrency(
+      details.discount_amount
+    )})`;
+  else document.getElementById("discountText").textContent = "";
 
   if (arrears <= 0) {
     document.getElementById("makePaymentForm").style.display = "none";
