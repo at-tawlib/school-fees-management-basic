@@ -9,3 +9,4 @@
 9. Implemented delete payment in the payments section
 10. Implement view payment history in payment section
 11. Add option to delete student to the student section
+12. Implement modal to update payment

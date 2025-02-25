@@ -223,7 +223,8 @@ th {
 }
 
 .table-rounded tfoot th {
-  background-color: var(--color-secondary-dark);
+  background-color: var(--color-yellow);
+  border: none;
 }
 
 .plain-table-header {

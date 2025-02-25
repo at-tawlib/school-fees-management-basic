@@ -468,19 +468,19 @@ export async function displayClassStudentsTable() {
         <td>
           <div style="display: flex; justify-content: center">
             <button id="btnPayFees"  class="text-button" title="Pay school fees">
-              <i class="fa-brands fa-amazon-pay"></i>
+              <i class="fa-brands fa-amazon-pay color-blue"></i>
             </button>
-
-            <div style="border-left: 1px solid #ccc; height: 24px;"></div>
 
             <button id="btnPaymentsHistory"  class="text-button" title="Payment history">
-              <i class="fa-solid fa-eye"></i>
+              <i class="fa-solid fa-eye color-green"></i>
             </button>
 
-            <div style="border-left: 1px solid #ccc; height: 24px;"></div>
-
             <button id="btnApplyDiscount"  class="text-button" title="Apply Discount">
-              <i class="fa-solid fa-percent"></i>
+              <i class="fa-solid fa-percent color-yellow"></i>
+            </button>
+
+            <button id="btnUnbillStudent" title="Unbill student" class="text-button">
+              <i class="fa-solid fa-link-slash color-red"></i>
             </button>
           </div>
         </td>
@@ -509,8 +509,12 @@ export async function displayClassStudentsTable() {
         <td>${notBilledCount + 1}</td>
         <td>${item.student_name}</td>
         <td>
-          <button class="bg-green text-button">
+          <button class="bg-green text-button" title="Bill student">
             <i class="fa-solid fa-money-bill-wave"></i> Bill Student
+          </button>
+          <button class="text-button" title="Remove student from class">
+            <i class="fa-solid fa-user-slash color-red"></i>
+            <span class="color-red">Remove Student from class</span>
           </button>
         </td>
       `;

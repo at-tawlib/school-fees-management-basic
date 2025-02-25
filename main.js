@@ -182,8 +182,12 @@ ipcMain.handle("insert-student", (event, student) => {
 
 // Delete student
 ipcMain.handle("delete-student", (event, studentId) => {
-  const result = dbHandler.deleteStudent(studentId);
-  return result;
+  try {
+    const result = dbHandler.deleteStudent(studentId);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 });
 
 // Update student
