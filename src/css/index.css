@@ -200,6 +200,7 @@ th {
 
 .table-rounded tr:last-child td {
   border-bottom: none;
+  text-align: center;
 }
 
 .table-rounded td {
@@ -220,6 +221,11 @@ th {
 .table-rounded tr:hover {
   background-color: var(--highlight-color);
   cursor: pointer;
+}
+
+.table-rounded td:last-child,
+.table-rounded th:last-child {
+  text-align: center;
 }
 
 .table-rounded tfoot th {
@@ -444,7 +450,7 @@ header {
 /* ************************** FEES ******************* */
 #feesTable td:last-child,
 #feesTable th:last-child {
-  text-align: end;
+  text-align: center;
 }
 
 #feesTable td:nth-child(6),

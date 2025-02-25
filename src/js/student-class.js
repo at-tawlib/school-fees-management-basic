@@ -498,6 +498,21 @@ export async function displayClassStudentsTable() {
         openApplyDiscountModal(item, currentClass, classTerm);
       });
 
+      row.querySelector("#btnUnbillStudent").addEventListener("click", async () => {
+        const confirmUnbill = confirm(`Are you sure you want to unbill ${item.student_name}?`);
+        if (!confirmUnbill) return;
+
+        const response = await window.api.deleteBill(item.bill_id);
+        console.log(response);
+        if (!response.success) {
+          showToast(response.message || "An error occurred", "error");
+          return;
+        }
+
+        showToast(response.message || "Student unbilled successfully", "success");
+        await displayClassStudentsTable();
+      });
+
       if (item.discount_amount > 0) row.style.background = "rgba(0, 255, 0, 0.1)";
 
       studentClassTableBody.appendChild(row);
@@ -512,7 +527,7 @@ export async function displayClassStudentsTable() {
           <button class="bg-green text-button" title="Bill student">
             <i class="fa-solid fa-money-bill-wave"></i> Bill Student
           </button>
-          <button class="text-button" title="Remove student from class">
+          <button id="btnRemoveStudent" class="text-button" title="Remove student from class">
             <i class="fa-solid fa-user-slash color-red"></i>
             <span class="color-red">Remove Student from class</span>
           </button>
@@ -521,6 +536,28 @@ export async function displayClassStudentsTable() {
 
       row.querySelector("button").addEventListener("click", () => {
         billSingleStudent(item.student_id, item.fees_id);
+      });
+
+      row.querySelector("#btnRemoveStudent").addEventListener("click", async () => {
+        const confirmRemove = confirm(
+          `Are you sure you want to remove ${item.student_name} from this class?`
+        );
+        console.log(item);
+        if (!confirmRemove) return;
+
+        const response = await window.api.removeStudentFromClass({
+          studentId: item.student_id,
+          classId: currentClass.classId,
+          academicYearId: currentClass.academicYearId,
+        });
+
+        if (!response.success) {
+          showToast(response.message || "An error occurred", "error");
+          return;
+        }
+
+        showToast(response.message || "Student removed successfully", "success");
+        await displayClassStudentsTable();
       });
 
       notBilledStudentClassTableBody.appendChild(row);

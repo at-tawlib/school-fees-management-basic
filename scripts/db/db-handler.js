@@ -309,6 +309,47 @@ class DatabaseHandler {
     }
   }
 
+  removeStudentFromClass(data) {
+    try {
+      const stmt = this.db.prepare(`
+          DELETE FROM studentClasses WHERE student_id = ? AND year_id = ? AND class_id = ?
+        `);
+      const result = stmt.run(data.studentId, data.academicYearId, data.classId);
+      if (result.changes === 0) {
+        return {
+          success: false,
+          message: "No student found with the given ID.",
+        };
+      }
+
+      return {
+        success: true,
+        message: "Student removed from class successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      // Handle common SQLite errors
+      if (error.message.includes("FOREIGN KEY constraint failed")) {
+        return {
+          success: false,
+          message: "Cannot delete student. This student is linked to other records.",
+        };
+      } else if (error.message.includes("database is locked")) {
+        return {
+          success: false,
+          message: "Database is currently in use. Please try again later.",
+        };
+      } else if (error.message.includes("SQLITE_CORRUPT")) {
+        return {
+          success: false,
+          message: "Database file is corrupted. Please restore from backup.",
+        };
+      }
+
+      return { success: false, message: error.message };
+    }
+  }
+
   getStudentsByClass(filter) {
     try {
       const stmt = this.db.prepare(`
@@ -481,7 +522,26 @@ class DatabaseHandler {
       };
     } catch (error) {
       console.error("Database Error: ", error);
-      return { success: false, message: error.message };
+
+      // Handle common SQLite errors
+      if (error.message.includes("FOREIGN KEY constraint failed")) {
+        return {
+          success: false,
+          message: "Cannot delete student. This student is linked to other records.",
+        };
+      } else if (error.message.includes("database is locked")) {
+        return {
+          success: false,
+          message: "Database is currently in use. Please try again later.",
+        };
+      } else if (error.message.includes("SQLITE_CORRUPT")) {
+        return {
+          success: false,
+          message: "Database file is corrupted. Please restore from backup.",
+        };
+      }
+
+      return { success: false, message: "An unexpected error occurred." };
     }
   }
 
@@ -518,6 +578,47 @@ class DatabaseHandler {
     } catch (error) {
       console.error("Database Error: ", error);
       return { success: false, message: error.message };
+    }
+  }
+
+  deleteBill(billId) {
+    try {
+      const stmt = this.db.prepare(`
+          DELETE FROM bills WHERE id = ?
+        `);
+      const result = stmt.run(billId);
+      if (result.changes === 0) {
+        return {
+          success: false,
+          message: "No bill found with the given ID.",
+        };
+      }
+
+      return {
+        success: true,
+        message: "Bill deleted successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      // Handle common SQLite errors
+      if (error.message.includes("FOREIGN KEY constraint failed")) {
+        return {
+          success: false,
+          message: "Cannot unbill student. This student is linked to other records.",
+        };
+      } else if (error.message.includes("database is locked")) {
+        return {
+          success: false,
+          message: "Database is currently in use. Please try again later.",
+        };
+      } else if (error.message.includes("SQLITE_CORRUPT")) {
+        return {
+          success: false,
+          message: "Database file is corrupted. Please restore from backup.",
+        };
+      }
+
+      return { success: false, message: "An unexpected error occurred." };
     }
   }
 
@@ -766,7 +867,25 @@ class DatabaseHandler {
       };
     } catch (error) {
       console.error("Database Error: ", error);
-      return { success: false, message: error.message };
+      // Handle common SQLite errors
+      if (error.message.includes("FOREIGN KEY constraint failed")) {
+        return {
+          success: false,
+          message: "Cannot delete student. This student is linked to other records.",
+        };
+      } else if (error.message.includes("database is locked")) {
+        return {
+          success: false,
+          message: "Database is currently in use. Please try again later.",
+        };
+      } else if (error.message.includes("SQLITE_CORRUPT")) {
+        return {
+          success: false,
+          message: "Database file is corrupted. Please restore from backup.",
+        };
+      }
+
+      return { success: false, message: "An unexpected error occurred." };
     }
   }
 

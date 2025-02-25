@@ -225,6 +225,16 @@ ipcMain.handle("add-student-to-class", (_, data) => {
   }
 });
 
+// Remove student from class
+ipcMain.handle("remove-student-from-class", (_, data) => {
+  try {
+    const result = dbHandler.removeStudentFromClass(data);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // Check if class exists
 ipcMain.handle("check-class-exists", (event, data) => {
   try {
@@ -316,6 +326,16 @@ ipcMain.handle("check-class-billed", async (_, data) => {
 ipcMain.handle("bill-class-students", async (_, dataArray, feesId) => {
   try {
     const result = await dbHandler.billClassStudents(dataArray, feesId);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// Delete bill
+ipcMain.handle("delete-bill", async (_, data) => {
+  try {
+    const result = await dbHandler.deleteBill(data);
     return result;
   } catch (error) {
     return { success: false, message: error.message };
