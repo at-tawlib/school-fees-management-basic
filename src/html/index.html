@@ -15,37 +15,34 @@
     <script type="module" src="../js/settings.js" defer></script>
   </head>
   <body>
-    <div class="container">
-      <nav class="sidebar">
-        <div>
-          <div id="navHeader">
-            <h3>School Fees Tracker</h3>
-            <p id="navAcademicYear"></p>
-            <p id="navTerm"></p>
-          </div>
-          <ul>
-            <li id="navDashboard" class="active">Dashboard</li>
-            <li id="navStudents">Students</li>
-            <li id="navFees">View Fees</li>
-            <li id="navClasses">Students Fees</li>
-            <li id="navPayments">Payments</li>
-          </ul>
-        </div>
-        <button id="navSettings"><i class="fa-solid fa-gears"></i> Settings</button>
+    <header>
+      <div>
+        <p id="navAcademicYear"></p>
+        <p id="navTerm"></p>
+      </div>
+      <nav class="navbar">
+        <ul>
+          <li><span id="navDashboard" class="active">Dashboard</span></li>
+          <li><span id="navStudents">Students</span></li>
+          <li><span id="navFees">Fees</span></li>
+          <li><span id="navClasses">Bills</span></li>
+          <li><span id="navPayments">Payments</span></li>
+        </ul>
       </nav>
+      <div>
+        <button id="navSettings" class="text-button" title="Settings" style="color: white">
+          <i class="fa-solid fa-gears"></i>
+        </button>
+        <button id="navRefreshBtn" class="text-button" title="Refresh App" style="color: white">
+          <i class="fa-solid fa-sync"></i>
+        </button>
+        <button id="navAbout" class="text-button" title="About App" style="color: white">
+          <i class="fa-solid fa-circle-info"></i>
+        </button>
+      </div>
+    </header>
 
-      <header>
-        <h2 id="sectionHeaderTitle">Students</h2>
-        <div>
-          <button id="navRefreshBtn" class="text-button" title="Refresh App" style="color: white">
-            <i class="fa-solid fa-sync"></i> Refresh
-          </button>
-          <button id="navAbout" class="text-button" title="About App" style="color: white">
-            <i class="fa-solid fa-circle-info"></i> About
-          </button>
-        </div>
-      </header>
-
+    <div class="container">
       <main>
         <!-------------- DASHBOARD  SECTION ----------------------->
         <section id="dashboardSection">

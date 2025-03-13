@@ -7,16 +7,14 @@ import { showHideFeesContainer } from "./utils/show-hide-container.js";
 import { setUpFeesSection } from "./fees.js";
 import { initDashboard } from "./dashboard.js";
 
-const navItems = document.querySelectorAll(".sidebar ul li");
-const sectionHeaderTitle = document.getElementById("sectionHeaderTitle");
+const navItems = document.querySelectorAll(".navbar ul li span");
 const navSettingsButton = document.getElementById("navSettings");
 
 // Function to handle navigation item clicks
+// Remove the 'active' class from all navigation items and set active class to the clicked item
 function handleNavClick(event) {
-  // Remove the 'active' class from all navigation items
   navItems.forEach((item) => item.classList.remove("active"));
-
-  // Add the 'active' class to the clicked navigation item
+  navSettingsButton.classList.remove("active");
   event.target.classList.add("active");
 }
 
@@ -34,31 +32,26 @@ document.getElementById("navAbout").addEventListener("click", function () {
 
 document.getElementById("navDashboard").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.DASHBOARD);
-  sectionHeaderTitle.textContent = "Dashboard";
   initDashboard();
 });
 
 document.getElementById("navStudents").addEventListener("click", async function () {
   showHideFeesContainer(CONTAINERS.STUDENTS_VIEW);
-  sectionHeaderTitle.textContent = "Students";
   await initStudentsSection();
 });
 
 document.getElementById("navFees").addEventListener("click", async function () {
   showHideFeesContainer(CONTAINERS.VIEW_FEES);
-  sectionHeaderTitle.textContent = "Fees";
   setUpFeesSection();
 });
 
 document.getElementById("navClasses").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.STUDENT_CLASS);
-  sectionHeaderTitle.textContent = "Students Classes";
   setupStudentsClassSection();
 });
 
 document.getElementById("navPayments").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.PAYMENTS);
-  sectionHeaderTitle.textContent = "Payments";
   setUpPaymentsSection();
 });
 
@@ -68,7 +61,6 @@ document.getElementById("navSettings").addEventListener("click", function () {
   navSettingsButton.classList.add("active");
 
   showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
-  sectionHeaderTitle.textContent = "Settings";
   initSettings();
 });
 
@@ -78,6 +70,5 @@ document.getElementById("aboutCloseXBtn").addEventListener("click", function () 
 
 window.onload = function () {
   showHideFeesContainer(CONTAINERS.DASHBOARD);
-  sectionHeaderTitle.textContent = "Dashboard";
   initDashboard();
 };

@@ -12,7 +12,6 @@ const recentPaymentsTable = document.getElementById("dashboardRecentPaymentsTabl
 
 document.getElementById("dashboardChangeYearTermBtn").addEventListener("click", function () {
   showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
-  sectionHeaderTitle.textContent = "Settings";
   initSettings();
 });
 
@@ -23,7 +22,6 @@ export async function initDashboard() {
   if (!academicYearSetting || !termSetting) {
     showToast("Set up the current term and academic year.", "error");
     showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
-    sectionHeaderTitle.textContent = "Settings";
     initSettings();
     return;
   }
