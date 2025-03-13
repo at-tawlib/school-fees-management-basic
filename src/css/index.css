@@ -238,6 +238,52 @@ th {
   border: none !important;
 }
 
+/* ***************** HEADER ****************** */
+header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  box-shadow: 0 4px 6px 0 rgba(36, 35, 35, 0.8);
+  z-index: 1000;
+  background-color: var(--color-secondary);
+  color: white;
+}
+
+#navAcademicYear {
+  font-weight: 700;
+}
+
+header .navbar ul {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+header .navbar li {
+  margin-left: 1rem;
+}
+
+header .navbar ul li span {
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 600;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+header .navbar ul li span.active,
+header .navbar ul li span:hover {
+  color: var(--color-yellow);
+  border-bottom: 0.2rem solid var(--color-yellow);
+  padding: 0.5rem 0;
+}
+
 /* ****************** CONTAINERS CSS *************************** */
 .container {
   margin: 0;
@@ -273,9 +319,9 @@ th {
 
 /* ****************** MAIN CONTENT *************************** */
 main {
-  width: calc(100% - 16rem);
+  width: 100%;
   margin-top: 5.4rem;
-  margin-left: 18rem;
+  margin-left: 1rem;
   margin-right: 2rem;
   margin-bottom: 1rem;
   border-radius: 1rem;
@@ -337,35 +383,16 @@ main {
   padding: 0.2rem;
 }
 
-#navSettings {
-  border-radius: 0px;
-  border-bottom: none;
-  text-align: start;
-  color: var(--color-secondary);
-  background-color: white;
-}
-
 #navSettings:hover {
-  background-color: var(--color-secondary);
+  background-color: var(--color-yellow);
   color: white;
 }
 
-/* ***************** HEADER ****************** */
-header {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 16rem;
-  height: 3.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 1rem;
-  box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
-  z-index: 1000;
-  background-color: var(--color-secondary);
+#navSettings.active {
+  background-color: var(--color-yellow);
   color: white;
 }
+
 /* ********************** DASHBOARD CSS ********************** */
 .metrics {
   display: grid;
@@ -659,7 +686,7 @@ header {
 
 .modal-color-background {
   color: #333;
-  background-color:rgba(92, 205, 233, 0.1);
+  background-color: rgba(92, 205, 233, 0.1);
   padding: 1rem;
   border-radius: 0.5rem;
   border: 1px solid #ddd;
