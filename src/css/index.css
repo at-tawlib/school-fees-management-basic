@@ -200,7 +200,6 @@ th {
 
 .table-rounded tr:last-child td {
   border-bottom: none;
-  text-align: center;
 }
 
 .table-rounded td {
