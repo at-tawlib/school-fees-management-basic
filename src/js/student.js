@@ -148,9 +148,17 @@ async function displayStudents(yearId) {
     });
 
     row.querySelector("#btnDeleteStudent").addEventListener("click", async () => {
-      const confirmDelete = confirm("Are you sure you want to delete this student?");
+      if (student.class_name) {
+        showToast(
+          "Student is already assigned to a class. Please remove student from class before deleting.",
+          "error"
+        );
+        return;
+      }
 
+      const confirmDelete = confirm("Are you sure you want to delete this student?");
       if (!confirmDelete) return;
+
       const result = await window.api.deleteStudent(student.student_id);
       console.log(result);
       if (result.success) {
