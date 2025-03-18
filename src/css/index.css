@@ -769,7 +769,8 @@ main {
   right: 20px;
   z-index: 1000;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   gap: 10px;
   border-radius: 5px;
 }
@@ -792,16 +793,21 @@ main {
 }
 
 .toast-close-button {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding-right: 8px;
+  padding-left: 8px;
+  color: #fff;
   cursor: pointer;
-  position: absolute;
-  top: 4px;
-  right: 10px;
-  padding-left: 10px;
+  shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
 }
 
+.toast-close-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  margin-right: 5px;
+}
 /* ************** COLOURS & BACKGROUND COLOURS ********************/
 .bg-secondary {
   background-color: var(--color-secondary);
