@@ -4,6 +4,17 @@ export function showToast(message, type = "success") {
   toastText.className = "toast-text";
   toastText.textContent = message;
 
+  // Create close button
+  const closeButton = document.createElement("button");
+  closeButton.className = "toast-close-button";
+  closeButton.innerHTML = "&times;";
+  closeButton.onclick = () => {
+    toastText.remove();
+  };
+
+  // Append close button to toast
+  toastText.appendChild(closeButton);
+
   // Append toast to container
   const container = document.getElementById("toastContainer");
   container.classList.remove("toast-success", "toast-error");
@@ -13,5 +24,5 @@ export function showToast(message, type = "success") {
   // Remove toast after 3 seconds
   setTimeout(() => {
     toastText.remove();
-  }, 5000);
+  }, 10000);
 }

@@ -761,8 +761,9 @@ main {
 
 /* *********************** TOAST CSS ************************ */
 .toast-container {
-  width: 250px;
+  width: auto;
   min-width: 250px;
+  max-width: 400px;
   position: fixed;
   top: 20px;
   right: 20px;
@@ -788,6 +789,17 @@ main {
 
 .toast-error {
   background-color: var(--color-red-light);
+}
+
+.toast-close-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  position: absolute;
+  top: 4px;
+  right: 10px;
+  padding-left: 10px;
 }
 
 /* ************** COLOURS & BACKGROUND COLOURS ********************/
