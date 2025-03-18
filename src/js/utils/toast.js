@@ -1,17 +1,20 @@
 // Function to show a toast notification
 export function showToast(message, type = "success") {
-  const toastText = document.createElement("p");
-  toastText.className = "toast-text";
-  toastText.textContent = message;
+  const toastContainer = document.getElementById("toastContainer");
+  const toastText = document.getElementById("toastText");
+  const closeButton = document.getElementById("toastClose");
 
-  // Append toast to container
-  const container = document.getElementById("toastContainer");
-  container.classList.remove("toast-success", "toast-error");
-  container.appendChild(toastText);
-  container.classList.add(`toast-${type}`);
+  toastContainer.style.display = "";
+  toastText.textContent = message;
+  closeButton.onclick = () => {
+    toastContainer.style.display = "none";
+  };
+
+  toastContainer.classList.remove("toast-success", "toast-error");
+  toastContainer.classList.add(`toast-${type}`);
 
   // Remove toast after 3 seconds
   setTimeout(() => {
-    toastText.remove();
-  }, 5000);
+    toastContainer.style.display = "none";
+  }, 10000);
 }
