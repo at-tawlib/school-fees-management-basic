@@ -1,8 +1,7 @@
+import { initDashboard } from "../dashboard.js";
 import { showToast } from "../utils/toast.js";
 
 const modal = document.getElementById("loginModal");
-const loginBtn = document.getElementById("loginBtn");
-const closeBtn = document.getElementById("closeBtn");
 const usernameField = document.getElementById("usernameField");
 const passwordField = document.getElementById("passwordField");
 
@@ -25,6 +24,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
   usernameField.value = "";
   passwordField.value = "";
   modal.style.display = "none";
+  initDashboard();
 });
 
 document.getElementById("cancelBtn").addEventListener("click", () => {

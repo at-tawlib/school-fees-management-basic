@@ -7,6 +7,11 @@ export const CONTAINERS = {
   PAYMENTS: "payments",
 };
 
+export const ADMIN_CONTAINERS = {
+  DASHBOARD: "dashboard",
+  SETTINGS: "settings",
+};
+
 // Used in settings.js
 export const ACADEMIC_YEAR = "academicYear";
 export const TERM = "term";
