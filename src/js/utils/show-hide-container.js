@@ -18,6 +18,6 @@ export function showHideFeesContainer(container) {
 
   // Show the selected container
   if (sections[container]) {
-    sections[container].style.display = "block";
+    sections[container].style.display = "";
   }
 }

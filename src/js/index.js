@@ -51,9 +51,39 @@ document.getElementById("navPayments").addEventListener("click", () => {
 
 document.getElementById("navAdminBtn").addEventListener("click", () => openLoginModal());
 
+document.getElementById("");
+
 document
   .getElementById("aboutCloseXBtn")
   .addEventListener("click", () => (document.getElementById("aboutModal").style.display = "none"));
+
+document.getElementById("goToStudentsBtn").addEventListener("click", () => {
+  navItems[0].classList.remove("active");
+  navItems[1].classList.add("active");
+  showHideFeesContainer(CONTAINERS.STUDENTS_VIEW);
+  initStudentsSection();
+});
+
+document.getElementById("goToFeesBtn").addEventListener("click", () => {
+  navItems[0].classList.remove("active");
+  navItems[2].classList.add("active");
+  showHideFeesContainer(CONTAINERS.VIEW_FEES);
+  setUpFeesSection();
+});
+
+document.getElementById("goToBillsBtn").addEventListener("click", () => {
+  navItems[0].classList.remove("active");
+  navItems[3].classList.add("active");
+  showHideFeesContainer(CONTAINERS.STUDENT_CLASS);
+  setupStudentsClassSection();
+});
+
+document.getElementById("goToPaymentsBtn").addEventListener("click", () => {
+  navItems[0].classList.remove("active");
+  navItems[4].classList.add("active");
+  showHideFeesContainer(CONTAINERS.PAYMENTS);
+  setUpPaymentsSection();
+});
 
 window.onload = function () {
   showHideFeesContainer(CONTAINERS.HOME);
