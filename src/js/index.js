@@ -22,7 +22,7 @@ document.getElementById("navRefreshBtn").addEventListener("click", () => window.
 
 document
   .getElementById("navAbout")
-  .addEventListener("click", () => (document.getElementById("aboutModal").style.display = "block"));
+  .addEventListener("click", () => (document.getElementById("aboutModal").style.display = ""));
 
 document.getElementById("navHome").addEventListener("click", () => {
   showHideFeesContainer(CONTAINERS.HOME);

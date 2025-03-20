@@ -16,10 +16,6 @@ navItems.forEach((item) => item.addEventListener("click", handleNavClick));
 
 document.getElementById("navRefreshBtn").addEventListener("click", () => window.app.reloadApp());
 
-document.getElementById("navAbout").addEventListener("click", () => {
-  document.getElementById("aboutModal").style.display = "block";
-});
-
 document.getElementById("navAdminSettings").addEventListener("click", () => {
   showHideAdminContainer(ADMIN_CONTAINERS.SETTINGS);
   initSettings();
