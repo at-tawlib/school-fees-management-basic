@@ -641,7 +641,7 @@ main {
 .modal {
   display: none;
   position: fixed;
-  z-index: 100;
+  z-index: 1500;
   left: 0;
   top: 0;
   width: 100%;
@@ -734,7 +734,7 @@ main {
 #aboutModal {
   display: none;
   position: fixed;
-  z-index: 1000;
+  z-index: 1500;
   left: 0;
   top: 0;
   width: 100%;
@@ -767,7 +767,7 @@ main {
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 1000;
+  z-index: 2000;
   display: flex;
   flex-direction: row;
   align-items: center;

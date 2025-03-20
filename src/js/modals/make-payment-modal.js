@@ -93,7 +93,6 @@ function clearPaymentModalFields() {
 }
 
 export function openStudentPaymentModal(details, currentFee, classTerm) {
-  console.log(details, currentFee, classTerm);
   selectedFee = currentFee;
   selectedTerm = classTerm;
 

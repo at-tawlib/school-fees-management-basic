@@ -9,12 +9,14 @@ import { initDashboard } from "./dashboard.js";
 
 const navItems = document.querySelectorAll(".navbar ul li span");
 const navSettingsButton = document.getElementById("navSettings");
+const navItemAdmin = document.getElementById("navAdmin"); 
 
 // Function to handle navigation item clicks
 // Remove the 'active' class from all navigation items and set active class to the clicked item
 function handleNavClick(event) {
   navItems.forEach((item) => item.classList.remove("active"));
   navSettingsButton.classList.remove("active");
+  navItemAdmin.classList.remove("active");
   event.target.classList.add("active");
 }
 
@@ -62,6 +64,10 @@ document.getElementById("navSettings").addEventListener("click", function () {
 
   showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
   initSettings();
+});
+
+document.getElementById("navAdmin").addEventListener("click",  () => {
+  window.app.openAdminPage();
 });
 
 document.getElementById("aboutCloseXBtn").addEventListener("click", function () {

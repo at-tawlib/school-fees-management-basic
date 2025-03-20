@@ -3,6 +3,7 @@ const path = require("path");
 const DatabaseHandler = require("./scripts/db/db-handler");
 
 let mainWindow;
+let adminWindow;
 let dbHandler;
 
 let store; // Declare `store` at the top for global access
@@ -29,6 +30,21 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, "src/html/index.html"));
 }
 
+function createAdminWindow() {
+  adminWindow = new BrowserWindow({
+    title: "School Fees Tracker | Admin",
+    height: 600,
+    width: 1000,
+    resizable: true,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: true,
+      preload: path.join(__dirname, "preload.js"),
+    },
+  });
+  
+  adminWindow.loadFile(path.join(__dirname, "src/html/admin.html"));
+}
 // Get all classes, academic years and terms from the database and save to local storage
 async function loadInitialData() {
   try {
@@ -81,6 +97,9 @@ ipcMain.on("reload-app", () => {
   const allWindows = BrowserWindow.getAllWindows();
   allWindows.forEach((win) => win.reload());
 });
+
+// Open admin page
+ipcMain.on("open-admin-page", () => createAdminWindow());
 
 ipcMain.handle("get-store-classes", (_) => {
   return store.get("classes") || [];

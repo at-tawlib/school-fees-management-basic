@@ -77,6 +77,7 @@ contextBridge.exposeInMainWorld("store", {
 
 contextBridge.exposeInMainWorld("app", {
   reloadApp: () => ipcRenderer.send("reload-app"),
+  openAdminPage: () => ipcRenderer.send("open-admin-page"),
 });
 
 contextBridge.exposeInMainWorld("dialog", {
