@@ -14,9 +14,16 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
     showToast("Please fill all the fields", "error");
     return;
   }
+
+  const response = await window.user.login({ username, password });
+
+  if (!response.success) {
+    showToast(response.message || "Login failed", "error");
+    return;
+  }
+
   usernameField.value = "";
   passwordField.value = "";
-
   modal.style.display = "none";
 });
 

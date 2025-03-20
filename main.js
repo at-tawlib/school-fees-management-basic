@@ -42,7 +42,7 @@ function createAdminWindow() {
       preload: path.join(__dirname, "preload.js"),
     },
   });
-  
+
   adminWindow.loadFile(path.join(__dirname, "src/html/admin.html"));
 }
 // Get all classes, academic years and terms from the database and save to local storage
@@ -117,6 +117,16 @@ ipcMain.handle("get-store-terms", (_) => {
 ipcMain.handle("save-setting", (_, key, value, text) => {
   try {
     const result = dbHandler.saveSetting(key, value, text);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// Login user
+ipcMain.handle("login", async (_, user) => {
+  try {
+    const result = await dbHandler.login(user);
     return result;
   } catch (error) {
     return { success: false, message: error.message };

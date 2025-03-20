@@ -46,6 +46,15 @@ contextBridge.exposeInMainWorld("api", {
   getSingleBillDetails: (data) => ipcRenderer.invoke("get-single-bill-details", data),
 });
 
+contextBridge.exposeInMainWorld("user", {
+  login: (user) => ipcRenderer.invoke("login", user),
+  // logout: () => ipcRenderer.send("logout"),
+  // getUser: () => ipcRenderer.invoke("get-user"),
+  // saveUser: (data) => ipcRenderer.invoke("save-user", data),
+  // changePassword: (data) => ipcRenderer.invoke("change-password", data),
+});
+
+
 contextBridge.exposeInMainWorld("store", {
   // TODO: remove this it is not needed
   getInitialData: async () => {
