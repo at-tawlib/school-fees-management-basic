@@ -1,6 +1,5 @@
 import { ADMIN_CONTAINERS } from "./constants/constants.js";
 import { initDashboard } from "./dashboard.js";
-import { openLoginModal } from "./modals/login-modal.js";
 import { initSettings } from "./settings.js";
 import { showHideAdminContainer } from "./utils/show-hide-admin.js";
 
@@ -32,6 +31,5 @@ document.getElementById("navDashboard").addEventListener("click", () => {
 });
 
 window.onload = function () {
-  // openLoginModal();
   initDashboard();
 };

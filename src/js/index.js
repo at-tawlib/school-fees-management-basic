@@ -1,80 +1,61 @@
 import { setupStudentsClassSection } from "./student-class.js";
 import { CONTAINERS } from "./constants/constants.js";
 import { setUpPaymentsSection } from "./payments.js";
-import { initSettings } from "./settings.js";
 import { initStudentsSection } from "./student.js";
 import { showHideFeesContainer } from "./utils/show-hide-container.js";
 import { setUpFeesSection } from "./fees.js";
-import { initDashboard } from "./dashboard.js";
+import { initHomeSection } from "./home.js";
+import { openLoginModal } from "./modals/login-modal.js";
 
 const navItems = document.querySelectorAll(".navbar ul li span");
-const navSettingsButton = document.getElementById("navSettings");
-const navItemAdmin = document.getElementById("navAdmin"); 
 
 // Function to handle navigation item clicks
 // Remove the 'active' class from all navigation items and set active class to the clicked item
-function handleNavClick(event) {
+const handleNavClick = (event) => {
   navItems.forEach((item) => item.classList.remove("active"));
-  navSettingsButton.classList.remove("active");
-  navItemAdmin.classList.remove("active");
   event.target.classList.add("active");
-}
+};
 
-navItems.forEach((item) => {
-  item.addEventListener("click", handleNavClick);
+navItems.forEach((item) => item.addEventListener("click", handleNavClick));
+
+document.getElementById("navRefreshBtn").addEventListener("click", () => window.app.reloadApp());
+
+document
+  .getElementById("navAbout")
+  .addEventListener("click", () => (document.getElementById("aboutModal").style.display = "block"));
+
+document.getElementById("navHome").addEventListener("click", () => {
+  showHideFeesContainer(CONTAINERS.HOME);
+  initHomeSection();
 });
 
-document.getElementById("navRefreshBtn").addEventListener("click", function () {
-  window.app.reloadApp();
-});
-
-document.getElementById("navAbout").addEventListener("click", function () {
-  document.getElementById("aboutModal").style.display = "block";
-});
-
-document.getElementById("navDashboard").addEventListener("click", function () {
-  showHideFeesContainer(CONTAINERS.DASHBOARD);
-  initDashboard();
-});
-
-document.getElementById("navStudents").addEventListener("click", async function () {
+document.getElementById("navStudents").addEventListener("click", async () => {
   showHideFeesContainer(CONTAINERS.STUDENTS_VIEW);
   await initStudentsSection();
 });
 
-document.getElementById("navFees").addEventListener("click", async function () {
+document.getElementById("navFees").addEventListener("click", async () => {
   showHideFeesContainer(CONTAINERS.VIEW_FEES);
   setUpFeesSection();
 });
 
-document.getElementById("navClasses").addEventListener("click", function () {
+document.getElementById("navClasses").addEventListener("click", () => {
   showHideFeesContainer(CONTAINERS.STUDENT_CLASS);
   setupStudentsClassSection();
 });
 
-document.getElementById("navPayments").addEventListener("click", function () {
+document.getElementById("navPayments").addEventListener("click", () => {
   showHideFeesContainer(CONTAINERS.PAYMENTS);
   setUpPaymentsSection();
 });
 
-document.getElementById("navSettings").addEventListener("click", function () {
-  // Remove the 'active' class from all navigation items
-  navItems.forEach((item) => item.classList.remove("active"));
-  navSettingsButton.classList.add("active");
+document.getElementById("navAdminBtn").addEventListener("click", () => openLoginModal());
 
-  showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
-  initSettings();
-});
-
-document.getElementById("navAdmin").addEventListener("click",  () => {
-  window.app.openAdminPage();
-});
-
-document.getElementById("aboutCloseXBtn").addEventListener("click", function () {
-  document.getElementById("aboutModal").style.display = "none";
-});
+document
+  .getElementById("aboutCloseXBtn")
+  .addEventListener("click", () => (document.getElementById("aboutModal").style.display = "none"));
 
 window.onload = function () {
-  showHideFeesContainer(CONTAINERS.DASHBOARD);
-  initDashboard();
+  showHideFeesContainer(CONTAINERS.HOME);
+  initHomeSection();
 };

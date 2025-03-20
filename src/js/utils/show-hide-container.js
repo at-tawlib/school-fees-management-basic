@@ -4,11 +4,10 @@ import { CONTAINERS } from "../constants/constants.js";
 export function showHideFeesContainer(container) {
   // Store all section elements in an object
   const sections = {
-    [CONTAINERS.DASHBOARD]: document.getElementById("dashboardSection"),
+    [CONTAINERS.HOME]: document.getElementById("homeSection"),
     [CONTAINERS.STUDENTS_VIEW]: document.getElementById("studentsView"),
     [CONTAINERS.VIEW_FEES]: document.getElementById("viewFeesSection"),
     [CONTAINERS.STUDENT_CLASS]: document.getElementById("studentClassSection"),
-    [CONTAINERS.SETTINGS_VIEW]: document.getElementById("settingsSection"),
     [CONTAINERS.PAYMENTS]: document.getElementById("paymentsSection"),
   };
 

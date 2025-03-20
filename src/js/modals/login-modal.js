@@ -24,13 +24,19 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
   usernameField.value = "";
   passwordField.value = "";
   modal.style.display = "none";
-  initDashboard();
+  window.app.openAdminPage();
 });
 
 document.getElementById("cancelBtn").addEventListener("click", () => {
-  //   TODO: close the page
   usernameField.value = "";
   passwordField.value = "";
+  modal.style.display = "none";
+});
+
+document.getElementById("closeLogin").addEventListener("click", () => {
+  usernameField.value = "";
+  passwordField.value = "";
+  modal.style.display = "none";
 });
 
 export const openLoginModal = () => {

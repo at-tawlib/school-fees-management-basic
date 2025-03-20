@@ -1,9 +1,8 @@
 export const CONTAINERS = {
-  DASHBOARD: "dashboard",
+  HOME: "home",
   STUDENTS_VIEW: "studentsView",
   VIEW_FEES: "viewFeesSection",
   STUDENT_CLASS: "studentClass",
-  SETTINGS_VIEW: "settingsView",
   PAYMENTS: "payments",
 };
 
