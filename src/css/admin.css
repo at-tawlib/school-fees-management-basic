@@ -1,0 +1,59 @@
+/* ********************** DASHBOARD CSS ********************** */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.metric-card {
+  background-color: white;
+  padding: 1.25rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
+  display: flex;
+  align-items: center;
+}
+
+.metric-card:hover {
+  background-color: var(--highlight-color);
+  cursor: pointer;
+}
+
+.metric-card i {
+  font-size: 2rem;
+  margin-right: 1rem;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 15px;
+}
+
+.action-button {
+  background-color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.action-button:hover {
+  background-color: #f0f0f0;
+}
+
+.action-button i {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #3498db;
+}
+
+.action-button span {
+  font-size: 1rem;
+}

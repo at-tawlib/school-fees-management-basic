@@ -14,6 +14,7 @@ const requiredTables = [
   "students",
   "studentClasses",
   "terms",
+  "users",
 ];
 
 class DatabaseHandler {
@@ -90,6 +91,24 @@ class DatabaseHandler {
       const stmt = this.db.prepare("SELECT * FROM settings");
       const records = stmt.all();
       return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  login(user) {
+    try {
+      const stmt = this.db.prepare(`
+          SELECT * FROM users WHERE username = ? AND password = ?
+        `);
+      const result = stmt.get(user.username, user.password);
+
+      if (!result) {
+        return { success: false, message: "Invalid username or password." };
+      }
+
+      return { success: true, data: result };
     } catch (error) {
       console.error("Database Error: ", error);
       return { success: false, message: error.message };

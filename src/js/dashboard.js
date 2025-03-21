@@ -1,19 +1,11 @@
-import { CONTAINERS } from "./constants/constants.js";
-import { initSettings } from "./settings.js";
 import { fCurrency } from "./utils/format-currency.js";
 import { formatDate } from "./utils/format-date.js";
 import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
-import { showHideFeesContainer } from "./utils/show-hide-container.js";
 import { showToast } from "./utils/toast.js";
 
 let academicYearSetting;
 let termSetting;
 const recentPaymentsTable = document.getElementById("dashboardRecentPaymentsTableBody");
-
-document.getElementById("dashboardChangeYearTermBtn").addEventListener("click", function () {
-  showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
-  initSettings();
-});
 
 export async function initDashboard() {
   academicYearSetting = await getDefaultYearSetting();
@@ -21,8 +13,6 @@ export async function initDashboard() {
 
   if (!academicYearSetting || !termSetting) {
     showToast("Set up the current term and academic year.", "error");
-    showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
-    initSettings();
     return;
   }
 

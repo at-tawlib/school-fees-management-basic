@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>School Fees Tracker - Admin</title>
+    <link rel="stylesheet" href="../css/index.css" />
+    <link rel="stylesheet" href="../css/admin.css" />
+
+    <!-- Fontawesome files -->
+    <link href="../assets/fontawesome/css/fontawesome.css" rel="stylesheet" />
+    <link href="../assets/fontawesome/css/brands.css" rel="stylesheet" />
+    <link href="../assets/fontawesome/css/solid.css" rel="stylesheet" />
+
+    <script type="module" src="../js//admin.js" defer></script>
+    <script type="module" src="../js/settings.js" defer></script>
+  </head>
+
+  <body>
+    <header>
+      <div>
+        <p id="navAcademicYear"></p>
+        <p id="navTerm"></p>
+      </div>
+
+      <nav class="navbar">
+        <ul>
+          <li><span id="navDashboard" class="active">Dashboard</span></li>
+          <li><span id="navAdminSettings">Settings</span></li>
+        </ul>
+      </nav>
+
+      <div>
+        <button id="navRefreshBtn" class="text-button" title="Refresh App" style="color: white">
+          <i class="fa-solid fa-sync"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="container">
+      <main>
+        <!-------------- DASHBOARD  SECTION ----------------------->
+        <section id="dashboardSection">
+          <div class="flex-row align-center">
+            <h2 id="dashboardTermYearTitle"></h2>
+          </div>
+          <hr style="margin: 1rem 0rem" />
+
+          <!-- Metrics -->
+          <div class="metrics">
+            <div class="metric-card">
+              <i class="fas fa-users color-blue"></i>
+              <div>
+                <h4 style="margin-bottom: 0.5rem">Total Students</h4>
+                <p id="totalStudentsMetric"></p>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <i class="fa-solid fa-sack-dollar color-yellow"></i>
+              <div>
+                <h4 style="margin-bottom: 0.5rem">Total Billed</h4>
+                <p id="totalFeesBilledMetric"></p>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <i class="fas fa-file-invoice-dollar color-green"></i>
+              <div>
+                <h4 style="margin-bottom: 0.5rem">Total Paid</h4>
+                <p id="totalFeesCollectedMetric"></p>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <i class="fa-solid fa-money-check-dollar color-red"></i>
+              <div>
+                <h4 style="margin-bottom: 0.5rem">Pending Payments</h4>
+                <p id="pendingPaymentsMetric"></p>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <i class="fa-solid fa-percent color-yellow"></i>
+              <div>
+                <h4 style="margin-bottom: 0.5rem">Discounts Given</h4>
+                <p id="discountGivenMetrics"></p>
+              </div>
+            </div>
+          </div>
+          <hr style="margin: 1rem 0rem" />
+
+          <h2>Overview</h2>
+          <div class="metrics">
+            <!-- Students Summary -->
+            <table class="table-rounded elevated-container">
+              <tbody>
+                <tr>
+                  <th colspan="2">Students Summary</th>
+                </tr>
+                <tr>
+                  <td>Total students</td>
+                  <td id="totalStudentsOverview"></td>
+                </tr>
+                <tr>
+                  <td>Students with classes</td>
+                  <td id="studentsWithClassOverview"></td>
+                </tr>
+                <tr>
+                  <td>Students without classes</td>
+                  <td id="studentsWithoutClassOverview"></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Class Summary -->
+            <table class="table-rounded elevated-container">
+              <tbody>
+                <tr>
+                  <th colspan="2">Class Summary</th>
+                </tr>
+                <tr>
+                  <td>Classes</td>
+                  <td id="totalClassesOverview"></td>
+                </tr>
+                <tr>
+                  <td>Classes with students</td>
+                  <td id="classesWithStudentsOverview"></td>
+                </tr>
+                <tr>
+                  <td>Classes without students</td>
+                  <td id="classesWithoutStudentsOverview"></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Fees Summary -->
+            <table class="table-rounded elevated-container">
+              <tbody>
+                <tr>
+                  <th colspan="2">Fees Summary</th>
+                </tr>
+                <tr>
+                  <td>Total Fees Billed</td>
+                  <td id="totalFeesBilledOverview"></td>
+                </tr>
+                <tr>
+                  <td>Total Fees Collected</td>
+                  <td id="totalFeesCollectedOverview"></td>
+                </tr>
+                <tr>
+                  <td>Pending Payments</td>
+                  <td id="pendingPaymentsOverview"></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Billing Summary -->
+            <table class="table-rounded elevated-container">
+              <tbody>
+                <tr>
+                  <th colspan="2">Billing Summary</th>
+                </tr>
+                <tr>
+                  <td>Billed / Unbilled classes</td>
+                  <td id="classesBilledUnbilledOverview"></td>
+                </tr>
+                <tr>
+                  <td>Billed / Unbilled Students</td>
+                  <td id="studentsBilledUnbilledOverview"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <hr style="margin: 1rem 0rem" />
+
+          <!-- Class Summary -->
+          <h2>Class Summary</h2>
+          <table class="table-rounded elevated-container">
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Students</th>
+                <th>Fees</th>
+                <th>Total Billed</th>
+                <th>Discounts</th>
+                <th>Total Paid</th>
+                <th>Total Balance</th>
+              </tr>
+            </thead>
+            <tbody id="dashboardClassSummaryTableBody"></tbody>
+          </table>
+          <hr style="margin: 1rem 0rem" />
+
+          <!-- Recent Payments -->
+          <h2>Recent Payments</h2>
+          <table class="table-rounded">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Amount</th>
+                <th>Mode</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="dashboardRecentPaymentsTableBody"></tbody>
+          </table>
+        </section>
+
+        <!-- ------------ SETTINGS PAGE --------------------- -->
+        <section id="settingsSection" style="display: none">
+          <div class="flex-column">
+            <!-- Current Academic Year & Term -->
+            <div class="elevated-container">
+              <h3>Current Academic Year and Term</h3>
+
+              <div id="defaultYearTermTextContainer" class="flex-row align-center">
+                <span id="defaultYearTermText" class="color-green"></span>
+                <button id="changeYearTermBtn" class="text-button">
+                  <i class="fa-solid fa-edit"></i> Change
+                </button>
+              </div>
+
+              <div id="changeYearTermContainer" style="display: none">
+                <div class="flex-item">
+                  <label for="settingsDefaultAcademicYear">Academic Year:</label>
+                  <select id="settingsDefaultAcademicYear"></select>
+                </div>
+
+                <div class="flex-item">
+                  <label for="settingsDefaultTerm">Term:</label>
+                  <select id="settingsDefaultTerm"></select>
+                </div>
+                <div class="flex-row">
+                  <button id="currentYearTermSaveBtn" class="bg-green">
+                    <i class="fa-solid fa-save"></i> Update
+                  </button>
+                  <button id="currentYearTermCancelBtn" class="btn bg-red">
+                    <i class="fa-solid fa-close"></i> Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <br />
+            <br />
+            <div class="grid-container grid-1">
+              <!-- Classes Section -->
+              <div class="elevated-container">
+                <h3>Manage Classes</h3>
+                <table id="settingsClassTable" class="table-rounded">
+                  <tbody id="settingsClassTableBody"></tbody>
+                </table>
+                <div class="flex-row">
+                  <input
+                    type="text"
+                    placeholder="Add new class"
+                    id="newClassInput"
+                    class="flex-3"
+                  />
+                  <button id="settingsAddClassBtn" class="outlined-button">
+                    <i class="fa-solid fa-plus"></i> Add Class
+                  </button>
+                </div>
+              </div>
+
+              <!-- Academic Years Section -->
+              <div class="elevated-container">
+                <h3>Manage Academic Years</h3>
+                <table id="settingsYearTable" class="table-rounded">
+                  <tbody id="settingsYearTableBody"></tbody>
+                </table>
+
+                <div class="flex-row">
+                  <input
+                    type="text"
+                    placeholder="Add new academic year"
+                    id="newAcademicYear"
+                    class="flex-3"
+                  />
+                  <button id="settingsAddYearBtn" class="outlined-button">
+                    <i class="fa-solid fa-plus"></i> Add Year
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toastContainer" class="toast-container" style="display: none">
+      <p id="toastText" class="toast-text" title="Close">Are you sure you want to save this data</p>
+      <span id="toastClose" class="toast-close-button">&times;</span>
+    </div>
+  </body>
+</html>
