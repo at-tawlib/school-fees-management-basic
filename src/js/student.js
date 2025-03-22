@@ -1,4 +1,5 @@
 import { getDefaultYearSetting } from "./utils/get-settings.js";
+import { printPage } from "./utils/print-page.js";
 import { setUpClassSelect } from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
@@ -15,6 +16,35 @@ let editingStudentId = null;
 document.getElementById("addStudentBtn").addEventListener("click", function () {
   addStudentModal.style.display = "block";
   document.getElementById("addStudentForm").reset();
+});
+
+document.getElementById("printStudentsBtn").addEventListener("click", async () => {
+  const studentsTable = document.getElementById("studentsTable");
+
+  if (!studentsTable) {
+    showToast("No table found to print", "error");
+    return;
+  }
+
+  const academicYearSetting = await getDefaultYearSetting();
+
+  // Clone the table to modify it without affecting the original
+  const tableClone = studentsTable.cloneNode(true);
+  tableClone.querySelectorAll("tr").forEach((row, index) => {
+    if (row.cells[5]) row.removeChild(row.cells[5]);
+  });
+
+  // Remove background colors
+  tableClone.querySelectorAll("tr, td, th").forEach((el) => {
+    el.style.backgroundColor = "white";
+  });
+
+  // Add a heading above the table
+  const heading = `<h2 style="text-align: center; margin-bottom: 10px;">Students for ${
+    academicYearSetting?.setting_text || ""
+  } Academic Year</h2>`;
+
+  printPage(heading, tableClone.outerHTML);
 });
 
 document.getElementById("addStudentCloseX").addEventListener("click", function () {

@@ -2,6 +2,7 @@ import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
 import { fCurrency } from "./utils/format-currency.js";
 import { formatDate } from "./utils/format-date.js";
 import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
+import { printPage } from "./utils/print-page.js";
 import { setUpAcademicYearsSelect, setUpClassSelect } from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
@@ -152,31 +153,7 @@ document.getElementById("printBillBtn").addEventListener("click", () => {
   const billHeader = `${currentClass.className} (${currentClass.academicYear}) - ${classTerm.text} term`;
   const heading = `<h2 style="text-align: center; margin-bottom: 10px;">Student Fees Bill for ${billHeader}</h2>`;
 
-  const printWindow = window.open("", "", "width=900,height=700");
-  printWindow.document.write(`
-    <html>
-      <head>
-        <title>Print Bill</title>
-        <style>
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-          }
-        </style>
-      </head>
-      <body>
-        ${heading}
-        ${tableClone.outerHTML}
-      </body>
-    </html>
-  `);
-  printWindow.document.close();
-  printWindow.print();
+  printPage(heading, tableClone.outerHTML);
 });
 
 // ************************** ADD STUDENTS TO CLASS FORM *******************************
