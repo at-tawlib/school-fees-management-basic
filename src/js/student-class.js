@@ -2,6 +2,7 @@ import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
 import { fCurrency } from "./utils/format-currency.js";
 import { formatDate } from "./utils/format-date.js";
 import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
+import { printPage } from "./utils/print-page.js";
 import { setUpAcademicYearsSelect, setUpClassSelect } from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
@@ -120,6 +121,39 @@ paidStatusSelect.addEventListener("change", async function () {
       row.style.display = "none";
     }
   }
+});
+
+document.getElementById("printBillBtn").addEventListener("click", () => {
+  if (!studentClassTable) {
+    alert("No table found to print!");
+    return;
+  }
+
+  // Clone the table to modify it without affecting the original
+  const tableClone = studentClassTable.cloneNode(true);
+
+  // Remove the last two column (status and actions column)
+  const columnsToRemove = [6, 5];
+  tableClone.querySelectorAll("tr").forEach((row) => {
+    columnsToRemove.forEach((index) => {
+      if (row.cells[index]) row.removeChild(row.cells[index]);
+    });
+  });
+
+  // Remove last cell of last child (footer)
+  const tableFootRow = tableClone.querySelector("tfoot tr");
+  tableFootRow.removeChild(tableFootRow.cells[4]);
+
+  // Remove background colors
+  tableClone.querySelectorAll("tr, td, th").forEach((el) => {
+    el.style.backgroundColor = "white";
+  });
+
+  // Add a heading above the table
+  const billHeader = `${currentClass.className} (${currentClass.academicYear}) - ${classTerm.text} term`;
+  const heading = `<h2 style="text-align: center; margin-bottom: 10px;">Student Fees Bill for ${billHeader}</h2>`;
+
+  printPage(heading, tableClone.outerHTML);
 });
 
 // ************************** ADD STUDENTS TO CLASS FORM *******************************
@@ -453,14 +487,11 @@ export async function displayClassStudentsTable() {
     const row = document.createElement("tr");
 
     if (item.bill_id) {
-      // TODO: use setAttribute to save the student id, fees id, and bill id
       row.setAttribute("data-arrears", arrears);
+      row.dataset.student = JSON.stringify(item);
       row.innerHTML = `
         <td>${billedCount + 1}</td>
         <td>${item.student_name}</td>
-        <td style="display:none">${item.bill_id}</td>
-        <td style="display:none">${item.student_id}</td>
-        <td style="display:none">${item.fees_id}</td>
         <td class="color-blue bold-text">${fCurrency(item.fee_amount)}</td>
         <td class="color-green bold-text">${fCurrency(item.total_payments)}</td>
         <td class="color-red bold-text">${fCurrency(arrears)}</td>

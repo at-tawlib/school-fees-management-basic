@@ -1,5 +1,6 @@
 import { fCurrency } from "./utils/format-currency.js";
 import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
+import { printPage } from "./utils/print-page.js";
 import {
   setUpAcademicYearsSelect,
   setUpClassSelect,
@@ -16,6 +17,33 @@ const addFeesModalYear = document.getElementById("feesAcademicYear");
 const addFeesModalTerm = document.getElementById("feesTerm");
 
 const editFeesModal = document.getElementById("editFeesModal");
+
+document.getElementById("printFeesBtn").addEventListener("click", async () => {
+  const feesTable = document.getElementById("feesTable");
+
+  if (!feesTable) {
+    showToast("No table found to print", "error");
+    return;
+  }
+
+  const academicYearSetting = await getDefaultYearSetting();
+
+  // Clone the table to modify it without affecting the original
+  const tableClone = feesTable.cloneNode(true);
+  tableClone.querySelectorAll("tr").forEach((row, index) => {
+    if (row.cells[6]) row.removeChild(row.cells[6]);
+  });
+
+  // Remove background colors
+  tableClone.querySelectorAll("tr, td, th").forEach((el) => {
+    el.style.backgroundColor = "white";
+  });
+
+  // Add a heading above the table
+  const heading = `<h2 style="text-align: center; margin-bottom: 10px;">School Fees</h2>`;
+
+  printPage(heading, tableClone.outerHTML);
+});
 
 // Event Listeners for Add Fees Modal
 document.getElementById("btnAddFees").addEventListener("click", function () {

@@ -12,7 +12,6 @@
     <link href="../assets/fontawesome/css/solid.css" rel="stylesheet" />
 
     <script type="module" src="../js/index.js" defer></script>
-    <script type="module" src="../js/settings.js" defer></script>
   </head>
   <body>
     <header>
@@ -95,6 +94,10 @@
               <button id="addStudentBtn" class="full-width">
                 <i class="fa-solid fa-plus"></i> Add Student
               </button>
+              <br />
+              <button id="printStudentsBtn" class="full-width bg-yellow">
+                <i class="fa-solid fa-print"></i> Print
+              </button>
             </div>
 
             <div>
@@ -146,6 +149,11 @@
                 <select id="filterFeesByTerm"></select>
               </div>
               <hr style="margin: 1rem 0rem" />
+              <br />
+              <button id="printFeesBtn" class="full-width bg-yellow">
+                <i class="fa-solid fa-print"></i> Print
+              </button>
+              <br />
               <button id="btnAddFees" class="full-width">
                 <i class="fa-solid fa-plus"></i> Add fees
               </button>
@@ -187,12 +195,15 @@
               </button>
             </div>
 
+            <!-- Student class table -->
             <div>
-              <!-- Student class table -->
               <div id="studentClassContainer">
                 <div class="flex-row j-space-between">
                   <h2 id="studentClassTitle"></h2>
                   <div class="flex-row">
+                    <button id="printBillBtn" class="bg-yellow">
+                      <i class="fa-solid fa-print"></i> Print
+                    </button>
                     <button id="addStudentToClassBtn" class="bg-green">
                       <i class="fa-solid fa-plus"></i> Add Student
                     </button>
@@ -345,6 +356,10 @@
               <label for="paymentTerm"><h3>Term:</h3></label>
               <select name="paymentTerm" id="paymentTerm" required></select>
 
+              <button id="printPaymentsBtn" class="full-width bg-yellow">
+                <i class="fa-solid fa-print"></i> Print
+              </button>
+
               <input
                 type="text"
                 id="searchPaymentsInput"
@@ -373,86 +388,6 @@
                 <!-- Load data from the css -->
               </tbody>
             </table>
-          </div>
-        </section>
-
-        <!-- ------------ SETTINGS PAGE --------------------- -->
-        <section id="settingsSection" style="display: none">
-          <div class="flex-column">
-            <!-- Current Academic Year & Term -->
-            <div class="elevated-container">
-              <h3>Current Academic Year and Term</h3>
-
-              <div id="defaultYearTermTextContainer" class="flex-row align-center">
-                <span id="defaultYearTermText" class="color-green"></span>
-                <button id="changeYearTermBtn" class="text-button">
-                  <i class="fa-solid fa-edit"></i> Change
-                </button>
-              </div>
-
-              <div id="changeYearTermContainer" style="display: none">
-                <div class="flex-item">
-                  <label for="settingsDefaultAcademicYear">Academic Year:</label>
-                  <select id="settingsDefaultAcademicYear"></select>
-                </div>
-
-                <div class="flex-item">
-                  <label for="settingsDefaultTerm">Term:</label>
-                  <select id="settingsDefaultTerm"></select>
-                </div>
-                <div class="flex-row">
-                  <button id="currentYearTermSaveBtn" class="bg-green">
-                    <i class="fa-solid fa-save"></i> Update
-                  </button>
-                  <button id="currentYearTermCancelBtn" class="btn bg-red">
-                    <i class="fa-solid fa-close"></i> Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <br />
-            <br />
-            <div class="grid-container grid-1">
-              <!-- Classes Section -->
-              <div class="elevated-container">
-                <h3>Manage Classes</h3>
-                <table id="settingsClassTable" class="table-rounded">
-                  <tbody id="settingsClassTableBody"></tbody>
-                </table>
-                <div class="flex-row">
-                  <input
-                    type="text"
-                    placeholder="Add new class"
-                    id="newClassInput"
-                    class="flex-3"
-                  />
-                  <button id="settingsAddClassBtn" class="outlined-button">
-                    <i class="fa-solid fa-plus"></i> Add Class
-                  </button>
-                </div>
-              </div>
-
-              <!-- Academic Years Section -->
-              <div class="elevated-container">
-                <h3>Manage Academic Years</h3>
-                <table id="settingsYearTable" class="table-rounded">
-                  <tbody id="settingsYearTableBody"></tbody>
-                </table>
-
-                <div class="flex-row">
-                  <input
-                    type="text"
-                    placeholder="Add new academic year"
-                    id="newAcademicYear"
-                    class="flex-3"
-                  />
-                  <button id="settingsAddYearBtn" class="outlined-button">
-                    <i class="fa-solid fa-plus"></i> Add Year
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
       </main>

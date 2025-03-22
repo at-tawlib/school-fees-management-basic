@@ -4,6 +4,7 @@ import { showPaymentHistoryModal } from "./student-class.js";
 import { fCurrency } from "./utils/format-currency.js";
 import { formatDate } from "./utils/format-date.js";
 import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
+import { printPage } from "./utils/print-page.js";
 import {
   setUpAcademicYearsSelect,
   setUpClassSelect,
@@ -151,3 +152,32 @@ const handleDeletePayment = async (paymentId) => {
     await displayPaymentsTable();
   }
 };
+
+document.getElementById("printPaymentsBtn").addEventListener("click", async () => {
+  const paymentsTable = document.getElementById("paymentsTable");
+
+  if (!paymentsTable) {
+    showToast("No table found to print", "error");
+    return;
+  }
+
+  const academicYearSetting = await getDefaultYearSetting();
+
+  // Clone the table to modify it without affecting the original
+  const tableClone = paymentsTable.cloneNode(true);
+  tableClone.querySelectorAll("tr").forEach((row, index) => {
+    if (row.cells[10]) row.removeChild(row.cells[10]);
+  });
+
+  // Remove background colors
+  tableClone.querySelectorAll("tr, td, th").forEach((el) => {
+    el.style.backgroundColor = "white";
+  });
+
+  // Add a heading above the table
+  const heading = `<h2 style="text-align: center; margin-bottom: 10px;">Payments for ${
+    academicYearSetting?.setting_text || ""
+  } Academic Year</h2>`;
+
+  printPage(heading, tableClone.outerHTML);
+});
