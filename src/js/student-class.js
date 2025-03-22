@@ -122,6 +122,63 @@ paidStatusSelect.addEventListener("change", async function () {
   }
 });
 
+document.getElementById("printBillBtn").addEventListener("click", () => {
+  if (!studentClassTable) {
+    alert("No table found to print!");
+    return;
+  }
+
+  // Clone the table to modify it without affecting the original
+  const tableClone = studentClassTable.cloneNode(true);
+
+  // Remove the last two column (status and actions column)
+  const columnsToRemove = [6, 5];
+  tableClone.querySelectorAll("tr").forEach((row) => {
+    columnsToRemove.forEach((index) => {
+      if (row.cells[index]) row.removeChild(row.cells[index]);
+    });
+  });
+
+  // Remove last cell of last child (footer)
+  const tableFootRow = tableClone.querySelector("tfoot tr");
+  tableFootRow.removeChild(tableFootRow.cells[4]);
+
+  // Remove background colors
+  tableClone.querySelectorAll("tr, td, th").forEach((el) => {
+    el.style.backgroundColor = "white";
+  });
+
+  // Add a heading above the table
+  const billHeader = `${currentClass.className} (${currentClass.academicYear}) - ${classTerm.text} term`;
+  const heading = `<h2 style="text-align: center; margin-bottom: 10px;">Student Fees Bill for ${billHeader}</h2>`;
+
+  const printWindow = window.open("", "", "width=900,height=700");
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Print Bill</title>
+        <style>
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+          }
+        </style>
+      </head>
+      <body>
+        ${heading}
+        ${tableClone.outerHTML}
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.print();
+});
+
 // ************************** ADD STUDENTS TO CLASS FORM *******************************
 document.getElementById("addClassButton").addEventListener("click", resetAddStudentForm);
 
@@ -453,14 +510,11 @@ export async function displayClassStudentsTable() {
     const row = document.createElement("tr");
 
     if (item.bill_id) {
-      // TODO: use setAttribute to save the student id, fees id, and bill id
       row.setAttribute("data-arrears", arrears);
+      row.dataset.student = JSON.stringify(item);
       row.innerHTML = `
         <td>${billedCount + 1}</td>
         <td>${item.student_name}</td>
-        <td style="display:none">${item.bill_id}</td>
-        <td style="display:none">${item.student_id}</td>
-        <td style="display:none">${item.fees_id}</td>
         <td class="color-blue bold-text">${fCurrency(item.fee_amount)}</td>
         <td class="color-green bold-text">${fCurrency(item.total_payments)}</td>
         <td class="color-red bold-text">${fCurrency(arrears)}</td>
