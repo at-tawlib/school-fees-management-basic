@@ -74,6 +74,12 @@ ipcMain.handle("reload-store-data", async () => {
   await loadInitialData();
 });
 
+ipcMain.on("save-payments-column-visibility", (_, data) =>
+  store.set("paymentsColumnVisibility", data)
+);
+
+ipcMain.handle("get-payments-column-visibility", () => store.get("paymentsColumnVisibility", {}));
+
 // update store classes
 ipcMain.handle("update-store-classes", (_, data) => {
   store.delete("classes");

@@ -356,16 +356,30 @@
               <label for="paymentTerm"><h3>Term:</h3></label>
               <select name="paymentTerm" id="paymentTerm" required></select>
 
-              <button id="printPaymentsBtn" class="full-width bg-yellow">
-                <i class="fa-solid fa-print"></i> Print
-              </button>
-
               <input
                 type="text"
                 id="searchPaymentsInput"
                 class="full-width"
                 placeholder="Search by name..."
               />
+
+              <button id="printPaymentsBtn" class="full-width bg-yellow" style="width: 10rem">
+                <i class="fa-solid fa-print"></i> Print
+              </button>
+            </div>
+            <br/>
+
+            <div id="column-controls" class="flex-row">
+              <h4>Columns: </h4>
+              
+              <label><input type="checkbox" class="toggle-column" data-column="3" checked> Class</label>
+              <label><input type="checkbox" class="toggle-column" data-column="4" checked> Year</label>
+              <label><input type="checkbox" class="toggle-column" data-column="5" checked> Term</label>
+              <label><input type="checkbox" class="toggle-column" data-column="6" checked> Fee Amount</label>
+              <label><input type="checkbox" class="toggle-column" data-column="7" checked> Paid Amount</label>
+              <label><input type="checkbox" class="toggle-column" data-column="8" checked> Mode</label>
+              <label><input type="checkbox" class="toggle-column" data-column="9" checked> Details</label>
+              <label><input type="checkbox" class="toggle-column" data-column="10" checked> Date</label>
             </div>
 
             <table id="paymentsTable" class="table-rounded">
