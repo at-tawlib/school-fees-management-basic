@@ -617,6 +617,24 @@ main {
   width: 100%;
 }
 
+/* ********************** PAYMENTS SECTION ****************** */
+#column-controls {
+  display: flex;
+  gap: 10px; /* Adjust spacing between checkboxes */
+}
+
+#column-controls label {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Adjust spacing between checkbox and label */
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+#column-controls input[type="checkbox"] {
+  margin: 0;
+}
+
 /* ********************** SETTINGS PAGE ****************** */
 #settingsClassTableBody td:nth-child(3),
 #settingsYearTableBody td:nth-child(3) {
