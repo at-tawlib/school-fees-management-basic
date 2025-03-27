@@ -1,5 +1,6 @@
 import { ADMIN_CONTAINERS } from "./constants/constants.js";
 import { initDashboard } from "./dashboard.js";
+import { openUpdatePassword } from "./modals/update-password-modal.js";
 import { initSettings } from "./settings.js";
 import { showHideAdminContainer } from "./utils/show-hide-admin.js";
 
@@ -15,6 +16,8 @@ const handleNavClick = (event) => {
 navItems.forEach((item) => item.addEventListener("click", handleNavClick));
 
 document.getElementById("navRefreshBtn").addEventListener("click", () => window.app.reloadApp());
+
+document.getElementById("navUpdatePassword").addEventListener("click", () => openUpdatePassword());
 
 document.getElementById("navAdminSettings").addEventListener("click", () => {
   showHideAdminContainer(ADMIN_CONTAINERS.SETTINGS);

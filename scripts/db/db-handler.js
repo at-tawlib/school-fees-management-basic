@@ -115,6 +115,37 @@ class DatabaseHandler {
     }
   }
 
+  getUser(username) {
+    try {
+      const stmt = this.db.prepare(`
+          SELECT * FROM users WHERE username = ?
+        `);
+      const result = stmt.get(username);
+
+      if (!result) {
+        return { success: false, message: "Invalid username" };
+      }
+
+      return { success: true, data: result };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  updatePassword(user) {
+    try {
+      const stmt = this.db.prepare(`
+          UPDATE users SET password = ? WHERE username = ?
+        `);
+      stmt.run(user.password, user.username);
+      return { success: true, message: "Password updated successfully." };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   addClass(className) {
     try {
       const stmt = this.db.prepare(`

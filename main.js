@@ -139,6 +139,26 @@ ipcMain.handle("login", async (_, user) => {
   }
 });
 
+// Update password
+ipcMain.handle("change-password", async (_, data)=> {
+  try {
+    const result = await dbHandler.updatePassword(data);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+})
+
+// Get user
+ipcMain.handle("get-user", async (_, data)=> {
+  try {
+    const result = await dbHandler.getUser(data);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+})
+
 // Add class
 ipcMain.handle("add-class", (event, data) => {
   try {

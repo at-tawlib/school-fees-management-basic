@@ -57,3 +57,7 @@
 .action-button span {
   font-size: 1rem;
 }
+
+#updatePasswordModal {
+  align-items: center;
+}
