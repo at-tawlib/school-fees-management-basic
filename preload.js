@@ -48,12 +48,9 @@ contextBridge.exposeInMainWorld("api", {
 
 contextBridge.exposeInMainWorld("user", {
   login: (user) => ipcRenderer.invoke("login", user),
-  // logout: () => ipcRenderer.send("logout"),
-  // getUser: () => ipcRenderer.invoke("get-user"),
-  // saveUser: (data) => ipcRenderer.invoke("save-user", data),
-  // changePassword: (data) => ipcRenderer.invoke("change-password", data),
+  updatePassword: (data) => ipcRenderer.invoke("change-password", data),
+  getUser: (data) => ipcRenderer.invoke("get-user", data),
 });
-
 
 contextBridge.exposeInMainWorld("store", {
   // TODO: remove this it is not needed
