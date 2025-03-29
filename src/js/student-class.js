@@ -534,7 +534,6 @@ export async function displayClassStudentsTable() {
         if (!confirmUnbill) return;
 
         const response = await window.api.deleteBill(item.bill_id);
-        console.log(response);
         if (!response.success) {
           showToast(response.message || "An error occurred", "error");
           return;
@@ -573,7 +572,6 @@ export async function displayClassStudentsTable() {
         const confirmRemove = confirm(
           `Are you sure you want to remove ${item.student_name} from this class?`
         );
-        console.log(item);
         if (!confirmRemove) return;
 
         const response = await window.api.removeStudentFromClass({
