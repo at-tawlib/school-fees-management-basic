@@ -190,7 +190,6 @@ async function displayStudents(yearId) {
       if (!confirmDelete) return;
 
       const result = await window.api.deleteStudent(student.student_id);
-      console.log(result);
       if (result.success) {
         showToast(result.message, "success");
         initStudentsSection();

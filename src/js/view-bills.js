@@ -38,7 +38,6 @@ document.getElementById("viewBillOkButton").addEventListener("click", async () =
   }
 
   const response = await window.api.getStudentsBillSummary({ className, academicYear, term });
-  console.log(response);
 
   if (!response.success) {
     showToast(response.message || "An error occurred", "error");
