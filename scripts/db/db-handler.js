@@ -14,6 +14,7 @@ const requiredTables = [
   "students",
   "studentClasses",
   "terms",
+  "users",
 ];
 
 class DatabaseHandler {
@@ -90,6 +91,55 @@ class DatabaseHandler {
       const stmt = this.db.prepare("SELECT * FROM settings");
       const records = stmt.all();
       return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  login(user) {
+    try {
+      const stmt = this.db.prepare(`
+          SELECT * FROM users WHERE username = ? AND password = ?
+        `);
+      const result = stmt.get(user.username, user.password);
+
+      if (!result) {
+        return { success: false, message: "Invalid username or password." };
+      }
+
+      return { success: true, data: result };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getUser(username) {
+    try {
+      const stmt = this.db.prepare(`
+          SELECT * FROM users WHERE username = ?
+        `);
+      const result = stmt.get(username);
+
+      if (!result) {
+        return { success: false, message: "Invalid username" };
+      }
+
+      return { success: true, data: result };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  updatePassword(user) {
+    try {
+      const stmt = this.db.prepare(`
+          UPDATE users SET password = ? WHERE username = ?
+        `);
+      stmt.run(user.password, user.username);
+      return { success: true, message: "Password updated successfully." };
     } catch (error) {
       console.error("Database Error: ", error);
       return { success: false, message: error.message };
@@ -179,15 +229,46 @@ class DatabaseHandler {
     }
   }
 
-  // TODO: not used anywhere remove
-  getAllStudents() {
+  deleteStudent(studentId) {
     try {
-      const stmt = this.db.prepare(`SELECT * FROM students`);
-      const records = stmt.all();
-      return { success: true, data: records };
+      const stmt = this.db.prepare(`
+          DELETE FROM students WHERE id = ?
+      `);
+      const result = stmt.run(studentId);
+
+      if (result.changes === 0) {
+        return {
+          success: false,
+          message: "No student found with the given ID.",
+        };
+      }
+
+      return {
+        success: true,
+        message: "Student deleted successfully.",
+      };
     } catch (error) {
       console.error("Database Error: ", error);
-      return { success: false, message: error.message };
+
+      // Handle common SQLite errors
+      if (error.message.includes("FOREIGN KEY constraint failed")) {
+        return {
+          success: false,
+          message: "Cannot delete student. This student is linked to other records.",
+        };
+      } else if (error.message.includes("database is locked")) {
+        return {
+          success: false,
+          message: "Database is currently in use. Please try again later.",
+        };
+      } else if (error.message.includes("SQLITE_CORRUPT")) {
+        return {
+          success: false,
+          message: "Database file is corrupted. Please restore from backup.",
+        };
+      }
+
+      return { success: false, message: "An unexpected error occurred." };
     }
   }
 
@@ -278,6 +359,47 @@ class DatabaseHandler {
     }
   }
 
+  removeStudentFromClass(data) {
+    try {
+      const stmt = this.db.prepare(`
+          DELETE FROM studentClasses WHERE student_id = ? AND year_id = ? AND class_id = ?
+        `);
+      const result = stmt.run(data.studentId, data.academicYearId, data.classId);
+      if (result.changes === 0) {
+        return {
+          success: false,
+          message: "No student found with the given ID.",
+        };
+      }
+
+      return {
+        success: true,
+        message: "Student removed from class successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      // Handle common SQLite errors
+      if (error.message.includes("FOREIGN KEY constraint failed")) {
+        return {
+          success: false,
+          message: "Cannot delete student. This student is linked to other records.",
+        };
+      } else if (error.message.includes("database is locked")) {
+        return {
+          success: false,
+          message: "Database is currently in use. Please try again later.",
+        };
+      } else if (error.message.includes("SQLITE_CORRUPT")) {
+        return {
+          success: false,
+          message: "Database file is corrupted. Please restore from backup.",
+        };
+      }
+
+      return { success: false, message: error.message };
+    }
+  }
+
   getStudentsByClass(filter) {
     try {
       const stmt = this.db.prepare(`
@@ -349,18 +471,6 @@ class DatabaseHandler {
     }
   }
 
-  // TODO: not used anywhere remove
-  feeExists(fee) {
-    const stmt = this.db.prepare(`
-        SELECT 1 FROM fees
-        WHERE class = ? AND term = ? AND academic_year = ?
-        LIMIT 1
-    `);
-
-    const result = stmt.get(fee.class, fee.term, fee.academicYear);
-    return result !== undefined; // Return true if a record exists
-  }
-
   getAllFees() {
     try {
       const stmt = this.db.prepare(`
@@ -389,7 +499,6 @@ class DatabaseHandler {
         LIMIT 1
       `);
 
-      console.log(fee);
       const result = stmt.get(fee.classId, fee.termId, fee.academicYearId);
       if (!result) {
         return {
@@ -418,7 +527,13 @@ class DatabaseHandler {
       const stmt = this.db.prepare(`
           INSERT INTO fees (class_id, year_id, term_id, amount, created_at) VALUES (?, ?, ?, ?, ?)
         `);
-      stmt.run(data.classId, data.academicYearId, data.termId, data.amount, new Date().toISOString());
+      stmt.run(
+        data.classId,
+        data.academicYearId,
+        data.termId,
+        data.amount,
+        new Date().toISOString()
+      );
       return {
         success: true,
         message: "Fees added successfully.",
@@ -457,7 +572,26 @@ class DatabaseHandler {
       };
     } catch (error) {
       console.error("Database Error: ", error);
-      return { success: false, message: error.message };
+
+      // Handle common SQLite errors
+      if (error.message.includes("FOREIGN KEY constraint failed")) {
+        return {
+          success: false,
+          message: "Cannot delete student. This student is linked to other records.",
+        };
+      } else if (error.message.includes("database is locked")) {
+        return {
+          success: false,
+          message: "Database is currently in use. Please try again later.",
+        };
+      } else if (error.message.includes("SQLITE_CORRUPT")) {
+        return {
+          success: false,
+          message: "Database file is corrupted. Please restore from backup.",
+        };
+      }
+
+      return { success: false, message: "An unexpected error occurred." };
     }
   }
 
@@ -494,6 +628,88 @@ class DatabaseHandler {
     } catch (error) {
       console.error("Database Error: ", error);
       return { success: false, message: error.message };
+    }
+  }
+
+  deleteBill(billId) {
+    try {
+      const stmt = this.db.prepare(`
+          DELETE FROM bills WHERE id = ?
+        `);
+      const result = stmt.run(billId);
+      if (result.changes === 0) {
+        return {
+          success: false,
+          message: "No bill found with the given ID.",
+        };
+      }
+
+      return {
+        success: true,
+        message: "Bill deleted successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      // Handle common SQLite errors
+      if (error.message.includes("FOREIGN KEY constraint failed")) {
+        return {
+          success: false,
+          message: "Cannot unbill student. This student is linked to other records.",
+        };
+      } else if (error.message.includes("database is locked")) {
+        return {
+          success: false,
+          message: "Database is currently in use. Please try again later.",
+        };
+      } else if (error.message.includes("SQLITE_CORRUPT")) {
+        return {
+          success: false,
+          message: "Database file is corrupted. Please restore from backup.",
+        };
+      }
+
+      return { success: false, message: "An unexpected error occurred." };
+    }
+  }
+
+  applyDiscount(data) {
+    try {
+      const stmt = this.db.prepare(`
+        UPDATE bills SET discount_amount = ? WHERE id = ?
+      `);
+      const result = stmt.run(data.discountAmount, data.billId);
+
+      if (result.changes === 0) {
+        return {
+          success: false,
+          message: "No matching bill found. Discount not applied.",
+        };
+      }
+
+      return {
+        success: true,
+        message: "Discount applied successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  checkIfClassBilled(feesId) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM bills 
+          WHERE fees_id = ?
+        ) AS data_exists;
+      `);
+      const result = stmt.get(feesId);
+      return { success: true, exists: !!result.data_exists };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, error: error.message };
     }
   }
 
@@ -590,10 +806,11 @@ class DatabaseHandler {
             s.id AS student_id, 
             s.first_name || ' ' || COALESCE(s.other_names, '') || ' ' || s.last_name  AS student_name,
             f.id AS fees_id, 
-            f.amount AS fee_amount, 
+            (f.amount - COALESCE(b.discount_amount, 0)) AS fee_amount,
             b.id AS bill_id, 
             COALESCE(SUM(p.amount), 0) AS total_payments, 
-            (f.amount - COALESCE(SUM(p.amount), 0)) AS balance
+            (f.amount - COALESCE(SUM(p.amount), 0) - COALESCE(b.discount_amount, 0)) AS balance,
+            b.discount_amount AS discount_amount
         FROM students s
         JOIN studentClasses sc ON s.id = sc.student_id
         JOIN classes c ON sc.class_id = c.id
@@ -604,10 +821,43 @@ class DatabaseHandler {
         LEFT JOIN payments p ON b.id = p.bill_id
         WHERE sc.class_id = ? AND ay.id = ? AND t.id = ?
         GROUP BY s.id, s.first_name, s.last_name, s.other_names, f.id, f.amount, b.id
-        ORDER BY s.first_name, s.last_name;
+        ORDER BY s.first_name, s.last_name
       `);
 
       const records = stmt.all(filter.classId, filter.yearId, filter.term);
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error in getBillDetails: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getSingleBillDetails(filter) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT 
+          s.id AS student_id, 
+          s.first_name || ' ' || COALESCE(s.other_names, '') || ' ' || s.last_name AS student_name,
+          f.id AS fees_id, 
+          (f.amount - COALESCE(b.discount_amount, 0)) AS fee_amount,
+          b.id AS bill_id, 
+          COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p.bill_id = b.id), 0) AS total_payments, 
+          (f.amount - COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p.bill_id = b.id), 0) - COALESCE(b.discount_amount, 0)) AS balance,
+          b.discount_amount AS discount_amount
+        FROM students s
+        JOIN studentClasses sc ON s.id = sc.student_id
+        JOIN fees f ON sc.class_id = f.class_id AND sc.year_id = f.year_id
+        LEFT JOIN bills b ON s.id = b.student_id AND b.fees_id = f.id
+        WHERE s.id = ? AND sc.class_id = ? AND f.year_id = ? AND f.term_id = ?
+        ORDER BY s.first_name, s.last_name;
+  `);
+
+      const records = stmt.all(
+        filter.studentId,
+        filter.classId,
+        filter.academicYearId,
+        filter.termId
+      );
       return { success: true, data: records };
     } catch (error) {
       console.error("Database Error in getBillDetails: ", error);
@@ -636,6 +886,56 @@ class DatabaseHandler {
     } catch (error) {
       console.error("Database Error: ", error);
       return { success: false, message: error.message };
+    }
+  }
+
+  updatePayment(data) {
+    try {
+      const stmt = this.db.prepare(`
+          UPDATE payments SET amount = ?, payment_mode = ?, payment_details = ? WHERE id = ?
+        `);
+      stmt.run(data.amount, data.paymentMode, data.paymentDetails, data.paymentId);
+      return {
+        success: true,
+        message: "Payment updated successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  deletePayment(paymentId) {
+    try {
+      const stmt = this.db.prepare(`
+          DELETE FROM payments WHERE id = ?
+        `);
+      stmt.run(paymentId);
+      return {
+        success: true,
+        message: "Payment deleted successfully.",
+      };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      // Handle common SQLite errors
+      if (error.message.includes("FOREIGN KEY constraint failed")) {
+        return {
+          success: false,
+          message: "Cannot delete student. This student is linked to other records.",
+        };
+      } else if (error.message.includes("database is locked")) {
+        return {
+          success: false,
+          message: "Database is currently in use. Please try again later.",
+        };
+      } else if (error.message.includes("SQLITE_CORRUPT")) {
+        return {
+          success: false,
+          message: "Database file is corrupted. Please restore from backup.",
+        };
+      }
+
+      return { success: false, message: "An unexpected error occurred." };
     }
   }
 
@@ -875,26 +1175,6 @@ class DatabaseHandler {
     }
   }
 
-  // getUnbilledClasses(yearId) {
-  //   try {
-  //     const stmt = this.db.prepare(`
-  //       SELECT c.id AS class_id, c.class_name, ay.id AS year_id, ay.year AS academic_year
-  //       FROM classes c
-  //       JOIN academicYears ay ON c.id = ay.id
-  //       WHERE c.id NOT IN (
-  //         SELECT DISTINCT f.class_id
-  //         FROM fees f
-  //         WHERE f.year_id = ?
-  //       );
-  //     `);
-  //     const records = stmt.all(yearId);
-  //     return { success: true, data: records };
-  //   } catch (error) {
-  //     console.error("Database Error: ", error);
-  //     return { success: false, message: error.message };
-  //   }
-  // }
-
   getStudentBilledCount(filter) {
     try {
       const stmt = this.db.prepare(`
@@ -906,6 +1186,23 @@ class DatabaseHandler {
         WHERE f.term_id = ? AND f.year_id = ?;
       `);
       const record = stmt.get(filter.termId, filter.academicYearId);
+      return { success: true, data: record };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getTotalDiscountGiven(filter) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT 
+          COALESCE(SUM(b.discount_amount), 0) AS total_discount
+        FROM bills b
+        JOIN fees f ON b.fees_id = f.id
+        WHERE f.year_id = ? AND f.term_id = ?;
+      `);
+      const record = stmt.get(filter.academicYearId, filter.termId);
       return { success: true, data: record };
     } catch (error) {
       console.error("Database Error: ", error);
@@ -937,7 +1234,8 @@ class DatabaseHandler {
           COUNT(DISTINCT sc.student_id) AS students_count, 
           COALESCE(f.amount, 0) AS class_fee, 
           COALESCE(SUM(p.amount), 0) AS total_paid, 
-          COALESCE(COUNT(DISTINCT sc.student_id) * f.amount, 0) AS total_fees
+          COALESCE(COUNT(DISTINCT sc.student_id) * f.amount, 0) AS total_fees,
+          COALESCE(SUM(b.discount_amount), 0) AS total_discount
         FROM classes c
         LEFT JOIN studentClasses sc ON c.id = sc.class_id AND sc.year_id = ? 
         LEFT JOIN fees f ON c.id = f.class_id AND f.term_id = ? AND f.year_id = ?

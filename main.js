@@ -3,6 +3,7 @@ const path = require("path");
 const DatabaseHandler = require("./scripts/db/db-handler");
 
 let mainWindow;
+let adminWindow;
 let dbHandler;
 
 let store; // Declare `store` at the top for global access
@@ -16,7 +17,6 @@ async function loadStore() {
 function createWindow() {
   mainWindow = new BrowserWindow({
     title: "School Fees Tracker",
-    fullscreen: true,
     height: 800,
     width: 1200,
     resizable: true,
@@ -30,6 +30,21 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, "src/html/index.html"));
 }
 
+function createAdminWindow() {
+  adminWindow = new BrowserWindow({
+    title: "School Fees Tracker | Admin",
+    height: 600,
+    width: 1000,
+    resizable: true,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: true,
+      preload: path.join(__dirname, "preload.js"),
+    },
+  });
+
+  adminWindow.loadFile(path.join(__dirname, "src/html/admin.html"));
+}
 // Get all classes, academic years and terms from the database and save to local storage
 async function loadInitialData() {
   try {
@@ -59,6 +74,12 @@ ipcMain.handle("reload-store-data", async () => {
   await loadInitialData();
 });
 
+ipcMain.on("save-payments-column-visibility", (_, data) =>
+  store.set("paymentsColumnVisibility", data)
+);
+
+ipcMain.handle("get-payments-column-visibility", () => store.get("paymentsColumnVisibility", {}));
+
 // update store classes
 ipcMain.handle("update-store-classes", (_, data) => {
   store.delete("classes");
@@ -83,6 +104,9 @@ ipcMain.on("reload-app", () => {
   allWindows.forEach((win) => win.reload());
 });
 
+// Open admin page
+ipcMain.on("open-admin-page", () => createAdminWindow());
+
 ipcMain.handle("get-store-classes", (_) => {
   return store.get("classes") || [];
 });
@@ -104,6 +128,36 @@ ipcMain.handle("save-setting", (_, key, value, text) => {
     return { success: false, message: error.message };
   }
 });
+
+// Login user
+ipcMain.handle("login", async (_, user) => {
+  try {
+    const result = await dbHandler.login(user);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// Update password
+ipcMain.handle("change-password", async (_, data)=> {
+  try {
+    const result = await dbHandler.updatePassword(data);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+})
+
+// Get user
+ipcMain.handle("get-user", async (_, data)=> {
+  try {
+    const result = await dbHandler.getUser(data);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+})
 
 // Add class
 ipcMain.handle("add-class", (event, data) => {
@@ -181,24 +235,20 @@ ipcMain.handle("insert-student", (event, student) => {
   }
 });
 
-// Update student
-ipcMain.handle("update-student", (event, student) => {
+// Delete student
+ipcMain.handle("delete-student", (event, studentId) => {
   try {
-    const result = dbHandler.updateStudent(student);
-
-    if (!result.success) {
-      throw new Error(result.message);
-    }
+    const result = dbHandler.deleteStudent(studentId);
     return result;
   } catch (error) {
     return { success: false, message: error.message };
   }
 });
 
-// get all students
-ipcMain.handle("get-all-students", async () => {
+// Update student
+ipcMain.handle("update-student", (event, student) => {
   try {
-    const result = dbHandler.getAllStudents();
+    const result = dbHandler.updateStudent(student);
 
     if (!result.success) {
       throw new Error(result.message);
@@ -224,6 +274,16 @@ ipcMain.handle("get-students-by-year", async (_, year) => {
 ipcMain.handle("add-student-to-class", (_, data) => {
   try {
     const result = dbHandler.addStudentToClass(data);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// Remove student from class
+ipcMain.handle("remove-student-from-class", (_, data) => {
+  try {
+    const result = dbHandler.removeStudentFromClass(data);
     return result;
   } catch (error) {
     return { success: false, message: error.message };
@@ -307,10 +367,30 @@ ipcMain.handle("delete-fees", async (_, data) => {
   }
 });
 
+// Check if class has been billed
+ipcMain.handle("check-class-billed", async (_, data) => {
+  try {
+    const result = await dbHandler.checkIfClassBilled(data);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // Bill class students
 ipcMain.handle("bill-class-students", async (_, dataArray, feesId) => {
   try {
     const result = await dbHandler.billClassStudents(dataArray, feesId);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// Delete bill
+ipcMain.handle("delete-bill", async (_, data) => {
+  try {
+    const result = await dbHandler.deleteBill(data);
     return result;
   } catch (error) {
     return { success: false, message: error.message };
@@ -329,6 +409,17 @@ ipcMain.handle("get-bill-details", async (_, data) => {
     return { success: false, message: error.message };
   }
 });
+
+// Get single bill details
+ipcMain.handle("get-single-bill-details", async (_, data) => {
+  try {
+    const result = await dbHandler.getSingleBillDetails(data);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // get all student fees
 ipcMain.handle("get-all-fees", async () => {
   try {
@@ -377,6 +468,28 @@ ipcMain.handle("make-payment", async (_, data) => {
     if (!result.success) {
       throw new Error(result.message);
     }
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Update payment
+ipcMain.handle("update-payment", async (_, data) => {
+  try {
+    const result = await dbHandler.updatePayment(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Delete payment
+ipcMain.handle("delete-payment", async (_, data) => {
+  try {
+    const result = await dbHandler.deletePayment(data);
     return result;
   } catch (error) {
     console.log(error.message);
@@ -509,6 +622,42 @@ ipcMain.handle("get-unbilled-classes", async (_, data) => {
     console.log(error.message);
     return { success: false, message: error.message };
   }
+});
+
+// Apply discount
+ipcMain.handle("apply-discount", async (_, data) => {
+  try {
+    const result = await dbHandler.applyDiscount(data);
+
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Get total discount given
+ipcMain.handle("get-total-discount-given", async (_, data) => {
+  try {
+    const result = await dbHandler.getTotalDiscountGiven(data);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
+
+// Handle confirmation dialog with custom message
+ipcMain.handle("show-confirmation-dialog", async (_, message) => {
+  const result = await dialog.showMessageBox(mainWindow, {
+    type: "question",
+    buttons: ["No", "Yes"],
+    defaultId: 1,
+    title: "Confirmation",
+    message: message || "Are you sure you want to proceed?", // Default message
+  });
+
+  return result.response === 1; // Returns true if "Yes" is clicked, otherwise false
 });
 
 // app.whenReady().then(createWindow);

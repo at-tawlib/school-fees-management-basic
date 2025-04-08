@@ -1,4 +1,5 @@
 import { getDefaultYearSetting } from "./utils/get-settings.js";
+import { printPage } from "./utils/print-page.js";
 import { setUpClassSelect } from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
@@ -15,6 +16,35 @@ let editingStudentId = null;
 document.getElementById("addStudentBtn").addEventListener("click", function () {
   addStudentModal.style.display = "block";
   document.getElementById("addStudentForm").reset();
+});
+
+document.getElementById("printStudentsBtn").addEventListener("click", async () => {
+  const studentsTable = document.getElementById("studentsTable");
+
+  if (!studentsTable) {
+    showToast("No table found to print", "error");
+    return;
+  }
+
+  const academicYearSetting = await getDefaultYearSetting();
+
+  // Clone the table to modify it without affecting the original
+  const tableClone = studentsTable.cloneNode(true);
+  tableClone.querySelectorAll("tr").forEach((row, index) => {
+    if (row.cells[5]) row.removeChild(row.cells[5]);
+  });
+
+  // Remove background colors
+  tableClone.querySelectorAll("tr, td, th").forEach((el) => {
+    el.style.backgroundColor = "white";
+  });
+
+  // Add a heading above the table
+  const heading = `<h2 style="text-align: center; margin-bottom: 10px;">Students for ${
+    academicYearSetting?.setting_text || ""
+  } Academic Year</h2>`;
+
+  printPage(heading, tableClone.outerHTML);
 });
 
 document.getElementById("addStudentCloseX").addEventListener("click", function () {
@@ -129,8 +159,13 @@ async function displayStudents(yearId) {
         <td>${student.other_names}</td>
         <td>${student?.class_name ? student.class_name : "No Class"}</td>
         <td> 
-          <div id="btnEditStudent" class="text-button">
-            <i class="fa-solid fa-pen-to-square"></i> Edit
+          <div style="display: flex; justify-content: center">
+            <button id="btnEditStudent" class="text-button" title="Edit Student">
+              <i class="fa-solid fa-pen-to-square"></i> Edit
+            </button>
+            <button id="btnDeleteStudent" class="text-button" title="Delete Student" style="color:red">
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
           </div>
         </td>
       `;
@@ -140,6 +175,27 @@ async function displayStudents(yearId) {
 
     row.querySelector("#btnEditStudent").addEventListener("click", () => {
       editStudentRecord(student);
+    });
+
+    row.querySelector("#btnDeleteStudent").addEventListener("click", async () => {
+      if (student.class_name) {
+        showToast(
+          "Student is already assigned to a class. Please remove student from class before deleting.",
+          "error"
+        );
+        return;
+      }
+
+      const confirmDelete = confirm("Are you sure you want to delete this student?");
+      if (!confirmDelete) return;
+
+      const result = await window.api.deleteStudent(student.student_id);
+      if (result.success) {
+        showToast(result.message, "success");
+        initStudentsSection();
+        return;
+      }
+      showToast(result.message, "error");
     });
 
     studentsTableBody.appendChild(row);

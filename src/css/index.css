@@ -1,9 +1,9 @@
 /* Define color variables in the :root */
 :root {
   --color-primary: #41d87b;
-  --color-secondary: #1D347A;
+  --color-secondary: #1d347a;
   --color-secondary-dark: #152659;
-  --color-secondary-light: #4F65A0;
+  --color-secondary-light: #4f65a0;
   --color-red: #cc0000;
   --color-red-light: #ff0000;
   --color-red-dark: #660000;
@@ -175,7 +175,7 @@ th {
 .table-rounded {
   border-collapse: collapse;
   width: 100%;
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   overflow: hidden;
   background-color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -222,14 +222,66 @@ th {
   cursor: pointer;
 }
 
+.table-rounded td:last-child,
+.table-rounded th:last-child {
+  text-align: center;
+}
+
 .table-rounded tfoot th {
-  background-color: var(--color-secondary-dark);
+  background-color: var(--color-yellow);
+  border: none;
 }
 
 .plain-table-header {
   background-color: transparent !important;
   color: var(--color-secondary) !important;
   border: none !important;
+}
+
+/* ***************** HEADER ****************** */
+header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  box-shadow: 0 4px 6px 0 rgba(36, 35, 35, 0.8);
+  z-index: 1000;
+  background-color: var(--color-secondary);
+  color: white;
+}
+
+#navAcademicYear {
+  font-weight: 700;
+}
+
+header .navbar ul {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+header .navbar li {
+  margin-left: 1rem;
+}
+
+header .navbar ul li span {
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 600;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+header .navbar ul li span.active,
+header .navbar ul li span:hover {
+  color: var(--color-yellow);
+  border-bottom: 0.2rem solid var(--color-yellow);
+  padding: 0.5rem 0;
 }
 
 /* ****************** CONTAINERS CSS *************************** */
@@ -243,7 +295,7 @@ th {
 
 .elevated-container {
   background-color: white;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   padding: 1rem;
   box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
 }
@@ -267,9 +319,9 @@ th {
 
 /* ****************** MAIN CONTENT *************************** */
 main {
-  width: calc(100% - 16rem);
+  width: 100%;
   margin-top: 5.4rem;
-  margin-left: 18rem;
+  margin-left: 1rem;
   margin-right: 2rem;
   margin-bottom: 1rem;
   border-radius: 1rem;
@@ -331,95 +383,62 @@ main {
   padding: 0.2rem;
 }
 
-#navSettings {
-  border-radius: 0px;
-  border-bottom: none;
-  text-align: start;
-  color: var(--color-secondary);
-  background-color: white;
-}
-
 #navSettings:hover {
-  background-color: var(--color-secondary);
+  background-color: var(--color-yellow);
   color: white;
 }
 
-/* ***************** HEADER ****************** */
-header {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 16rem;
-  height: 3.5rem;
+#navSettings.active {
+  background-color: var(--color-yellow);
+  color: white;
+}
+
+/* *************** HOME SECTION CSS  ***************** */
+#homeSection {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 1rem;
-  box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
-  z-index: 1000;
-  background-color: var(--color-secondary);
-  color: white;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
+  padding: 1rem;
 }
-/* ********************** DASHBOARD CSS ********************** */
-.metrics {
+
+#homeSection p {
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.home-btns-group {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
   gap: 1.25rem;
-  margin-bottom: 1.25rem;
+  margin: auto;
+  width: 80%;
 }
 
-.metric-card {
+.home-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background-color: white;
   padding: 1.25rem;
   border-radius: 0.5rem;
   box-shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
-  display: flex;
-  align-items: center;
 }
 
-.metric-card:hover {
+.home-btn i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.home-btn h4 {
+  font-size: 1.25rem;
+}
+
+.home-btn:hover {
   background-color: var(--highlight-color);
   cursor: pointer;
 }
-
-.metric-card i {
-  font-size: 2rem;
-  margin-right: 1rem;
-}
-
-.action-buttons {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  gap: 15px;
-}
-
-.action-button {
-  background-color: white;
-  border: none;
-  padding: 15px;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.action-button:hover {
-  background-color: #f0f0f0;
-}
-
-.action-button i {
-  font-size: 2rem;
-  margin-bottom: 10px;
-  color: #3498db;
-}
-
-.action-button span {
-  font-size: 1rem;
-}
-
 /* *************** STUDENTS ********************* */
 #studentsTable td:nth-child(2),
 #studentsTable th:nth-child(2),
@@ -443,7 +462,7 @@ header {
 /* ************************** FEES ******************* */
 #feesTable td:last-child,
 #feesTable th:last-child {
-  text-align: end;
+  text-align: center;
 }
 
 #feesTable td:nth-child(6),
@@ -598,6 +617,24 @@ header {
   width: 100%;
 }
 
+/* ********************** PAYMENTS SECTION ****************** */
+#column-controls {
+  display: flex;
+  gap: 10px; /* Adjust spacing between checkboxes */
+}
+
+#column-controls label {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Adjust spacing between checkbox and label */
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+#column-controls input[type="checkbox"] {
+  margin: 0;
+}
+
 /* ********************** SETTINGS PAGE ****************** */
 #settingsClassTableBody td:nth-child(3),
 #settingsYearTableBody td:nth-child(3) {
@@ -608,7 +645,7 @@ header {
 .modal {
   display: none;
   position: fixed;
-  z-index: 100;
+  z-index: 1500;
   left: 0;
   top: 0;
   width: 100%;
@@ -651,6 +688,14 @@ header {
   cursor: pointer;
 }
 
+.modal-color-background {
+  color: #333;
+  background-color: rgba(92, 205, 233, 0.1);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ddd;
+}
+
 /* Animation for fading in and out */
 @keyframes fadeIn {
   from {
@@ -689,18 +734,33 @@ header {
   width: 8rem;
 }
 
+/* *************** LOGIN MODAL CSS *********************** */
+#loginModal {
+  display: "flex";
+}
+
+#loginModal .modal-container {
+  margin: auto;
+  padding: 1rem;
+  border: 1px solid #888;
+}
+
 /* *************** ABOUT MODAL CSS *********************** */
 #aboutModal {
-  display: none;
+  display: flex;
   position: fixed;
-  z-index: 1000;
+  z-index: 1500;
   left: 0;
   top: 0;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   overflow-y: auto;
   scrollbar-width: none;
-  background-color: rgba(0, 0, 0, 0.5); 
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#aboutModal .modal-container {
+  margin: auto;
 }
 
 #aboutModal p {
@@ -720,14 +780,16 @@ header {
 
 /* *********************** TOAST CSS ************************ */
 .toast-container {
-  width: 250px;
+  width: auto;
   min-width: 250px;
+  max-width: 400px;
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 1000;
+  z-index: 2000;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   gap: 10px;
   border-radius: 5px;
 }
@@ -749,6 +811,22 @@ header {
   background-color: var(--color-red-light);
 }
 
+.toast-close-button {
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding-right: 8px;
+  padding-left: 8px;
+  color: #fff;
+  cursor: pointer;
+  shadow: 0 2px 2px 0 rgba(36, 35, 35, 0.8);
+}
+
+.toast-close-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  margin-right: 5px;
+}
 /* ************** COLOURS & BACKGROUND COLOURS ********************/
 .bg-secondary {
   background-color: var(--color-secondary);

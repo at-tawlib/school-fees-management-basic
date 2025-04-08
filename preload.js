@@ -3,11 +3,12 @@ const { contextBridge, ipcRenderer } = require("electron");
 contextBridge.exposeInMainWorld("api", {
   saveSetting: (key, value, text) => ipcRenderer.invoke("save-setting", key, value, text),
   getAllSettings: () => ipcRenderer.invoke("get-all-settings"),
-  getAllStudents: () => ipcRenderer.invoke("get-all-students"),
   getStudentsByYear: (year) => ipcRenderer.invoke("get-students-by-year", year),
   insertStudent: (student) => ipcRenderer.invoke("insert-student", student),
+  deleteStudent: (id) => ipcRenderer.invoke("delete-student", id),
   updateStudent: (student) => ipcRenderer.invoke("update-student", student),
   addStudentToClass: (data) => ipcRenderer.invoke("add-student-to-class", data),
+  removeStudentFromClass: (data) => ipcRenderer.invoke("remove-student-from-class", data),
   checkClassExists: (data) => ipcRenderer.invoke("check-class-exists", data),
   getStudentsByClass: (data) => ipcRenderer.invoke("get-students-by-class", data),
   addFees: (data) => ipcRenderer.invoke("add-fees", data),
@@ -15,9 +16,11 @@ contextBridge.exposeInMainWorld("api", {
   billStudent: (data) => ipcRenderer.invoke("bill-student", data),
   filterAllClassesStudents: (data) => ipcRenderer.invoke("filter-all-classes-students", data),
   billClassStudents: (data, feesId) => ipcRenderer.invoke("bill-class-students", data, feesId),
+  deleteBill: (data) => ipcRenderer.invoke("delete-bill", data),
   getSingleFee: (data) => ipcRenderer.invoke("get-single-fee", data),
   getBillDetails: (data) => ipcRenderer.invoke("get-bill-details", data),
   makePayment: (data) => ipcRenderer.invoke("make-payment", data),
+  updatePayment: (data) => ipcRenderer.invoke("update-payment", data),
   getStudentsBillSummary: (data) => ipcRenderer.invoke("get-students-bill-summary", data),
   getAllPayments: () => ipcRenderer.invoke("get-all-payments"),
   getYearTermPayments: (data) => ipcRenderer.invoke("get-year-term-payments", data),
@@ -36,6 +39,17 @@ contextBridge.exposeInMainWorld("api", {
   getYearClassCount: (data) => ipcRenderer.invoke("get-year-class-count", data),
   getTotalClassCount: (data) => ipcRenderer.invoke("get-total-class-count", data),
   getUnbilledClasses: (data) => ipcRenderer.invoke("get-unbilled-classes", data),
+  checkIfClassBilled: (data) => ipcRenderer.invoke("check-class-billed", data),
+  applyDiscount: (data) => ipcRenderer.invoke("apply-discount", data),
+  getTotalDiscountGiven: (data) => ipcRenderer.invoke("get-total-discount-given", data),
+  deletePayment: (data) => ipcRenderer.invoke("delete-payment", data),
+  getSingleBillDetails: (data) => ipcRenderer.invoke("get-single-bill-details", data),
+});
+
+contextBridge.exposeInMainWorld("user", {
+  login: (user) => ipcRenderer.invoke("login", user),
+  updatePassword: (data) => ipcRenderer.invoke("change-password", data),
+  getUser: (data) => ipcRenderer.invoke("get-user", data),
 });
 
 contextBridge.exposeInMainWorld("store", {
@@ -64,9 +78,18 @@ contextBridge.exposeInMainWorld("store", {
   // For use in dev to clear the store data
   clearStore: async () => {
     return await ipcRenderer.invoke("clear-store");
-  }
+  },
 });
 
 contextBridge.exposeInMainWorld("app", {
-  reloadApp: () => ipcRenderer.send('reload-app')
+  reloadApp: () => ipcRenderer.send("reload-app"),
+  openAdminPage: () => ipcRenderer.send("open-admin-page"),
+  savePaymentsColumnVisibility: (data) => ipcRenderer.send("save-payments-column-visibility", data),
+  getPaymentsColumnVisibility: () => ipcRenderer.invoke("get-payments-column-visibility"),
+});
+
+contextBridge.exposeInMainWorld("dialog", {
+  showConfirmationDialog: async (message) => {
+    return await ipcRenderer.invoke("show-confirmation-dialog", message);
+  },
 });

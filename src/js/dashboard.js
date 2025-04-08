@@ -1,19 +1,11 @@
-import { CONTAINERS } from "./constants/constants.js";
-import { initSettings } from "./settings.js";
 import { fCurrency } from "./utils/format-currency.js";
 import { formatDate } from "./utils/format-date.js";
 import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
-import { showHideFeesContainer } from "./utils/show-hide-container.js";
 import { showToast } from "./utils/toast.js";
 
 let academicYearSetting;
 let termSetting;
-
-document.getElementById("dashboardChangeYearTermBtn").addEventListener("click", function () {
-  showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
-  sectionHeaderTitle.textContent = "Settings";
-  initSettings();
-});
+const recentPaymentsTable = document.getElementById("dashboardRecentPaymentsTableBody");
 
 export async function initDashboard() {
   academicYearSetting = await getDefaultYearSetting();
@@ -21,9 +13,6 @@ export async function initDashboard() {
 
   if (!academicYearSetting || !termSetting) {
     showToast("Set up the current term and academic year.", "error");
-    showHideFeesContainer(CONTAINERS.SETTINGS_VIEW);
-    sectionHeaderTitle.textContent = "Settings";
-    initSettings();
     return;
   }
 
@@ -51,7 +40,7 @@ function setUpMetrics(metricsData) {
   document.getElementById("totalStudentsMetric").textContent = metricsData.totalStudents;
 
   document.getElementById("totalFeesBilledMetric").textContent = fCurrency(
-    metricsData.totalFeesBilled
+    metricsData.totalFeesBilled - metricsData.totalDiscountGiven
   );
 
   document.getElementById("totalFeesCollectedMetric").textContent = fCurrency(
@@ -59,7 +48,11 @@ function setUpMetrics(metricsData) {
   );
 
   document.getElementById("pendingPaymentsMetric").textContent = fCurrency(
-    metricsData.totalFeesBilled - metricsData.totalAmountPaid
+    metricsData.totalFeesBilled - metricsData.totalAmountPaid - metricsData.totalDiscountGiven
+  );
+
+  document.getElementById("discountGivenMetrics").textContent = fCurrency(
+    metricsData.totalDiscountGiven
   );
 }
 
@@ -78,13 +71,13 @@ async function setUpOverview(metricsData) {
 
   // Fees Overview summary
   document.getElementById("totalFeesBilledOverview").textContent = fCurrency(
-    metricsData.totalFeesBilled
+    metricsData.totalFeesBilled - metricsData.totalDiscountGiven
   );
   document.getElementById("totalFeesCollectedOverview").textContent = fCurrency(
     metricsData.totalAmountPaid
   );
   document.getElementById("pendingPaymentsOverview").textContent = fCurrency(
-    metricsData.totalFeesBilled - metricsData.totalAmountPaid
+    metricsData.totalFeesBilled - metricsData.totalAmountPaid - metricsData.totalDiscountGiven
   );
 
   // Billed students overview summary
@@ -120,9 +113,12 @@ async function setUpClassSummary() {
     row.insertCell().textContent = item.class_name;
     row.insertCell().textContent = item.students_count;
     row.insertCell().textContent = item.class_fee === 0 ? "No Fee" : fCurrency(item.class_fee);
-    row.insertCell().textContent = fCurrency(item.total_fees);
+    row.insertCell().textContent = fCurrency(item.total_fees - item.total_discount);
+    row.insertCell().textContent = fCurrency(item.total_discount);
     row.insertCell().textContent = fCurrency(item.total_paid);
-    row.insertCell().textContent = fCurrency(item.total_fees - item.total_paid);
+    row.insertCell().textContent = fCurrency(
+      item.total_fees - item.total_paid - item.total_discount
+    );
   });
 }
 
@@ -131,8 +127,6 @@ async function setUpRecentPayments() {
     academicYearId: academicYearSetting.setting_value,
     termId: termSetting.setting_value,
   });
-
-  console.log(recentPaymentsResp, academicYearSetting.setting_value, termSetting.setting_value);  
 
   if (!recentPaymentsResp.success) {
     showToast(recentPaymentsResp.message, "error");
@@ -148,7 +142,7 @@ async function setUpRecentPayments() {
   if (recentPayments.length > 10) {
     recentPayments = recentPayments.splice(0, 10);
   }
-  const recentPaymentsTable = document.getElementById("dashboardRecentPaymentsTableBody");
+
   recentPaymentsTable.innerHTML = "";
 
   recentPayments.forEach((item) => {
@@ -211,6 +205,13 @@ async function getMetricsData() {
     }
     const { total_amount_paid: totalAmountPaid } = totalAmountPaidResp.data;
 
+    // Fetch total discount given
+    const totalDiscountResp = await window.api.getTotalDiscountGiven({ termId, academicYearId });
+    if (!totalDiscountResp.success) {
+      throw new Error(totalDiscountResp.message);
+    }
+    const { total_discount: totalDiscountGiven } = totalDiscountResp.data;
+
     // Return the metrics data
     return {
       totalStudents,
@@ -222,10 +223,10 @@ async function getMetricsData() {
       yearClasses,
       unbilledClassesCount: unbilledClasses.length,
       unbilledClasses,
+      totalDiscountGiven,
     };
   } catch (error) {
     showToast(error.message, "error");
-    console.error("Error fetching metrics data:", error);
     return null;
   }
 }

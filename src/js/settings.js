@@ -5,6 +5,8 @@ import { showToast } from "./utils/toast.js";
 
 const changeYearTermContainer = document.getElementById("changeYearTermContainer");
 const defaultYearTermTextContainer = document.getElementById("defaultYearTermTextContainer");
+const classInput = document.getElementById("newClassInput");
+const academicYearInput = document.getElementById("newAcademicYear");
 
 document.getElementById("changeYearTermBtn").addEventListener("click", async function () {
   let academicYearSetting = (await getDefaultYearSetting()) || null;
@@ -83,7 +85,6 @@ document.getElementById("currentYearTermSaveBtn").addEventListener("click", asyn
 });
 
 document.getElementById("settingsAddClassBtn").addEventListener("click", async function () {
-  const classInput = document.getElementById("newClassInput");
   classInput.style.background = "";
   const className = classInput.value;
 
@@ -108,7 +109,6 @@ document.getElementById("settingsAddClassBtn").addEventListener("click", async f
 });
 
 document.getElementById("settingsAddYearBtn").addEventListener("click", async function () {
-  const academicYearInput = document.getElementById("newAcademicYear");
   academicYearInput.style.background = "";
   const academicYear = academicYearInput.value;
 
@@ -133,6 +133,7 @@ document.getElementById("settingsAddYearBtn").addEventListener("click", async fu
 });
 
 export function initSettings() {
+  clearFields();
   displayClassSettingsTable();
   displayAcademicYearSettingsTable();
   setUpDefaultValues();
@@ -210,4 +211,13 @@ async function displayAcademicYearSettingsTable() {
         `;
     tableBody.appendChild(row);
   });
+}
+
+async function clearFields() {
+  classInput.style.background = "";
+  classInput.value = "";
+  academicYearInput.style.background = "";
+  academicYearInput.value = "";
+  changeYearTermContainer.style.display = "none";
+  defaultYearTermTextContainer.style.display = "";
 }

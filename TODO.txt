@@ -1,0 +1,16 @@
+Check the dashboard, total billed is shown even when the student is not billed yet
+
+
+General:
+- Don't not show unbilled students for future and past terms (always use the current term and academic year)
+
+Reduce the size of the sidebar i.e. use percentages for the sidebar instead of a fixed width
+
+5. Reporting & Filters
+Show "Total Discounts Given" in financial summaries.
+Allow filtering by:
+Full-fee students
+Discounted students
+Fully exempted students
+
+In the payment section, show payment history does not take the discount into consideration
