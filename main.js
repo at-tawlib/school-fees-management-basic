@@ -59,6 +59,7 @@ async function loadInitialData() {
     store.set("academicYears", academicYears.data);
     store.set("terms", terms.data);
     store.set("settings", settings.data);
+    store.set("session", "user")
   } catch (error) {
     console.error("Failed to load initial data:", error);
   }
@@ -79,6 +80,12 @@ ipcMain.on("save-payments-column-visibility", (_, data) =>
 );
 
 ipcMain.handle("get-payments-column-visibility", () => store.get("paymentsColumnVisibility", {}));
+
+ipcMain.on("set-session", (_, data) => {
+  store.set("session", data);
+});
+
+ipcMain.handle("get-session", () => store.get("session"));
 
 // update store classes
 ipcMain.handle("update-store-classes", (_, data) => {
@@ -140,24 +147,24 @@ ipcMain.handle("login", async (_, user) => {
 });
 
 // Update password
-ipcMain.handle("change-password", async (_, data)=> {
+ipcMain.handle("change-password", async (_, data) => {
   try {
     const result = await dbHandler.updatePassword(data);
     return result;
   } catch (error) {
     return { success: false, message: error.message };
   }
-})
+});
 
 // Get user
-ipcMain.handle("get-user", async (_, data)=> {
+ipcMain.handle("get-user", async (_, data) => {
   try {
     const result = await dbHandler.getUser(data);
     return result;
   } catch (error) {
     return { success: false, message: error.message };
   }
-})
+});
 
 // Add class
 ipcMain.handle("add-class", (event, data) => {
