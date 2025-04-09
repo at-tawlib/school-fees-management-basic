@@ -8,6 +8,7 @@ import { initHomeSection } from "./home.js";
 import { openLoginModal } from "./modals/login-modal.js";
 import { initDashboard } from "./dashboard.js";
 import { initSettings } from "./settings.js";
+import { openUpdatePassword } from "./modals/update-password-modal.js";
 
 const navItems = document.querySelectorAll(".navbar ul li span");
 
@@ -75,7 +76,17 @@ document.getElementById("navAdminBtn").addEventListener("click", async () => {
   else window.app.openAdminPage();
 });
 
-document.getElementById("navLogout").addEventListener("click", async () => {
+document.getElementById("navAdminMenu").addEventListener("click", async () => {
+  document.getElementById("adminDropdown").classList.toggle("hidden");
+});
+
+document.getElementById("adminChangePassword").addEventListener("click", () => {
+  document.getElementById("adminDropdown").classList.toggle("hidden");
+  openUpdatePassword();
+});
+
+document.getElementById("adminLogout").addEventListener("click", async () => {
+  document.getElementById("adminDropdown").classList.toggle("hidden");
   await window.app.setSession("");
   window.app.closeAdmin();
   window.app.reloadApp();
@@ -116,13 +127,15 @@ document.getElementById("goToPaymentsBtn").addEventListener("click", () => {
 const setUpAdminView = async () => {
   const adminSession = await window.app.getSession();
   if (adminSession === "admin") {
-    document.getElementById("navLogout").style.display = "";
+    document.getElementById("navAdminBtn").style.display = "none";
+    document.getElementById("navAdminMenu").style.display = "";
     document.getElementById("navDashboard").style.display = "";
     document.getElementById("navSettings").style.display = "";
     document.getElementById("adminTitle").style.display = "";
     document.getElementById("appHeader").style.background = "#000";
   } else {
-    document.getElementById("navLogout").style.display = "none";
+    document.getElementById("navAdminBtn").style.display = "";
+    document.getElementById("navAdminMenu").style.display = "none";
     document.getElementById("navDashboard").style.display = "none";
     document.getElementById("navSettings").style.display = "none";
     document.getElementById("adminTitle").style.display = "none";
