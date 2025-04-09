@@ -15,11 +15,7 @@ const handleNavClick = (event) => {
 
 navItems.forEach((item) => item.addEventListener("click", handleNavClick));
 
-document.getElementById("navAdminClose").addEventListener("click", () => {
-  const confirmQuit = confirm("Are you sure you want to close the admin?\n\n");
-  if (!confirmQuit) return;
-  window.app.closeAdmin();
-});
+document.getElementById("navAdminClose").addEventListener("click", () => window.app.closeAdmin());
 
 document.getElementById("navRefreshBtn").addEventListener("click", () => window.app.reloadApp());
 
@@ -35,6 +31,10 @@ document.getElementById("navDashboard").addEventListener("click", () => {
   initDashboard();
 });
 
-window.onload = function () {
+// window.onload = function () {
+//   initDashboard();
+// };
+
+window.addEventListener("load", async () => {
   initDashboard();
-};
+});

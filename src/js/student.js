@@ -192,7 +192,9 @@ async function displayStudents(yearId) {
         return;
       }
 
-      const confirmDelete = confirm("Are you sure you want to delete this student?");
+      const confirmDelete = await window.dialog.showConfirmationDialog(
+        "Are you sure you want to delete this student?"
+      );
       if (!confirmDelete) return;
 
       const result = await window.api.deleteStudent(student.student_id);

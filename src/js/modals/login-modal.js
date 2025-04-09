@@ -25,7 +25,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
   passwordField.value = "";
   modal.style.display = "none";
   await window.app.setSession("admin");
-  window.app.reloadApp()
+  window.app.reloadApp();
 });
 
 document.getElementById("cancelBtn").addEventListener("click", () => {
@@ -42,4 +42,6 @@ document.getElementById("closeLogin").addEventListener("click", () => {
 
 export const openLoginModal = () => {
   modal.style.display = "flex";
+  console.log(usernameField.disabled); // should be false
+  console.log(window.getComputedStyle(usernameField).pointerEvents); // should not be 'none'
 };
