@@ -7,6 +7,7 @@ import { setUpFeesSection } from "./fees.js";
 import { initHomeSection } from "./home.js";
 import { openLoginModal } from "./modals/login-modal.js";
 import { initDashboard } from "./dashboard.js";
+import { initSettings } from "./settings.js";
 
 const navItems = document.querySelectorAll(".navbar ul li span");
 
@@ -63,6 +64,11 @@ document.getElementById("navPayments").addEventListener("click", () => {
   setUpPaymentsSection();
 });
 
+document.getElementById("navSettings").addEventListener("click", () => {
+  showHideFeesContainer(CONTAINERS.SETTINGS);
+  initSettings();
+});
+
 document.getElementById("navAdminBtn").addEventListener("click", async () => {
   const userSession = await window.app.getSession();
   if (userSession !== "admin") openLoginModal();
@@ -112,11 +118,13 @@ const setUpAdminView = async () => {
   if (adminSession === "admin") {
     document.getElementById("navLogout").style.display = "";
     document.getElementById("navDashboard").style.display = "";
+    document.getElementById("navSettings").style.display = "";
     document.getElementById("adminTitle").style.display = "";
     document.getElementById("appHeader").style.background = "#000";
   } else {
     document.getElementById("navLogout").style.display = "none";
     document.getElementById("navDashboard").style.display = "none";
+    document.getElementById("navSettings").style.display = "none";
     document.getElementById("adminTitle").style.display = "none";
     document.getElementById("appHeader").style.background = "";
   }

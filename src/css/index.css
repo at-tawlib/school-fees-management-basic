@@ -383,16 +383,6 @@ main {
   padding: 0.2rem;
 }
 
-#navSettings:hover {
-  background-color: var(--color-yellow);
-  color: white;
-}
-
-#navSettings.active {
-  background-color: var(--color-yellow);
-  color: white;
-}
-
 /* *************** HOME SECTION CSS  ***************** */
 #homeSection {
   display: flex;

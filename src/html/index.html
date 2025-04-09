@@ -28,11 +28,13 @@
           <li><span id="navFees">Fees</span></li>
           <li><span id="navClasses">Bills</span></li>
           <li><span id="navPayments">Payments</span></li>
+          <li><span id="navSettings">Settings</span></li>
         </ul>
       </nav>
 
       <div>
         <h4 id="adminTitle">Admin Session</h4>
+        <div class="admin-menu">
         <button id="navLogout" class="text-button" title="Admin Logout" style="color: white">
           <i class="fa-solid fa-arrow-right-from-bracket"></i>
         </button>
@@ -601,6 +603,86 @@
                 <!-- Load data from the css -->
               </tbody>
             </table>
+          </div>
+        </section>
+
+        <!-- ------------ SETTINGS PAGE --------------------- -->
+        <section id="settingsSection" style="display: none">
+          <div class="flex-column">
+            <!-- Current Academic Year & Term -->
+            <div class="elevated-container">
+              <h3>Current Academic Year and Term</h3>
+
+              <div id="defaultYearTermTextContainer" class="flex-row align-center">
+                <span id="defaultYearTermText" class="color-green"></span>
+                <button id="changeYearTermBtn" class="text-button">
+                  <i class="fa-solid fa-edit"></i> Change
+                </button>
+              </div>
+
+              <div id="changeYearTermContainer" style="display: none">
+                <div class="flex-item">
+                  <label for="settingsDefaultAcademicYear">Academic Year:</label>
+                  <select id="settingsDefaultAcademicYear"></select>
+                </div>
+
+                <div class="flex-item">
+                  <label for="settingsDefaultTerm">Term:</label>
+                  <select id="settingsDefaultTerm"></select>
+                </div>
+                <div class="flex-row">
+                  <button id="currentYearTermSaveBtn" class="bg-green">
+                    <i class="fa-solid fa-save"></i> Update
+                  </button>
+                  <button id="currentYearTermCancelBtn" class="btn bg-red">
+                    <i class="fa-solid fa-close"></i> Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <br />
+            <br />
+            <div class="grid-container grid-1">
+              <!-- Classes Section -->
+              <div class="elevated-container">
+                <h3>Manage Classes</h3>
+                <table id="settingsClassTable" class="table-rounded">
+                  <tbody id="settingsClassTableBody"></tbody>
+                </table>
+                <div class="flex-row">
+                  <input
+                    type="text"
+                    placeholder="Add new class"
+                    id="newClassInput"
+                    class="flex-3"
+                  />
+                  <button id="settingsAddClassBtn" class="outlined-button">
+                    <i class="fa-solid fa-plus"></i> Add Class
+                  </button>
+                </div>
+              </div>
+
+              <!-- Academic Years Section -->
+              <div class="elevated-container">
+                <h3>Manage Academic Years</h3>
+                <table id="settingsYearTable" class="table-rounded">
+                  <tbody id="settingsYearTableBody"></tbody>
+                </table>
+
+                <div class="flex-row">
+                  <input
+                    type="text"
+                    placeholder="Add new academic year"
+                    id="newAcademicYear"
+                    class="flex-3"
+                  />
+                  <button id="settingsAddYearBtn" class="outlined-button">
+                    <i class="fa-solid fa-plus"></i> Add Year
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </main>
