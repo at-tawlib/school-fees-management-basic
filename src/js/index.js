@@ -16,9 +16,9 @@ const handleNavClick = (event) => {
   event.target.classList.add("active");
 };
 
-document.getElementById("navQuit").addEventListener("click", () => {
-  const confirmQuit = confirm("Are you sure you want to close the app?\n\n");
-  if (!confirmQuit) return;
+document.getElementById("navQuit").addEventListener("click", async () => {
+  const confirm = await window.dialog.showConfirmationDialog("Are you sure you want to quit the app?");
+  if (!confirm) return;
   window.app.quitApp();
 });
 
@@ -62,9 +62,6 @@ document.getElementById("navAdminBtn").addEventListener("click", async () => {
 });
 
 document.getElementById("navLogout").addEventListener("click", async () => {
-  const confirmLogout = confirm("Confirm logout of admin session\n\n");
-
-  if (!confirmLogout) return;
   await window.app.setSession("");
   window.app.closeAdmin();
   window.app.reloadApp();
@@ -115,8 +112,19 @@ const setUpAdminView = async () => {
   }
 };
 
-window.onload = async function () {
-  showHideFeesContainer(CONTAINERS.HOME);
-  setUpAdminView();
-  initHomeSection();
-};
+// window.onload = async function () {
+//   showHideFeesContainer(CONTAINERS.HOME);
+//   setUpAdminView();
+//   initHomeSection();
+// };
+
+window.addEventListener("load", async () => {
+  try {
+    showHideFeesContainer(CONTAINERS.HOME);
+    await initHomeSection();
+    await setUpAdminView();
+    console.log("App loaded");
+  } catch (error) {
+    console.error("Error loading app:", error);
+  }
+});

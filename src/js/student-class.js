@@ -530,8 +530,16 @@ export async function displayClassStudentsTable() {
       });
 
       row.querySelector("#btnUnbillStudent").addEventListener("click", async () => {
-        const confirmUnbill = confirm(`Are you sure you want to unbill ${item.student_name}?`);
-        if (!confirmUnbill) return;
+        const userSession = await window.app.getSession();
+        if (userSession !== "admin") {
+          showToast("Only admin can delete student bill", "error");
+          return;
+        }
+
+        const confirmDelete = await window.dialog.showConfirmationDialog(
+          `Are you sure you want to unbill ${item.student_name}?`
+        );
+        if (!confirmDelete) return;
 
         const response = await window.api.deleteBill(item.bill_id);
         if (!response.success) {
@@ -569,7 +577,12 @@ export async function displayClassStudentsTable() {
       });
 
       row.querySelector("#btnRemoveStudent").addEventListener("click", async () => {
-        const confirmRemove = confirm(
+        const userSession = await window.app.getSession();
+        if (userSession !== "admin") {
+          showToast("Only admin can remove student from class", "error");
+          return;
+        }
+        const confirmRemove = await window.dialog.showConfirmationDialog(
           `Are you sure you want to remove ${item.student_name} from this class?`
         );
         if (!confirmRemove) return;

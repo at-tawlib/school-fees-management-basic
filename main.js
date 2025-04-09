@@ -31,7 +31,8 @@ function createWindow() {
     if (adminWindow) adminWindow = null;
     app.quit();
   });
-  mainWindow.removeMenu();
+
+  // mainWindow.removeMenu();
   mainWindow.setMenuBarVisibility(false);
   mainWindow.loadFile(path.join(__dirname, "src/html/index.html"));
 }
@@ -56,7 +57,7 @@ function createAdminWindow() {
   });
 
   adminWindow.on("closed", () => (adminWindow = null));
-  adminWindow.removeMenu();
+  // adminWindow.removeMenu();
   adminWindow.setMenuBarVisibility(false);
   adminWindow.loadFile(path.join(__dirname, "src/html/admin.html"));
 }

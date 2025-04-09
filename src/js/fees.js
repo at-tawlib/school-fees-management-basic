@@ -257,12 +257,20 @@ function handleEditFee(fee) {
 
 // Function to Handle Deleting Fees
 async function handleDeleteFee(fee) {
+  const userSession = await window.app.getSession();
+  if (userSession !== "admin") {
+    showToast("Only admin can delete a fee", "error");
+    return;
+  }
+
   if (fee.total_students_billed > 0) {
     showToast("Cannot delete fee: Students have already been billed", "error");
     return;
   }
 
-  const confirmDelete = confirm("Are you sure you want to delete this fee?");
+  const confirmDelete = await window.dialog.showConfirmationDialog(
+    "Are you sure you want to delete this fee?"
+  );
   if (!confirmDelete) return;
 
   const deleteResponse = await window.api.deleteFee(fee.id);
