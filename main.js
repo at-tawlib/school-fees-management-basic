@@ -27,14 +27,26 @@ function createWindow() {
     },
   });
 
+  mainWindow.on("close", () => {
+    if (adminWindow) adminWindow = null;
+    app.quit();
+  });
+  mainWindow.removeMenu();
+  mainWindow.setMenuBarVisibility(false);
   mainWindow.loadFile(path.join(__dirname, "src/html/index.html"));
 }
 
 function createAdminWindow() {
+  if (adminWindow) {
+    adminWindow.focus();
+    return adminWindow;
+  }
+
   adminWindow = new BrowserWindow({
     title: "School Fees Tracker | Admin",
     height: 600,
     width: 1000,
+    alwaysOnTop: true,
     resizable: true,
     webPreferences: {
       nodeIntegration: true,
@@ -43,6 +55,9 @@ function createAdminWindow() {
     },
   });
 
+  adminWindow.on("closed", () => (adminWindow = null));
+  adminWindow.removeMenu();
+  adminWindow.setMenuBarVisibility(false);
   adminWindow.loadFile(path.join(__dirname, "src/html/admin.html"));
 }
 // Get all classes, academic years and terms from the database and save to local storage
@@ -59,11 +74,20 @@ async function loadInitialData() {
     store.set("academicYears", academicYears.data);
     store.set("terms", terms.data);
     store.set("settings", settings.data);
-    store.set("session", "user")
+    store.set("session", "user");
   } catch (error) {
     console.error("Failed to load initial data:", error);
   }
 }
+
+// Close app
+ipcMain.on("quit-app", () => {
+  app.quit();
+});
+
+ipcMain.on("close-admin", () => {
+  if (adminWindow) adminWindow.close();
+});
 
 // IPC to clear store
 ipcMain.handle("clear-store", () => {

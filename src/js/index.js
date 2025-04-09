@@ -16,6 +16,12 @@ const handleNavClick = (event) => {
   event.target.classList.add("active");
 };
 
+document.getElementById("navQuit").addEventListener("click", () => {
+  const confirmQuit = confirm("Are you sure you want to close the app?\n\n");
+  if (!confirmQuit) return;
+  window.app.quitApp();
+});
+
 navItems.forEach((item) => item.addEventListener("click", handleNavClick));
 
 document.getElementById("navRefreshBtn").addEventListener("click", () => window.app.reloadApp());
@@ -56,10 +62,11 @@ document.getElementById("navAdminBtn").addEventListener("click", async () => {
 });
 
 document.getElementById("navLogout").addEventListener("click", async () => {
-  const confirmLogout = confirm("Confirm logout of admin session");
+  const confirmLogout = confirm("Confirm logout of admin session\n\n");
 
   if (!confirmLogout) return;
   await window.app.setSession("");
+  window.app.closeAdmin();
   window.app.reloadApp();
 });
 

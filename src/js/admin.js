@@ -15,6 +15,12 @@ const handleNavClick = (event) => {
 
 navItems.forEach((item) => item.addEventListener("click", handleNavClick));
 
+document.getElementById("navAdminClose").addEventListener("click", () => {
+  const confirmQuit = confirm("Are you sure you want to close the admin?\n\n");
+  if (!confirmQuit) return;
+  window.app.closeAdmin();
+});
+
 document.getElementById("navRefreshBtn").addEventListener("click", () => window.app.reloadApp());
 
 document.getElementById("navUpdatePassword").addEventListener("click", () => openUpdatePassword());
