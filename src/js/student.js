@@ -12,6 +12,7 @@ const searchStudentInput = document.getElementById("searchStudentInput");
 const studentsTableBody = document.getElementById("studentsTableBody");
 const studentClassFilter = document.getElementById("studentClassFilter");
 let editingStudentId = null;
+let userSession;
 
 document.getElementById("addStudentBtn").addEventListener("click", function () {
   addStudentModal.style.display = "block";
@@ -178,6 +179,11 @@ async function displayStudents(yearId) {
     });
 
     row.querySelector("#btnDeleteStudent").addEventListener("click", async () => {
+      if (userSession !== "admin") {
+        showToast("Only admin can delete student", "error");
+        return;
+      }
+
       if (student.class_name) {
         showToast(
           "Student is already assigned to a class. Please remove student from class before deleting.",
@@ -228,6 +234,7 @@ function filterStudentsTable() {
 }
 
 async function displayClassStats(data) {
+  userSession = await window.app.getSession();
   const classResp = await window.api.getAllClass();
   if (!classResp.success) {
     showToast(classResp.message, "error");

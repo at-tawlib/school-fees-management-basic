@@ -49,9 +49,19 @@ document.getElementById("navPayments").addEventListener("click", () => {
   setUpPaymentsSection();
 });
 
-document.getElementById("navAdminBtn").addEventListener("click", () => openLoginModal());
+document.getElementById("navAdminBtn").addEventListener("click", async () => {
+  const userSession = await window.app.getSession();
+  if (userSession !== "admin") openLoginModal();
+  else window.app.openAdminPage();
+});
 
-document.getElementById("");
+document.getElementById("navLogout").addEventListener("click", async () => {
+  const confirmLogout = confirm("Confirm logout of admin session");
+
+  if (!confirmLogout) return;
+  await window.app.setSession("");
+  window.app.reloadApp();
+});
 
 document
   .getElementById("aboutCloseXBtn")
@@ -85,7 +95,21 @@ document.getElementById("goToPaymentsBtn").addEventListener("click", () => {
   setUpPaymentsSection();
 });
 
-window.onload = function () {
+const setUpAdminView = async () => {
+  const adminSession = await window.app.getSession();
+  if (adminSession === "admin") {
+    document.getElementById("navLogout").style.display = "";
+    document.getElementById("adminTitle").style.display = "";
+    document.getElementById("appHeader").style.background = "#000";
+  } else {
+    document.getElementById("navLogout").style.display = "none";
+    document.getElementById("adminTitle").style.display = "none";
+    document.getElementById("appHeader").style.background = "";
+  }
+};
+
+window.onload = async function () {
   showHideFeesContainer(CONTAINERS.HOME);
+  setUpAdminView();
   initHomeSection();
 };

@@ -12,6 +12,7 @@ import {
 } from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
+let userSession;
 const tableBody = document.getElementById("paymentsTableBody");
 const paymentTable = document.getElementById("paymentsTable");
 const classSelect = document.getElementById("paymentClass");
@@ -27,6 +28,7 @@ yearSelect.addEventListener("change", () => displayPaymentsTable());
 searchPaymentsInput.addEventListener("input", () => filterPaymentsTable());
 
 export const setUpPaymentsSection = async () => {
+  userSession = await window.app.getSession();
   const defaultYear = await getDefaultYearSetting();
   const defaultTerm = await getDefaultTermSetting();
   await setUpAcademicYearsSelect(paymentAcademicYear, false);
@@ -143,6 +145,11 @@ const handleEditPayment = (payment) => {
 };
 
 const handleDeletePayment = async (paymentId) => {
+  if (userSession !== "admin") {
+    showToast("Only admin can delete a payment", "error");
+    return;
+  }
+
   const confirmed = await window.dialog.showConfirmationDialog(
     "Do you really want to delete this payment?"
   );

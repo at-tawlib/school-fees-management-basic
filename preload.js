@@ -86,6 +86,8 @@ contextBridge.exposeInMainWorld("app", {
   openAdminPage: () => ipcRenderer.send("open-admin-page"),
   savePaymentsColumnVisibility: (data) => ipcRenderer.send("save-payments-column-visibility", data),
   getPaymentsColumnVisibility: () => ipcRenderer.invoke("get-payments-column-visibility"),
+  setSession: (data) => ipcRenderer.send("set-session", data),
+  getSession: () => ipcRenderer.invoke("get-session"),
 });
 
 contextBridge.exposeInMainWorld("dialog", {

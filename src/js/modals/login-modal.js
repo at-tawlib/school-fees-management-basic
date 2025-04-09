@@ -24,7 +24,8 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
   usernameField.value = "";
   passwordField.value = "";
   modal.style.display = "none";
-  window.app.openAdminPage();
+  await window.app.setSession("admin");
+  window.app.reloadApp()
 });
 
 document.getElementById("cancelBtn").addEventListener("click", () => {

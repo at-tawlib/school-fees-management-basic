@@ -14,7 +14,7 @@
     <script type="module" src="../js/index.js" defer></script>
   </head>
   <body>
-    <header>
+    <header id="appHeader">
       <div>
         <p id="navAcademicYear"></p>
         <p id="navTerm"></p>
@@ -31,6 +31,10 @@
       </nav>
 
       <div>
+        <h4 id="adminTitle">Admin Session</h4>
+        <button id="navLogout" class="text-button" title="Admin Logout" style="color: white">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
         <button id="navAdminBtn" class="text-button" title="Admin" style="color: white">
           <i class="fa-solid fa-user-tie"></i>
         </button>
