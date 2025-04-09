@@ -26,15 +26,11 @@ document.getElementById("navAdminSettings").addEventListener("click", () => {
   initSettings();
 });
 
-document.getElementById("navDashboard").addEventListener("click", () => {
+document.getElementById("navAdminDashboard").addEventListener("click", () => {
   showHideAdminContainer(ADMIN_CONTAINERS.DASHBOARD);
   initDashboard();
 });
 
-// window.onload = function () {
-//   initDashboard();
-// };
-
-window.addEventListener("load", async () => {
+window.onload = function () {
   initDashboard();
-});
+};

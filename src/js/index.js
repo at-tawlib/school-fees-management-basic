@@ -6,6 +6,7 @@ import { showHideFeesContainer } from "./utils/show-hide-container.js";
 import { setUpFeesSection } from "./fees.js";
 import { initHomeSection } from "./home.js";
 import { openLoginModal } from "./modals/login-modal.js";
+import { initDashboard } from "./dashboard.js";
 
 const navItems = document.querySelectorAll(".navbar ul li span");
 
@@ -17,7 +18,9 @@ const handleNavClick = (event) => {
 };
 
 document.getElementById("navQuit").addEventListener("click", async () => {
-  const confirm = await window.dialog.showConfirmationDialog("Are you sure you want to quit the app?");
+  const confirm = await window.dialog.showConfirmationDialog(
+    "Are you sure you want to quit the app?"
+  );
   if (!confirm) return;
   window.app.quitApp();
 });
@@ -33,6 +36,11 @@ document
 document.getElementById("navHome").addEventListener("click", () => {
   showHideFeesContainer(CONTAINERS.HOME);
   initHomeSection();
+});
+
+document.getElementById("navDashboard").addEventListener("click", () => {
+  showHideFeesContainer(CONTAINERS.DASHBOARD);
+  initDashboard();
 });
 
 document.getElementById("navStudents").addEventListener("click", async () => {
@@ -103,28 +111,19 @@ const setUpAdminView = async () => {
   const adminSession = await window.app.getSession();
   if (adminSession === "admin") {
     document.getElementById("navLogout").style.display = "";
+    document.getElementById("navDashboard").style.display = "";
     document.getElementById("adminTitle").style.display = "";
     document.getElementById("appHeader").style.background = "#000";
   } else {
     document.getElementById("navLogout").style.display = "none";
+    document.getElementById("navDashboard").style.display = "none";
     document.getElementById("adminTitle").style.display = "none";
     document.getElementById("appHeader").style.background = "";
   }
 };
 
-// window.onload = async function () {
-//   showHideFeesContainer(CONTAINERS.HOME);
-//   setUpAdminView();
-//   initHomeSection();
-// };
-
-window.addEventListener("load", async () => {
-  try {
-    showHideFeesContainer(CONTAINERS.HOME);
-    await initHomeSection();
-    await setUpAdminView();
-    console.log("App loaded");
-  } catch (error) {
-    console.error("Error loading app:", error);
-  }
-});
+window.onload = async function () {
+  showHideFeesContainer(CONTAINERS.HOME);
+  await initHomeSection();
+  await setUpAdminView();
+};
