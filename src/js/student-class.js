@@ -43,11 +43,14 @@ let classTerm = {};
 let currentFees = {};
 let defaultTerm;
 let defaultYear;
+let userSession;
 
 export async function setupStudentsClassSection() {
   defaultYear = await getDefaultYearSetting();
   defaultTerm = await getDefaultTermSetting();
   classTerm = { text: defaultTerm.setting_text, value: defaultTerm.setting_value };
+
+  userSession = await window.app.getSession();
 
   addClassForm.style.display = "none";
   studentClassTableContainer.style.display = "none";
@@ -537,13 +540,16 @@ export async function displayClassStudentsTable() {
       });
 
       row.querySelector("#btnApplyDiscount").addEventListener("click", () => {
+        if (userSession !== "admin") {
+          showToast("Only admin can add student discount", "error");
+          return;
+        }
         openApplyDiscountModal(item, currentClass, classTerm);
       });
 
       row.querySelector("#btnUnbillStudent").addEventListener("click", async () => {
-        const userSession = await window.app.getSession();
         if (userSession !== "admin") {
-          showToast("Only admin can delete student bill", "error");
+          showToast("Only admin can remove student bill", "error");
           return;
         }
 
@@ -703,11 +709,6 @@ async function billSingleStudent(studentId, feesId) {
 }
 
 const removeStudentFromClass = async (student) => {
-  console.log("currentClass: ", currentClass);
-  console.log("classTerm: ", classTerm);
-  console.log("defaultYear: ", defaultYear);
-  console.log("defaultTerm: ", defaultTerm);
-  const userSession = await window.app.getSession();
   if (userSession !== "admin") {
     showToast("Only admin can remove student from class", "error");
     return;
