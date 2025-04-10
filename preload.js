@@ -40,6 +40,7 @@ contextBridge.exposeInMainWorld("api", {
   getTotalClassCount: (data) => ipcRenderer.invoke("get-total-class-count", data),
   getUnbilledClasses: (data) => ipcRenderer.invoke("get-unbilled-classes", data),
   checkIfClassBilled: (data) => ipcRenderer.invoke("check-class-billed", data),
+  checkStudentBillExist: (data) => ipcRenderer.invoke("check-student-billed", data),
   applyDiscount: (data) => ipcRenderer.invoke("apply-discount", data),
   getTotalDiscountGiven: (data) => ipcRenderer.invoke("get-total-discount-given", data),
   deletePayment: (data) => ipcRenderer.invoke("delete-payment", data),

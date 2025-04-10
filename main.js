@@ -409,6 +409,16 @@ ipcMain.handle("check-class-billed", async (_, data) => {
   }
 });
 
+// Check if student bill exist
+ipcMain.handle("check-student-billed", async (_, data) => {
+  try {
+    const result = await dbHandler.checkStudentBillExist(data);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // Bill class students
 ipcMain.handle("bill-class-students", async (_, dataArray, feesId) => {
   try {
