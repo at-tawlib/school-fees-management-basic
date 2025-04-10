@@ -46,9 +46,20 @@ document.getElementById("printFeesBtn").addEventListener("click", async () => {
 });
 
 // Event Listeners for Add Fees Modal
-document.getElementById("btnAddFees").addEventListener("click", function () {
+document.getElementById("btnAddFees").addEventListener("click", async () => {
   const academicYear = filterFeesByAcademicYear.value;
   const term = filterFeesByTerm.value;
+
+  const defaultTerm = await getDefaultTermSetting();
+  const defaultYear = await getDefaultYearSetting();
+
+  if (
+    Number(defaultTerm.setting_value) !== Number(term) ||
+    Number(defaultYear.setting_value) !== Number(academicYear)
+  ) {
+    showToast("You can only add fees current term and academic year", "error");
+    return;
+  }
 
   setUpClassSelect(addFeesModalClass);
   setUpAcademicYearsSelect(addFeesModalYear, false, academicYear);
