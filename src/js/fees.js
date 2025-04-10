@@ -53,6 +53,9 @@ document.getElementById("btnAddFees").addEventListener("click", function () {
   setUpClassSelect(addFeesModalClass);
   setUpAcademicYearsSelect(addFeesModalYear, false, academicYear);
   setUpTermsSelect(addFeesModalTerm, false, term);
+
+  addFeesModalYear.disabled = true;
+  addFeesModalTerm.disabled = true;
   addFeesModal.style.display = "block";
 });
 
