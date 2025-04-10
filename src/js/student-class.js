@@ -475,8 +475,39 @@ export async function displayClassStudentsTable() {
         <td>${index + 1}</td>
         <td>${item.student_name}</td>
         <td>
+          <button id="btnRemoveStudent" class="text-button" title="Remove student from class">
+            <i class="fa-solid fa-user-slash color-red"></i>
+            <span class="color-red">Remove Student from class</span>
+          </button>
         </td>
       `;
+
+      row.querySelector("#btnRemoveStudent").addEventListener("click", async () => {
+        const userSession = await window.app.getSession();
+        if (userSession !== "admin") {
+          showToast("Only admin can remove student from class", "error");
+          return;
+        }
+        const confirmRemove = await window.dialog.showConfirmationDialog(
+          `Are you sure you want to remove ${item.student_name} from this class?`
+        );
+        if (!confirmRemove) return;
+
+        const response = await window.api.removeStudentFromClass({
+          studentId: item.student_id,
+          classId: currentClass.classId,
+          academicYearId: currentClass.academicYearId,
+        });
+
+        if (!response.success) {
+          showToast(response.message || "An error occurred", "error");
+          return;
+        }
+
+        showToast(response.message || "Student removed successfully", "success");
+        await displayClassStudentsTable();
+      });
+
       notBilledStudentClassTableBody.appendChild(row);
     });
     return;
