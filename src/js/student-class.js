@@ -888,11 +888,6 @@ export const showPaymentHistoryModal = async (data, classDetails = null) => {
     return;
   }
 
-  if (response.data.length === 0) {
-    showToast("No payment history found for this student", "success");
-    return;
-  }
-
   paymentHistoryModal.style.display = "block";
   document.getElementById("paymentHistoryStudentName").textContent = data.student_name;
 
