@@ -713,6 +713,23 @@ class DatabaseHandler {
     }
   }
 
+  checkStudentBillExist(studentId) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM bills 
+          WHERE student_id = ?
+        ) AS data_exists;
+      `);
+      const result = stmt.get(studentId);
+      return { success: true, exists: !!result.data_exists };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, error: error.message };
+    }
+  }
+
   /**
    * Bills a list of students with the specified fees. Skips students who have already been billed.
    *

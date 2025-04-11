@@ -41,11 +41,16 @@ let studentsData = [];
 let currentClass = {};
 let classTerm = {};
 let currentFees = {};
+let defaultTerm;
+let defaultYear;
+let userSession;
 
 export async function setupStudentsClassSection() {
-  const defaultYear = await getDefaultYearSetting();
-  const defaultTerm = await getDefaultTermSetting();
+  defaultYear = await getDefaultYearSetting();
+  defaultTerm = await getDefaultTermSetting();
   classTerm = { text: defaultTerm.setting_text, value: defaultTerm.setting_value };
+
+  userSession = await window.app.getSession();
 
   addClassForm.style.display = "none";
   studentClassTableContainer.style.display = "none";
@@ -475,8 +480,17 @@ export async function displayClassStudentsTable() {
         <td>${index + 1}</td>
         <td>${item.student_name}</td>
         <td>
+          <button id="btnRemoveStudent" class="text-button" title="Remove student from class">
+            <i class="fa-solid fa-user-slash color-red"></i>
+            <span class="color-red">Remove Student from class</span>
+          </button>
         </td>
       `;
+
+      row
+        .querySelector("#btnRemoveStudent")
+        .addEventListener("click", () => removeStudentFromClass(item));
+
       notBilledStudentClassTableBody.appendChild(row);
     });
     return;
@@ -526,13 +540,16 @@ export async function displayClassStudentsTable() {
       });
 
       row.querySelector("#btnApplyDiscount").addEventListener("click", () => {
+        if (userSession !== "admin") {
+          showToast("Only admin can add student discount", "error");
+          return;
+        }
         openApplyDiscountModal(item, currentClass, classTerm);
       });
 
       row.querySelector("#btnUnbillStudent").addEventListener("click", async () => {
-        const userSession = await window.app.getSession();
         if (userSession !== "admin") {
-          showToast("Only admin can delete student bill", "error");
+          showToast("Only admin can remove student bill", "error");
           return;
         }
 
@@ -576,31 +593,9 @@ export async function displayClassStudentsTable() {
         billSingleStudent(item.student_id, item.fees_id);
       });
 
-      row.querySelector("#btnRemoveStudent").addEventListener("click", async () => {
-        const userSession = await window.app.getSession();
-        if (userSession !== "admin") {
-          showToast("Only admin can remove student from class", "error");
-          return;
-        }
-        const confirmRemove = await window.dialog.showConfirmationDialog(
-          `Are you sure you want to remove ${item.student_name} from this class?`
-        );
-        if (!confirmRemove) return;
-
-        const response = await window.api.removeStudentFromClass({
-          studentId: item.student_id,
-          classId: currentClass.classId,
-          academicYearId: currentClass.academicYearId,
-        });
-
-        if (!response.success) {
-          showToast(response.message || "An error occurred", "error");
-          return;
-        }
-
-        showToast(response.message || "Student removed successfully", "success");
-        await displayClassStudentsTable();
-      });
+      row
+        .querySelector("#btnRemoveStudent")
+        .addEventListener("click", () => removeStudentFromClass(item));
 
       notBilledStudentClassTableBody.appendChild(row);
       notBilledCount += 1;
@@ -712,6 +707,51 @@ async function billSingleStudent(studentId, feesId) {
   await displayClassStudentsTable();
   showToast(billResp.message || "Student billed successfully", "success");
 }
+
+const removeStudentFromClass = async (student) => {
+  if (userSession !== "admin") {
+    showToast("Only admin can remove student from class", "error");
+    return;
+  }
+
+  if (
+    currentClass.academicYear !== defaultYear.setting_text ||
+    classTerm.text !== defaultTerm.setting_text
+  ) {
+    showToast("You can only remove student in the current term and year", "error");
+    return;
+  }
+
+  const studentBillExist = await window.api.checkStudentBillExist(student.student_id);
+  if (!studentBillExist.success) {
+    showToast("An error occurred", "error");
+    return;
+  }
+
+  if (studentBillExist.success && studentBillExist.exists) {
+    showToast("Student has an active bill, remove bill first", "error");
+    return;
+  }
+
+  const confirmRemove = await window.dialog.showConfirmationDialog(
+    `Are you sure you want to remove ${student.student_name} from this class?`
+  );
+  if (!confirmRemove) return;
+
+  const response = await window.api.removeStudentFromClass({
+    studentId: student.student_id,
+    classId: currentClass.classId,
+    academicYearId: currentClass.academicYearId,
+  });
+
+  if (!response.success) {
+    showToast(response.message || "An error occurred", "error");
+    return;
+  }
+
+  showToast(response.message || "Student removed successfully", "success");
+  await displayClassStudentsTable();
+};
 
 // ************************** BILL CLASS MODAL *******************************
 document.getElementById("billClassBtn").addEventListener("click", async function () {
@@ -845,11 +885,6 @@ export const showPaymentHistoryModal = async (data, classDetails = null) => {
   const response = await window.api.getStudentPayments(data.bill_id);
   if (!response.success) {
     showToast(response.message || "An error occurred", "error");
-    return;
-  }
-
-  if (response.data.length === 0) {
-    showToast("No payment history found for this student", "success");
     return;
   }
 

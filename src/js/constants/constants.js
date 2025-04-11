@@ -4,6 +4,8 @@ export const CONTAINERS = {
   VIEW_FEES: "viewFeesSection",
   STUDENT_CLASS: "studentClass",
   PAYMENTS: "payments",
+  DASHBOARD: "dashboard",
+  SETTINGS: "settings",
 };
 
 export const ADMIN_CONTAINERS = {
