@@ -42,6 +42,4 @@ document.getElementById("closeLogin").addEventListener("click", () => {
 
 export const openLoginModal = () => {
   modal.style.display = "flex";
-  console.log(usernameField.disabled); // should be false
-  console.log(window.getComputedStyle(usernameField).pointerEvents); // should not be 'none'
 };

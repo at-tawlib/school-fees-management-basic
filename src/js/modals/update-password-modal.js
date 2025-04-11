@@ -2,30 +2,22 @@ import { initDashboard } from "../dashboard.js";
 import { showToast } from "../utils/toast.js";
 
 const modal = document.getElementById("updatePasswordModal");
-const username = document.getElementById("username");
 const oldPassword = document.getElementById("oldPassword");
 const newPassword = document.getElementById("newPassword");
 const confirmPassword = document.getElementById("confirmPassword");
 
 document.getElementById("updatePasswordBtn").addEventListener("click", async () => {
-  username.style.border = "";
   oldPassword.style.border = "";
   newPassword.style.border = "";
   confirmPassword.style.border = "";
 
-  if (
-    username.value === "" ||
-    oldPassword.value === "" ||
-    newPassword.value === "" ||
-    confirmPassword.value === ""
-  ) {
+  if (oldPassword.value === "" || newPassword.value === "" || confirmPassword.value === "") {
     showToast("Please fill all fields", "error");
     return;
   }
 
-  const userRes = await window.user.getUser(username.value);
+  const userRes = await window.user.getUser("admin");
   if (!userRes.success) {
-    username.style.border = "1px solid red";
     showToast(userRes.message || "An error occurred", "error");
     return;
   }
@@ -44,7 +36,7 @@ document.getElementById("updatePasswordBtn").addEventListener("click", async () 
   }
 
   const updateRes = await window.user.updatePassword({
-    username: username.value,
+    username: "admin",
     password: newPassword.value,
   });
 
