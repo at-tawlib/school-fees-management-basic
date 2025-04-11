@@ -81,6 +81,7 @@ document.getElementById("currentYearTermSaveBtn").addEventListener("click", asyn
   defaultYearTermTextContainer.style.display = "";
 
   const reload = await window.store.reloadStore();
+  window.app.reloadApp()
   initSettings();
 });
 
