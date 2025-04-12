@@ -2,6 +2,7 @@ import { openBillClassModal } from "./modals/bill-class-modal.js";
 import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
 import { showPaymentHistoryModal } from "./modals/payment-history-modal.js";
 import { fCurrency } from "./utils/format-currency.js";
+import { formatDateTime } from "./utils/format-date.js";
 import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
 import { printPage } from "./utils/print-page.js";
 import { setUpAcademicYearsSelect, setUpClassSelect } from "./utils/setup-select-inputs.js";
@@ -157,7 +158,8 @@ document.getElementById("printBillBtn").addEventListener("click", () => {
 
   // Add a heading above the table
   const billHeader = `${currentClass.className} (${currentClass.academicYear}) - ${classTerm.text} term`;
-  const heading = `<h2 style="text-align: center; margin-bottom: 10px;">Student Fees Bill for ${billHeader}</h2>`;
+  const heading = `<h2 style="text-align: center; margin-bottom: 4px;">Student Fees Bill for ${billHeader}</h2>
+                   <h3 style="text-align: center; margin-bottom: 10px;">(${formatDateTime(new Date().toISOString())})</h3>`;
 
   printPage(heading, tableClone.outerHTML);
 });
