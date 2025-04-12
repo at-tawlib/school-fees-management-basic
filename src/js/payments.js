@@ -1,6 +1,6 @@
 import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
+import { showPaymentHistoryModal } from "./modals/payment-history-modal.js";
 import { openUpdatePaymentModal } from "./modals/update-payment-modal.js";
-import { showPaymentHistoryModal } from "./student-class.js";
 import { fCurrency } from "./utils/format-currency.js";
 import { formatDate } from "./utils/format-date.js";
 import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
