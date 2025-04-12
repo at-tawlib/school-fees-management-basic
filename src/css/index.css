@@ -524,24 +524,20 @@ main {
   font-size: 1rem;
 }
 
-/* *************** STUDENTS ********************* */
-#studentsTable td:nth-child(2),
-#studentsTable th:nth-child(2),
-#studentsTable td:nth-child(3),
-#studentsTable th:nth-child(3),
-#studentsTable td:nth-child(4),
-#studentsTable th:nth-child(4) {
-  text-align: left;
+#dashboardClassSummaryTableBody td:nth-child(4) {
+  color: var(--color-blue);
+  font-weight: 700;
 }
 
-#notBilledStudentClassTable thead tr th {
-  text-align: center;
-  background-color: var(--color-yellow);
-  color: white;
+#dashboardClassSummaryTableBody td:nth-child(6) {
+  color: var(--color-green);
+  font-weight: 700;
 }
 
-#notBilledStudentClassTableBody td:last-child {
-  text-align: end;
+#dashboardClassSummaryTableBody td:nth-child(7) {
+  color: var(--color-red);
+  font-weight: 700;
+  text-align: start;
 }
 
 /* ************************** FEES ******************* */

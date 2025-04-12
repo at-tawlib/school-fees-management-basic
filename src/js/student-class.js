@@ -1,6 +1,7 @@
+import { openBillClassModal } from "./modals/bill-class-modal.js";
 import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
+import { showPaymentHistoryModal } from "./modals/payment-history-modal.js";
 import { fCurrency } from "./utils/format-currency.js";
-import { formatDate } from "./utils/format-date.js";
 import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
 import { printPage } from "./utils/print-page.js";
 import { setUpAcademicYearsSelect, setUpClassSelect } from "./utils/setup-select-inputs.js";
@@ -14,7 +15,6 @@ const changeClassButton = document.getElementById("setChangeClassButton");
 const addClassForm = document.getElementById("addClassForm");
 
 const studentClassTitle = document.getElementById("studentClassTitle");
-const billStudentsMessage = document.getElementById("billStudentsMessage");
 const filterStudentsByAcademicYear = document.getElementById("filterStudentsByAcademicYear");
 
 const studentClassTableContainer = document.getElementById("studentClassContainer");
@@ -25,7 +25,6 @@ const notBilledStudentClassTable = document.getElementById("notBilledStudentClas
 const notBilledStudentClassTableBody = document.getElementById("notBilledStudentClassTableBody");
 
 const searchStudentClassInput = document.getElementById("searchStudentClassInput");
-const billClassModal = document.getElementById("billClassModal");
 const paymentHistoryModal = document.getElementById("paymentHistoryModal");
 
 const addStudentsToClassModal = document.getElementById("addStudentsToClassModal");
@@ -38,9 +37,9 @@ const paidStatusSelect = document.getElementById("paidStatusSelect");
 const applyDiscountModal = document.getElementById("applyDiscountModal");
 
 let studentsData = [];
-let currentClass = {};
-let classTerm = {};
-let currentFees = {};
+export let currentClass = {};
+export let classTerm = {};
+export let currentFees = {};
 let defaultTerm;
 let defaultYear;
 let userSession;
@@ -58,6 +57,8 @@ export async function setupStudentsClassSection() {
   filterStudentsByAcademicYear.value = defaultYear.setting_value;
   await setupClassesSidebar(defaultYear.setting_value);
 }
+
+export const resetCurrentFees = () => (currentFees = {});
 
 async function setupClassesSidebar(year) {
   const classesResp = await window.api.getDistinctClasses(year);
@@ -535,9 +536,9 @@ export async function displayClassStudentsTable() {
         openStudentPaymentModal(item, currentClass, classTerm);
       });
 
-      row.querySelector("#btnPaymentsHistory").addEventListener("click", () => {
-        showPaymentHistoryModal(item);
-      });
+      row
+        .querySelector("#btnPaymentsHistory")
+        .addEventListener("click", async () => await showPaymentHistoryModal(item));
 
       row.querySelector("#btnApplyDiscount").addEventListener("click", () => {
         if (userSession !== "admin") {
@@ -753,7 +754,6 @@ const removeStudentFromClass = async (student) => {
   await displayClassStudentsTable();
 };
 
-// ************************** BILL CLASS MODAL *******************************
 document.getElementById("billClassBtn").addEventListener("click", async function () {
   if (!currentClass.className || !currentClass.academicYear || !classTerm.text) {
     showToast("Please select a class, academic year and term", "error");
@@ -819,8 +819,7 @@ document.getElementById("billClassBtn").addEventListener("click", async function
     <p><strong>Do you want to proceed?</strong></p>
   `;
 
-    billStudentsMessage.innerHTML = message;
-    billClassModal.style.display = "block";
+    openBillClassModal(message);
     return;
   }
 
@@ -833,22 +832,10 @@ document.getElementById("billClassBtn").addEventListener("click", async function
       </ul>
       <p><strong>Do you want to proceed?</strong></p>
   `;
-
-  billStudentsMessage.innerHTML = message;
-  billClassModal.style.display = "block";
+  openBillClassModal(message);
 });
 
-document.getElementById("billClassCloseXBtn").addEventListener("click", () => {
-  currentFees = {};
-  billClassModal.style.display = "none";
-});
-
-document.getElementById("cancelBillClassModalBtn").addEventListener("click", () => {
-  currentFees = {};
-  billClassModal.style.display = "none";
-});
-
-document.getElementById("submitBillClassModalBtn").addEventListener("click", async function () {
+export const submitBill = async () => {
   // get student ids from the table
   const rows = notBilledStudentClassTableBody.getElementsByTagName("tr");
   const idsArray = Array.from(rows).map((row) => row.getAttribute("data-student-id"));
@@ -861,94 +848,6 @@ document.getElementById("submitBillClassModalBtn").addEventListener("click", asy
 
   showToast(response.message || "Students billed successfully", "success");
   currentFees = {};
-  billClassModal.style.display = "none";
-  await displayClassStudentsTable();
-});
-
-// *********************** PAYMENT HISTORY MODAL ***************************
-document
-  .getElementById("paymentHistoryClassCloseXBtn")
-  .addEventListener("click", () => (paymentHistoryModal.style.display = "none"));
-
-document
-  .getElementById("paymentHistoryOkModalBtn")
-  .addEventListener("click", () => (paymentHistoryModal.style.display = "none"));
-
-export const showPaymentHistoryModal = async (data, classDetails = null) => {
-  const discountContainer = document.getElementById("paymentHistoryModalDiscountContainer");
-  const discountText = document.getElementById("paymentHistoryModalDiscount");
-  const classYearText = document.getElementById("paymentHistoryFeesText");
-  const feesText = document.getElementById("paymentHistoryModalFees");
-  const paidText = document.getElementById("paymentModalTotalPaidText");
-  const balanceText = document.getElementById("paymentModalBalanceText");
-
-  const response = await window.api.getStudentPayments(data.bill_id);
-  if (!response.success) {
-    showToast(response.message || "An error occurred", "error");
-    return;
-  }
-
-  paymentHistoryModal.style.display = "block";
-  document.getElementById("paymentHistoryStudentName").textContent = data.student_name;
-
-  const tableBody = document.getElementById("paymentHistoryTableBody");
-  tableBody.innerHTML = "";
-
-  response.data.forEach((payment, index) => {
-    const row = tableBody.insertRow(index);
-    row.innerHTML = `
-      <td>${index + 1}</td>
-      <td>${formatDate(payment.date_paid)}</td>
-      <td class="color-green bold-text">${fCurrency(payment.payment_amount)}</td>
-      <td>${payment.payment_mode}</td>
-      <td>${payment.payment_details}</td>
-    `;
-  });
-
-  if (classDetails) {
-    const studentBillResp = await window.api.getSingleBillDetails({
-      studentId: data.student_id,
-      classId: data.class_id,
-      academicYearId: data.year_id,
-      termId: data.term_id,
-    });
-
-    if (!studentBillResp.success) {
-      showToast(studentBillResp.message || "An error occurred fetching payment history", "error");
-      return;
-    }
-
-    if (studentBillResp.data.length <= 0) {
-      showToast("No payment history found for this student", "success");
-      return;
-    }
-
-    const stdBill = studentBillResp.data[0];
-
-    if (stdBill.discount_amount > 0) {
-      discountContainer.style.display = "";
-      discountText.textContent = fCurrency(stdBill.discount_amount);
-    } else {
-      discountContainer.style.display = "none";
-    }
-
-    classYearText.textContent = `${data.class_name} - ${data.term} Term, ${data.academic_year}`;
-    paidText.textContent = fCurrency(stdBill.total_payments);
-    balanceText.textContent = fCurrency(stdBill.balance);
-    feesText.textContent = fCurrency(stdBill.fee_amount + stdBill.discount_amount);
-  } else {
-    classYearText.textContent = `${currentClass.className} - ${classTerm.text} Term, ${currentClass.academicYear}`;
-    if (data.discount_amount > 0) {
-      discountContainer.style.display = "";
-      discountText.textContent = fCurrency(data.discount_amount);
-    } else {
-      discountContainer.style.display = "none";
-    }
-
-    feesText.textContent = fCurrency(data.fee_amount + data.discount_amount);
-    paidText.textContent = fCurrency(data.total_payments);
-    balanceText.textContent = fCurrency(data.balance);
-  }
 };
 
 // **************** ADD DISCOUNT MODAL ************************
