@@ -1,3 +1,4 @@
+import { openBillClassModal } from "./modals/bill-class-modal.js";
 import { openStudentPaymentModal } from "./modals/make-payment-modal.js";
 import { fCurrency } from "./utils/format-currency.js";
 import { formatDate } from "./utils/format-date.js";
@@ -14,7 +15,6 @@ const changeClassButton = document.getElementById("setChangeClassButton");
 const addClassForm = document.getElementById("addClassForm");
 
 const studentClassTitle = document.getElementById("studentClassTitle");
-const billStudentsMessage = document.getElementById("billStudentsMessage");
 const filterStudentsByAcademicYear = document.getElementById("filterStudentsByAcademicYear");
 
 const studentClassTableContainer = document.getElementById("studentClassContainer");
@@ -25,7 +25,6 @@ const notBilledStudentClassTable = document.getElementById("notBilledStudentClas
 const notBilledStudentClassTableBody = document.getElementById("notBilledStudentClassTableBody");
 
 const searchStudentClassInput = document.getElementById("searchStudentClassInput");
-const billClassModal = document.getElementById("billClassModal");
 const paymentHistoryModal = document.getElementById("paymentHistoryModal");
 
 const addStudentsToClassModal = document.getElementById("addStudentsToClassModal");
@@ -40,7 +39,7 @@ const applyDiscountModal = document.getElementById("applyDiscountModal");
 let studentsData = [];
 let currentClass = {};
 let classTerm = {};
-let currentFees = {};
+export let currentFees = {};
 let defaultTerm;
 let defaultYear;
 let userSession;
@@ -58,6 +57,8 @@ export async function setupStudentsClassSection() {
   filterStudentsByAcademicYear.value = defaultYear.setting_value;
   await setupClassesSidebar(defaultYear.setting_value);
 }
+
+export const resetCurrentFees = () => (currentFees = {});
 
 async function setupClassesSidebar(year) {
   const classesResp = await window.api.getDistinctClasses(year);
@@ -753,7 +754,6 @@ const removeStudentFromClass = async (student) => {
   await displayClassStudentsTable();
 };
 
-// ************************** BILL CLASS MODAL *******************************
 document.getElementById("billClassBtn").addEventListener("click", async function () {
   if (!currentClass.className || !currentClass.academicYear || !classTerm.text) {
     showToast("Please select a class, academic year and term", "error");
@@ -819,8 +819,7 @@ document.getElementById("billClassBtn").addEventListener("click", async function
     <p><strong>Do you want to proceed?</strong></p>
   `;
 
-    billStudentsMessage.innerHTML = message;
-    billClassModal.style.display = "block";
+    openBillClassModal(message);
     return;
   }
 
@@ -833,22 +832,10 @@ document.getElementById("billClassBtn").addEventListener("click", async function
       </ul>
       <p><strong>Do you want to proceed?</strong></p>
   `;
-
-  billStudentsMessage.innerHTML = message;
-  billClassModal.style.display = "block";
+  openBillClassModal(message);
 });
 
-document.getElementById("billClassCloseXBtn").addEventListener("click", () => {
-  currentFees = {};
-  billClassModal.style.display = "none";
-});
-
-document.getElementById("cancelBillClassModalBtn").addEventListener("click", () => {
-  currentFees = {};
-  billClassModal.style.display = "none";
-});
-
-document.getElementById("submitBillClassModalBtn").addEventListener("click", async function () {
+export const submitBill = async () => {
   // get student ids from the table
   const rows = notBilledStudentClassTableBody.getElementsByTagName("tr");
   const idsArray = Array.from(rows).map((row) => row.getAttribute("data-student-id"));
@@ -861,9 +848,7 @@ document.getElementById("submitBillClassModalBtn").addEventListener("click", asy
 
   showToast(response.message || "Students billed successfully", "success");
   currentFees = {};
-  billClassModal.style.display = "none";
-  await displayClassStudentsTable();
-});
+};
 
 // *********************** PAYMENT HISTORY MODAL ***************************
 document
