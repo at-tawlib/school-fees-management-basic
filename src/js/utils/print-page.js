@@ -1,3 +1,5 @@
+import { formatDateTime } from "./format-date.js";
+
 export const printPage = (heading, table, footer = "") => {
   const printWindow = window.open("", "", "width=900,height=700");
   printWindow.document.write(`
@@ -18,6 +20,7 @@ export const printPage = (heading, table, footer = "") => {
         </head>
         <body>
           ${heading}
+          <h3 style="text-align: center; margin-bottom: 10px;">(${formatDateTime(new Date().toISOString())})</h3>
           ${table}
           ${footer}
         </body>
