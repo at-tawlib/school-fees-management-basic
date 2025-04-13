@@ -158,8 +158,7 @@ document.getElementById("printBillBtn").addEventListener("click", () => {
 
   // Add a heading above the table
   const billHeader = `${currentClass.className} (${currentClass.academicYear}) - ${classTerm.text} term`;
-  const heading = `<h2 style="text-align: center; margin-bottom: 4px;">Student Fees Bill for ${billHeader}</h2>
-                   <h3 style="text-align: center; margin-bottom: 10px;">(${formatDateTime(new Date().toISOString())})</h3>`;
+  const heading = `<h2 style="text-align: center; margin-bottom: 4px;">Student Fees Bill for ${billHeader}</h2>`;
 
   printPage(heading, tableClone.outerHTML);
 });
