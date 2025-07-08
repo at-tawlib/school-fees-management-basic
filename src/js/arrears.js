@@ -1,199 +1,219 @@
-import { showPaymentHistoryModal } from "./modals/payment-history-modal.js";
 import { fCurrency } from "./utils/format-currency.js";
 import { getDefaultYearSetting } from "./utils/get-settings.js";
 import { printPage } from "./utils/print-page.js";
 import { setUpAcademicYearsSelect, setUpClassSelect } from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
+// State management
 let userSession;
-const yearSelect = document.getElementById("arrearsYear");
-const classSelect = document.getElementById("arrearsClass");
-const searchInput = document.getElementById("searchArrearsInput");
-const tableBody = document.getElementById("arrearsTableBody");
+let cachedArrearsData = [];
 
-classSelect.addEventListener("change", () => filterArrearsTable());
-// yearSelect.addEventListener("change", () => filterArrearsTable());
-searchInput.addEventListener("input", () => filterArrearsTable());
-
-export const setUpArrearsSection = async () => {
-  userSession = await window.app.getSession();
-  const defaultYear = await getDefaultYearSetting();
-  await setUpAcademicYearsSelect(yearSelect, false);
-  await setUpClassSelect(classSelect, true);
-
-  yearSelect.value = defaultYear.setting_value;
-
-  await displayArrearsTable();
+// DOM elements
+const elements = {
+  yearSelect: document.getElementById("arrearsYear"),
+  classSelect: document.getElementById("arrearsClass"),
+  searchInput: document.getElementById("searchArrearsInput"),
+  tableBody: document.getElementById("arrearsTableBody"),
+  classesList: document.getElementById("arrearsClassList"),
+  printBtn: document.getElementById("printArrearsBtn"),
+  arrearsTable: document.getElementById("arrearsTable"),
 };
 
+// Event listeners setup
+const setupEventListeners = () => {
+  elements.classSelect.addEventListener("change", filterArrearsTable);
+  elements.searchInput.addEventListener("input", filterArrearsTable);
+  elements.printBtn.addEventListener("click", handlePrintArrears);
+};
+
+// Filter table based on search and class selection
 const filterArrearsTable = () => {
-  const searchValue = searchInput.value.toLowerCase();
-  const selectedClass = classSelect.value;
+  const searchValue = elements.searchInput.value.toLowerCase().trim();
+  const selectedClass = elements.classSelect.value;
 
-  const tableRows = tableBody.querySelectorAll("tr");
+  const tableRows = elements.tableBody.querySelectorAll("tr");
+
   tableRows.forEach((row) => {
-    const rowName = row.getAttribute("data-name").toLowerCase();
-    const rowClass = row.getAttribute("data-class-id");
+    const rowName = row.getAttribute("data-name")?.toLowerCase() || "";
+    const rowClass = row.getAttribute("data-class-id") || "";
 
-    const classMatch = selectedClass === "all" || rowClass.includes(selectedClass);
+    const classMatch = selectedClass === "all" || rowClass === selectedClass;
+    const searchMatch = !searchValue || rowName.includes(searchValue);
 
-    // Show or hide row based on filter match
-    if (classMatch && rowName.includes(searchValue)) {
-      row.style.display = "";
-    } else {
-      row.style.display = "none";
-    }
+    row.style.display = classMatch && searchMatch ? "" : "none";
   });
 };
 
+// Create table row HTML
+const createTableRow = (arrear, index) => `
+  <td>${index + 1}</td>
+  <td>${arrear.student_name}</td>
+  <td>${arrear.class_name}</td>
+  <td>${fCurrency(arrear.outstanding_balance)}</td>
+  <td>
+    <div style="display: flex; justify-content: center">
+      <button id="btnArrearsView" class="text-button" title="View Arrears">
+        <i class="fa-solid fa-eye color-green"></i> View
+      </button>
+    </div>
+  </td>
+`;
+
+// Display arrears table
 export const displayArrearsTable = async () => {
-  const response = await window.api.getAllOutstandingBalances();
+  try {
+    const response = await window.api.getAllOutstandingBalances();
 
-  if (!response.success) {
-    showToast(response.message || "An error occurred", "error");
-    return;
+    if (!response.success) {
+      showToast(response.message || "Failed to load arrears data", "error");
+      return;
+    }
+
+    cachedArrearsData = response.data;
+    renderArrearsTable(cachedArrearsData);
+    setupArrearsSidebar(cachedArrearsData);
+  } catch (error) {
+    console.error("Error loading arrears data:", error);
+    showToast("An error occurred while loading data", "error");
   }
+};
 
-  const data = response.data;
-  tableBody.innerHTML = "";
+// Render table with data
+const renderArrearsTable = (data) => {
+  elements.tableBody.innerHTML = "";
+
   data.forEach((arrear, index) => {
-    const row = tableBody.insertRow(index);
+    const row = elements.tableBody.insertRow(index);
 
-    // Add data-* attributes for filtering
+    // Set data attributes for filtering
     row.setAttribute("data-class-id", arrear.class_id);
     row.setAttribute("data-year-id", arrear.year_id);
     row.setAttribute("data-term-id", arrear.term_id);
     row.setAttribute("data-name", arrear.student_name);
 
-    row.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${arrear.student_name}</td>
-        <td>${arrear.class_name}</td>
-        <td>${fCurrency(arrear.outstanding_balance)}</td>
-        <td>
-         <div style="display: flex; justify-content: center">
-            <button id="btnPaymentView"  class="text-button" title="View Payment">
-              <i class="fa-solid fa-eye color-green"></i> View
-            </button>
-          </div>
-        </td>
-      `;
+    row.innerHTML = createTableRow(arrear, index);
   });
-
-  // calculateStats(data);
-  setupArrearsSidebar(data);
 };
 
-const setupArrearsSidebar = (data) => {
-  const classesList = document.getElementById("arrearsClassList");
-  classesList.innerHTML = "";
-
+// Calculate class statistics
+const calculateClassStats = (data) => {
   const classStats = {};
-  for (const student of data) {
-    const cls = student.class_name;
-    if (!classStats[cls]) {
-      classStats[cls] = {
+
+  data.forEach((student) => {
+    const className = student.class_name;
+
+    if (!classStats[className]) {
+      classStats[className] = {
         class_id: student.class_id,
         class_name: student.class_name,
         student_count: 0,
         total_outstanding: 0,
       };
     }
-    classStats[cls].student_count++;
-    classStats[cls].total_outstanding += student.outstanding_balance;
-  }
 
-  const allOption = document.createElement("div");
-  allOption.className = "class-item";
-  allOption.textContent = `All (${data.length} students)`;
-  classesList.appendChild(allOption);
-  allOption.addEventListener("click", () => {
-    classSelect.value = "all";
-    filterArrearsTable();
+    classStats[className].student_count++;
+    classStats[className].total_outstanding += student.outstanding_balance;
   });
 
-  Object.entries(classStats).forEach(([key, value]) => {
-    const option = document.createElement("div");
-    option.className = "class-item";
-    option.textContent = `${value.class_name} (${value.student_count} students)`;
-    option.setAttribute("data-class-name", value.class_name);
-    option.setAttribute("data-class-id", value.class_id);
-    classesList.appendChild(option);
+  return classStats;
+};
+
+// Create sidebar class item
+const createClassItem = (text, classId = null) => {
+  const item = document.createElement("div");
+  item.className = "class-item";
+  item.textContent = text;
+
+  if (classId) {
+    item.setAttribute("data-class-id", classId);
+  }
+
+  return item;
+};
+
+// Setup sidebar with class statistics
+const setupArrearsSidebar = (data) => {
+  elements.classesList.innerHTML = "";
+
+  const classStats = calculateClassStats(data);
+
+  // Add "All" option
+  const allOption = createClassItem(`All (${data.length} students)`);
+  allOption.addEventListener("click", () => {
+    elements.classSelect.value = "all";
+    filterArrearsTable();
+  });
+  elements.classesList.appendChild(allOption);
+
+  // Add class-specific options
+  Object.values(classStats).forEach((classData) => {
+    const option = createClassItem(
+      `${classData.class_name} (${classData.student_count} students)`,
+      classData.class_id
+    );
 
     option.addEventListener("click", () => {
-      classSelect.value = value.class_id;
+      elements.classSelect.value = classData.class_id;
       filterArrearsTable();
     });
+
+    elements.classesList.appendChild(option);
   });
 };
 
-// const calculateStats = (data) => {
-//   const classStats = {};
-//   for (const student of data) {
-//     const cls = student.class_name;
-//     if (!classStats[cls]) {
-//       classStats[cls] = {
-//         class_id: student.class_id,
-//         class_name: student.class_name,
-//         student_count: 0,
-//         total_outstanding: 0,
-//       };
-//     }
-//     classStats[cls].student_count++;
-//     classStats[cls].total_outstanding += student.outstanding_balance;
-//   }
-
-//   const totalStudents = data.length;
-//   const totalOutstanding = data.reduce((sum, s) => sum + s.outstanding_balance, 0);
-//   const highestOutstanding = Math.max(...data.map((s) => s.outstanding_balance));
-//   const lowestOutstanding = Math.min(...data.map((s) => s.outstanding_balance));
-
-//   // 4. Top 3 debtors
-//   const topDebtors = [...data]
-//     .sort((a, b) => b.outstanding_balance - a.outstanding_balance)
-//     .slice(0, 3);
-
-//   // Display
-//   console.log("📊 Class-wise Stats:");
-//   console.table(classStats);
-
-//   console.log("📈 Overall Stats:");
-//   console.log("Total Students:", totalStudents);
-//   console.log("Total Outstanding:", totalOutstanding);
-//   console.log("Highest Single Outstanding:", highestOutstanding);
-//   console.log("Lowest Single Outstanding:", lowestOutstanding);
-
-//   console.log("🔥 Top 3 Students With Highest Outstanding:");
-//   console.table(topDebtors);
-
-//   console.log(classStats);
-// };
-
-document.getElementById("printArrearsBtn").addEventListener("click", async () => {
-  const arrearsTable = document.getElementById("arrearsTable");
-
-  if (!arrearsTable) {
+// Handle print functionality
+const handlePrintArrears = async () => {
+  if (!elements.arrearsTable) {
     showToast("No table found to print", "error");
     return;
   }
 
-  const academicYearSetting = await getDefaultYearSetting();
+  try {
+    const academicYearSetting = await getDefaultYearSetting();
 
-  // Clone the table to modify it without affecting the original
-  const tableClone = arrearsTable.cloneNode(true);
-  tableClone.querySelectorAll("tr").forEach((row, index) => {
-    if (row.cells[4]) row.removeChild(row.cells[4]);
-  });
+    // Clone and modify table for printing
+    const tableClone = elements.arrearsTable.cloneNode(true);
 
-  // Remove background colors
-  tableClone.querySelectorAll("tr, td, th").forEach((el) => {
-    el.style.backgroundColor = "white";
-  });
+    // Remove action column (last column)
+    tableClone.querySelectorAll("tr").forEach((row) => {
+      if (row.cells[4]) {
+        row.removeChild(row.cells[4]);
+      }
+    });
 
-  // Add a heading above the table
-  const heading = `<h2 style="text-align: center; margin-bottom: 10px;">Payments for ${
-    academicYearSetting?.setting_text || ""
-  } Academic Year</h2>`;
+    // Remove background colors for printing
+    tableClone.querySelectorAll("tr, td, th").forEach((el) => {
+      el.style.backgroundColor = "white";
+    });
 
-  printPage(heading, tableClone.outerHTML);
-});
+    const heading = `
+      <h2 style="text-align: center; margin-bottom: 10px;">
+        Outstanding Arrears - ${academicYearSetting?.setting_text || "Academic Year"}
+      </h2>
+    `;
+
+    printPage(heading, tableClone.outerHTML);
+  } catch (error) {
+    console.error("Error printing arrears:", error);
+    showToast("Failed to print arrears", "error");
+  }
+};
+
+// Main setup function
+export const setUpArrearsSection = async () => {
+  try {
+    userSession = await window.app.getSession();
+    const defaultYear = await getDefaultYearSetting();
+
+    await setUpAcademicYearsSelect(elements.yearSelect, false);
+    await setUpClassSelect(elements.classSelect, true);
+
+    elements.yearSelect.value = defaultYear.setting_value;
+
+    setupEventListeners();
+    await displayArrearsTable();
+  } catch (error) {
+    console.error("Error setting up arrears section:", error);
+    showToast("Failed to initialize arrears section", "error");
+  }
+};
