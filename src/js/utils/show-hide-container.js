@@ -10,6 +10,7 @@ export function showHideFeesContainer(container) {
     [CONTAINERS.STUDENT_CLASS]: document.getElementById("studentClassSection"),
     [CONTAINERS.PAYMENTS]: document.getElementById("paymentsSection"),
     [CONTAINERS.DASHBOARD]: document.getElementById("dashboardSection"),
+    [CONTAINERS.ARREARS]: document.getElementById("arrearsSection"),
     [CONTAINERS.SETTINGS]: document.getElementById("settingsSection"),
   };
 

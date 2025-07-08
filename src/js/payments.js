@@ -32,11 +32,11 @@ export const setUpPaymentsSection = async () => {
   const defaultYear = await getDefaultYearSetting();
   const defaultTerm = await getDefaultTermSetting();
   await setUpAcademicYearsSelect(paymentAcademicYear, false);
-  await setUpClassSelect(paymentClass, true);
-  await setUpTermsSelect(paymentTerm, false);
+  await setUpClassSelect(classSelect, true);
+  await setUpTermsSelect(termSelect, false);
 
   paymentAcademicYear.value = defaultYear.setting_value;
-  paymentTerm.value = defaultTerm.setting_value;
+  termSelect.value = defaultTerm.setting_value;
 
   await displayPaymentsTable();
 };

@@ -5,11 +5,7 @@ export const CONTAINERS = {
   STUDENT_CLASS: "studentClass",
   PAYMENTS: "payments",
   DASHBOARD: "dashboard",
-  SETTINGS: "settings",
-};
-
-export const ADMIN_CONTAINERS = {
-  DASHBOARD: "dashboard",
+  ARREARS: "arrears",
   SETTINGS: "settings",
 };
 

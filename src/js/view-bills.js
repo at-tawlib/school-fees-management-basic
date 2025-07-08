@@ -93,6 +93,10 @@ function displayViewBillTable(data) {
   });
 }
 
+function getArrearsData() {
+
+}
+
 export function setUpViewBills() {
   classSelect.innerHTML = "";
   academicYearSelect.innerHTML = "";
