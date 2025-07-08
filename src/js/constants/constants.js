@@ -5,6 +5,7 @@ export const CONTAINERS = {
   STUDENT_CLASS: "studentClass",
   PAYMENTS: "payments",
   DASHBOARD: "dashboard",
+  ARREARS: "arrears",
   SETTINGS: "settings",
 };
 

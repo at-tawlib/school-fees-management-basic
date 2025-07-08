@@ -9,6 +9,7 @@ import { openLoginModal } from "./modals/login-modal.js";
 import { initDashboard } from "./dashboard.js";
 import { initSettings } from "./settings.js";
 import { openUpdatePassword } from "./modals/update-password-modal.js";
+import { setUpArrearsSection } from "./arrears.js";
 
 const navItems = document.querySelectorAll(".navbar ul li span");
 
@@ -58,6 +59,11 @@ document.getElementById("navFees").addEventListener("click", async () => {
 document.getElementById("navClasses").addEventListener("click", () => {
   showHideFeesContainer(CONTAINERS.STUDENT_CLASS);
   setupStudentsClassSection();
+});
+
+document.getElementById("navArrears").addEventListener("click", () => {
+  showHideFeesContainer(CONTAINERS.ARREARS);
+  setUpArrearsSection();
 });
 
 document.getElementById("navPayments").addEventListener("click", () => {
