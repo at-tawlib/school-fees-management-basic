@@ -3,230 +3,306 @@ import { formatDate } from "./utils/format-date.js";
 import { getDefaultTermSetting, getDefaultYearSetting } from "./utils/get-settings.js";
 import { showToast } from "./utils/toast.js";
 
+// State management
 let academicYearSetting;
 let termSetting;
-const recentPaymentsTable = document.getElementById("dashboardRecentPaymentsTableBody");
 
+// DOM elements
+const elements = {
+  termYearTitle: document.getElementById("dashboardTermYearTitle"),
+  navAcademicYear: document.getElementById("navAcademicYear"),
+  navTerm: document.getElementById("navTerm"),
+  recentPaymentsTable: document.getElementById("dashboardRecentPaymentsTableBody"),
+  classSummaryTable: document.getElementById("dashboardClassSummaryTableBody"),
+
+  // Metrics elements
+  totalStudentsMetric: document.getElementById("totalStudentsMetric"),
+  totalFeesBilledMetric: document.getElementById("totalFeesBilledMetric"),
+  totalFeesCollectedMetric: document.getElementById("totalFeesCollectedMetric"),
+  pendingPaymentsMetric: document.getElementById("pendingPaymentsMetric"),
+  discountGivenMetrics: document.getElementById("discountGivenMetrics"),
+
+  // Overview elements
+  totalStudentsOverview: document.getElementById("totalStudentsOverview"),
+  studentsWithClassOverview: document.getElementById("studentsWithClassOverview"),
+  studentsWithoutClassOverview: document.getElementById("studentsWithoutClassOverview"),
+  totalClassesOverview: document.getElementById("totalClassesOverview"),
+  classesWithStudentsOverview: document.getElementById("classesWithStudentsOverview"),
+  classesWithoutStudentsOverview: document.getElementById("classesWithoutStudentsOverview"),
+  totalFeesBilledOverview: document.getElementById("totalFeesBilledOverview"),
+  totalFeesCollectedOverview: document.getElementById("totalFeesCollectedOverview"),
+  pendingPaymentsOverview: document.getElementById("pendingPaymentsOverview"),
+  studentsBilledUnbilledOverview: document.getElementById("studentsBilledUnbilledOverview"),
+  classesBilledUnbilledOverview: document.getElementById("classesBilledUnbilledOverview"),
+};
+
+// Constants
+const MAX_RECENT_PAYMENTS = 10;
+
+// Initialize dashboard
 export async function initDashboard() {
-  academicYearSetting = await getDefaultYearSetting();
-  termSetting = await getDefaultTermSetting();
+  try {
+    await loadSettings();
 
-  if (!academicYearSetting || !termSetting) {
-    showToast("Set up the current term and academic year.", "error");
-    return;
+    if (!academicYearSetting || !termSetting) {
+      showToast("Set up the current term and academic year.", "error");
+      return;
+    }
+
+    updateNavigationHeaders();
+
+    const metricsData = await getMetricsData();
+    if (!metricsData) return;
+
+    await Promise.all([
+      setUpMetrics(metricsData),
+      setUpOverview(metricsData),
+      setUpClassSummary(),
+      setUpRecentPayments(),
+    ]);
+  } catch (error) {
+    console.error("Error initializing dashboard:", error);
+    showToast("Failed to initialize dashboard", "error");
   }
+}
 
+// Load settings from API
+async function loadSettings() {
+  try {
+    [academicYearSetting, termSetting] = await Promise.all([
+      getDefaultYearSetting(),
+      getDefaultTermSetting(),
+    ]);
+  } catch (error) {
+    console.error("Error loading settings:", error);
+    throw error;
+  }
+}
+
+// Update navigation headers
+function updateNavigationHeaders() {
   const resultText = `${academicYearSetting.setting_text} Academic year, ${termSetting.setting_text} Term`;
-  document.getElementById("dashboardTermYearTitle").textContent = resultText;
-
-  document.getElementById(
-    "navAcademicYear"
-  ).textContent = `${academicYearSetting.setting_text} Academic year`;
-  document.getElementById("navTerm").textContent = `${termSetting.setting_text} Term`;
-
-  const metricsData = await getMetricsData();
-
-  if (!metricsData) {
-    return;
-  }
-
-  await setUpMetrics(metricsData);
-  await setUpOverview(metricsData);
-  await setUpClassSummary();
-  await setUpRecentPayments();
+  elements.termYearTitle.textContent = resultText;
+  elements.navAcademicYear.textContent = `${academicYearSetting.setting_text} Academic year`;
+  elements.navTerm.textContent = `${termSetting.setting_text} Term`;
 }
 
+// Calculate financial metrics
+function calculateFinancialMetrics(data) {
+  const netFeesBilled = data.totalFeesBilled - data.totalDiscountGiven;
+  const pendingPayments = data.totalFeesBilled - data.totalAmountPaid - data.totalDiscountGiven;
+
+  return {
+    netFeesBilled,
+    pendingPayments,
+    totalAmountPaid: data.totalAmountPaid,
+    totalDiscountGiven: data.totalDiscountGiven,
+  };
+}
+
+// Set up metrics display
 function setUpMetrics(metricsData) {
-  document.getElementById("totalStudentsMetric").textContent = metricsData.totalStudents;
+  const financialMetrics = calculateFinancialMetrics(metricsData);
 
-  document.getElementById("totalFeesBilledMetric").textContent = fCurrency(
-    metricsData.totalFeesBilled - metricsData.totalDiscountGiven
-  );
-
-  document.getElementById("totalFeesCollectedMetric").textContent = fCurrency(
-    metricsData.totalAmountPaid
-  );
-
-  document.getElementById("pendingPaymentsMetric").textContent = fCurrency(
-    metricsData.totalFeesBilled - metricsData.totalAmountPaid - metricsData.totalDiscountGiven
-  );
-
-  document.getElementById("discountGivenMetrics").textContent = fCurrency(
-    metricsData.totalDiscountGiven
-  );
+  elements.totalStudentsMetric.textContent = metricsData.totalStudents;
+  elements.totalFeesBilledMetric.textContent = fCurrency(financialMetrics.netFeesBilled);
+  elements.totalFeesCollectedMetric.textContent = fCurrency(financialMetrics.totalAmountPaid);
+  elements.pendingPaymentsMetric.textContent = fCurrency(financialMetrics.pendingPayments);
+  elements.discountGivenMetrics.textContent = fCurrency(financialMetrics.totalDiscountGiven);
 }
 
-async function setUpOverview(metricsData) {
-  // Student overview summary
-  document.getElementById("totalStudentsOverview").textContent = metricsData.totalStudents;
-  document.getElementById("studentsWithClassOverview").textContent = metricsData.studentsWithClass;
-  document.getElementById("studentsWithoutClassOverview").textContent =
+// Set up overview display
+function setUpOverview(metricsData) {
+  const financialMetrics = calculateFinancialMetrics(metricsData);
+
+  // Student overview
+  elements.totalStudentsOverview.textContent = metricsData.totalStudents;
+  elements.studentsWithClassOverview.textContent = metricsData.studentsWithClass;
+  elements.studentsWithoutClassOverview.textContent =
     metricsData.totalStudents - metricsData.studentsWithClass;
 
-  // Class overview summary
-  document.getElementById("totalClassesOverview").textContent = metricsData.totalClasses;
-  document.getElementById("classesWithStudentsOverview").textContent = metricsData.yearClasses;
-  document.getElementById("classesWithoutStudentsOverview").textContent =
+  // Class overview
+  elements.totalClassesOverview.textContent = metricsData.totalClasses;
+  elements.classesWithStudentsOverview.textContent = metricsData.yearClasses;
+  elements.classesWithoutStudentsOverview.textContent =
     metricsData.totalClasses - metricsData.yearClasses;
 
-  // Fees Overview summary
-  document.getElementById("totalFeesBilledOverview").textContent = fCurrency(
-    metricsData.totalFeesBilled - metricsData.totalDiscountGiven
-  );
-  document.getElementById("totalFeesCollectedOverview").textContent = fCurrency(
-    metricsData.totalAmountPaid
-  );
-  document.getElementById("pendingPaymentsOverview").textContent = fCurrency(
-    metricsData.totalFeesBilled - metricsData.totalAmountPaid - metricsData.totalDiscountGiven
-  );
+  // Fees overview
+  elements.totalFeesBilledOverview.textContent = fCurrency(financialMetrics.netFeesBilled);
+  elements.totalFeesCollectedOverview.textContent = fCurrency(financialMetrics.totalAmountPaid);
+  elements.pendingPaymentsOverview.textContent = fCurrency(financialMetrics.pendingPayments);
 
-  // Billed students overview summary
-  document.getElementById("studentsBilledUnbilledOverview").textContent = `${
-    metricsData.totalStudentsBilled
-  } / ${metricsData.studentsWithClass - metricsData.totalStudentsBilled}`;
-  document.getElementById("classesBilledUnbilledOverview").textContent = `${
-    metricsData.totalClasses - metricsData.unbilledClassesCount
-  } / ${metricsData.unbilledClassesCount}`;
+  // Billed/Unbilled overview
+  const unbilledStudents = metricsData.studentsWithClass - metricsData.totalStudentsBilled;
+  const billedClasses = metricsData.totalClasses - metricsData.unbilledClassesCount;
+
+  elements.studentsBilledUnbilledOverview.textContent = `${metricsData.totalStudentsBilled} / ${unbilledStudents}`;
+  elements.classesBilledUnbilledOverview.textContent = `${billedClasses} / ${metricsData.unbilledClassesCount}`;
 }
 
+// Create class summary table row
+function createClassSummaryRow(item) {
+  const row = elements.classSummaryTable.insertRow();
+  const cells = [
+    item.class_name,
+    item.students_count,
+    item.class_fee === 0 ? "No Fee" : fCurrency(item.class_fee),
+    fCurrency(item.total_fees - item.total_discount),
+    fCurrency(item.total_discount),
+    fCurrency(item.total_paid),
+    fCurrency(item.total_fees - item.total_paid - item.total_discount),
+  ];
+
+  cells.forEach((content) => {
+    row.insertCell().textContent = content;
+  });
+}
+
+// Set up class summary table
 async function setUpClassSummary() {
-  const classSummaryResp = await window.api.getClassSummary({
-    academicYearId: academicYearSetting.setting_value,
-    termId: termSetting.setting_value,
-  });
+  try {
+    const response = await window.api.getClassSummary({
+      academicYearId: academicYearSetting.setting_value,
+      termId: termSetting.setting_value,
+    });
 
-  if (!classSummaryResp.success) {
-    showToast(classSummaryResp.message, "error");
-    return;
+    if (!response.success) {
+      showToast(response.message, "error");
+      return;
+    }
+
+    if (response.data.length === 0) {
+      return;
+    }
+
+    elements.classSummaryTable.innerHTML = "";
+    response.data.forEach(createClassSummaryRow);
+  } catch (error) {
+    console.error("Error setting up class summary:", error);
+    showToast("Failed to load class summary", "error");
   }
+}
 
-  if (classSummaryResp.data.length === 0) {
-    return;
-  }
+// Create recent payments table row
+function createRecentPaymentRow(payment) {
+  const row = elements.recentPaymentsTable.insertRow();
+  const cells = [
+    formatDate(payment.date_paid),
+    payment.student_name,
+    payment.class_name,
+    fCurrency(payment.payment_amount),
+    payment.payment_mode,
+    payment.payment_details,
+  ];
 
-  const classSummary = classSummaryResp.data;
-  const classSummaryTable = document.getElementById("dashboardClassSummaryTableBody");
-  classSummaryTable.innerHTML = "";
-
-  classSummary.forEach((item) => {
-    const row = classSummaryTable.insertRow();
-    row.insertCell().textContent = item.class_name;
-    row.insertCell().textContent = item.students_count;
-    row.insertCell().textContent = item.class_fee === 0 ? "No Fee" : fCurrency(item.class_fee);
-    row.insertCell().textContent = fCurrency(item.total_fees - item.total_discount);
-    row.insertCell().textContent = fCurrency(item.total_discount);
-    row.insertCell().textContent = fCurrency(item.total_paid);
-    row.insertCell().textContent = fCurrency(
-      item.total_fees - item.total_paid - item.total_discount
-    );
+  cells.forEach((content) => {
+    row.insertCell().textContent = content;
   });
 }
 
+// Set up recent payments table
 async function setUpRecentPayments() {
-  const recentPaymentsResp = await window.api.getYearTermPayments({
-    academicYearId: academicYearSetting.setting_value,
-    termId: termSetting.setting_value,
-  });
+  try {
+    const response = await window.api.getYearTermPayments({
+      academicYearId: academicYearSetting.setting_value,
+      termId: termSetting.setting_value,
+    });
 
-  if (!recentPaymentsResp.success) {
-    showToast(recentPaymentsResp.message, "error");
-    return;
+    if (!response.success) {
+      showToast(response.message, "error");
+      return;
+    }
+
+    let recentPayments = response.data;
+
+    if (recentPayments.length === 0) {
+      const row = elements.recentPaymentsTable.insertRow();
+      row.insertCell().textContent = "No recent payments";
+      return;
+    }
+
+    // Limit to recent payments
+    if (recentPayments.length > MAX_RECENT_PAYMENTS) {
+      recentPayments = recentPayments.slice(0, MAX_RECENT_PAYMENTS);
+    }
+
+    elements.recentPaymentsTable.innerHTML = "";
+    recentPayments.forEach(createRecentPaymentRow);
+  } catch (error) {
+    console.error("Error setting up recent payments:", error);
+    showToast("Failed to load recent payments", "error");
   }
-
-  let recentPayments = recentPaymentsResp.data;
-  if (recentPayments.length === 0) {
-    recentPaymentsTable.insertRow().insertCell().textContent = "No recent payments";
-    return;
-  }
-
-  if (recentPayments.length > 10) {
-    recentPayments = recentPayments.splice(0, 10);
-  }
-
-  recentPaymentsTable.innerHTML = "";
-
-  recentPayments.forEach((item) => {
-    const row = recentPaymentsTable.insertRow();
-    row.insertCell().textContent = formatDate(item.date_paid);
-    row.insertCell().textContent = item.student_name;
-    row.insertCell().textContent = item.class_name;
-    row.insertCell().textContent = fCurrency(item.payment_amount);
-    row.insertCell().textContent = item.payment_mode;
-    row.insertCell().textContent = item.payment_details;
-  });
 }
 
+// API call helper with error handling
+async function makeApiCall(apiCall, errorMessage) {
+  try {
+    const response = await apiCall();
+    if (!response.success) {
+      throw new Error(response.message || errorMessage);
+    }
+    return response.data;
+  } catch (error) {
+    console.error(errorMessage, error);
+    throw error;
+  }
+}
+
+// Get all metrics data
 async function getMetricsData() {
   const { setting_value: termId } = termSetting;
   const { setting_value: academicYearId } = academicYearSetting;
 
   try {
-    // Fetch student count data
-    const studentCountResp = await window.api.getStudentCount(academicYearId);
-    if (!studentCountResp.success) {
-      throw new Error(studentCountResp.message);
-    }
-    const { total_students: totalStudents, students_with_class: studentsWithClass } =
-      studentCountResp.data;
+    // Fetch all required data in parallel
+    const [
+      studentCountData,
+      totalClassesData,
+      yearClassesData,
+      billedCountData,
+      unbilledClassesData,
+      totalAmountPaidData,
+      totalDiscountData,
+    ] = await Promise.all([
+      makeApiCall(() => window.api.getStudentCount(academicYearId), "Failed to get student count"),
+      makeApiCall(() => window.api.getTotalClassCount(), "Failed to get total class count"),
+      makeApiCall(
+        () => window.api.getYearClassCount(academicYearId),
+        "Failed to get year class count"
+      ),
+      makeApiCall(
+        () => window.api.getStudentBilledCount({ termId, academicYearId }),
+        "Failed to get billed count"
+      ),
+      makeApiCall(
+        () => window.api.getUnbilledClasses({ termId, academicYearId }),
+        "Failed to get unbilled classes"
+      ),
+      makeApiCall(
+        () => window.api.getTotalAmountPaid({ termId, academicYearId }),
+        "Failed to get total amount paid"
+      ),
+      makeApiCall(
+        () => window.api.getTotalDiscountGiven({ termId, academicYearId }),
+        "Failed to get total discount"
+      ),
+    ]);
 
-    // Fetch total class count data
-    const totalClassCountResp = await window.api.getTotalClassCount();
-    if (!totalClassCountResp.success) {
-      throw new Error(totalClassCountResp.message);
-    }
-    const totalClasses = totalClassCountResp.data.total_classes;
-
-    // Fetch year class count data
-    const yearClassCountResp = await window.api.getYearClassCount(academicYearId);
-    if (!yearClassCountResp.success) {
-      throw new Error(yearClassCountResp.message);
-    }
-    const yearClasses = yearClassCountResp.data.total_classes;
-
-    // Fetch billed students count data
-    const billedCountResp = await window.api.getStudentBilledCount({ termId, academicYearId });
-    if (!billedCountResp.success) {
-      throw new Error(billedCountResp.message);
-    }
-    const { total_amount_billed: totalFeesBilled, total_students_billed: totalStudentsBilled } =
-      billedCountResp.data;
-
-    // Fetch unbilled classes data
-    const unbilledClassesResp = await window.api.getUnbilledClasses({ termId, academicYearId });
-    if (!unbilledClassesResp.success) {
-      throw new Error(unbilledClassesResp.message);
-    }
-    const unbilledClasses = unbilledClassesResp.data;
-
-    // Fetch total amount paid data
-    const totalAmountPaidResp = await window.api.getTotalAmountPaid({ termId, academicYearId });
-    if (!totalAmountPaidResp.success) {
-      throw new Error(totalAmountPaidResp.message);
-    }
-    const { total_amount_paid: totalAmountPaid } = totalAmountPaidResp.data;
-
-    // Fetch total discount given
-    const totalDiscountResp = await window.api.getTotalDiscountGiven({ termId, academicYearId });
-    if (!totalDiscountResp.success) {
-      throw new Error(totalDiscountResp.message);
-    }
-    const { total_discount: totalDiscountGiven } = totalDiscountResp.data;
-
-    // Return the metrics data
     return {
-      totalStudents,
-      studentsWithClass,
-      totalFeesBilled,
-      totalStudentsBilled,
-      totalAmountPaid,
-      totalClasses,
-      yearClasses,
-      unbilledClassesCount: unbilledClasses.length,
-      unbilledClasses,
-      totalDiscountGiven,
+      totalStudents: studentCountData.total_students,
+      studentsWithClass: studentCountData.students_with_class,
+      totalClasses: totalClassesData.total_classes,
+      yearClasses: yearClassesData.total_classes,
+      totalFeesBilled: billedCountData.total_amount_billed,
+      totalStudentsBilled: billedCountData.total_students_billed,
+      totalAmountPaid: totalAmountPaidData.total_amount_paid,
+      totalDiscountGiven: totalDiscountData.total_discount,
+      unbilledClassesCount: unbilledClassesData.length,
+      unbilledClasses: unbilledClassesData,
     };
   } catch (error) {
-    showToast(error.message, "error");
+    showToast("Failed to load dashboard metrics", "error");
+    console.error("Error fetching metrics data:", error);
     return null;
   }
 }
