@@ -460,7 +460,7 @@ function setRowContent(row, student, index, className) {
     <td>${index + 1}</td>
     <td>${student.first_name}</td>
     <td>${student.last_name}</td>
-    <td>${student.other_names}</td>
+    <td>${student.other_names || "-"}</td>
     <td>${className}</td>
     <td> 
       <div style="display: flex; justify-content: center">
