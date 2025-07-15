@@ -723,7 +723,7 @@ main {
 }
 
 /* *************** MODAL CSS *********************** */
-.modal {
+/* .modal {
   display: none;
   position: fixed;
   z-index: 1500;
@@ -733,10 +733,9 @@ main {
   height: 100%;
   overflow-y: auto;
   scrollbar-width: none;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
-/* Modal content box */
 .modal-container {
   margin: 15% auto;
   padding: 1.5rem;
@@ -762,7 +761,6 @@ main {
   gap: 2rem;
 }
 
-/* Close button (X) */
 .close-btn {
   position: absolute;
   top: 10px;
@@ -777,7 +775,7 @@ main {
   padding: 1rem;
   border-radius: 0.5rem;
   border: 1px solid #ddd;
-}
+} */
 
 /* Animation for fading in and out */
 @keyframes fadeIn {
@@ -890,8 +888,16 @@ main {
   background-color: var(--color-green);
 }
 
+.toast-info {
+  background-color: var(--color-blue);
+}
+
 .toast-error {
   background-color: var(--color-red-light);
+}
+
+.toast-default {
+  background-color: var(--color-yellow);
 }
 
 .toast-close-button {

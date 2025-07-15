@@ -6,6 +6,7 @@ import { showToast } from "./utils/toast.js";
 // DOM Elements
 const elements = {
   addStudentModal: document.getElementById("addStudentModal"),
+  viewStudentModal: document.getElementById("viewStudentModal"),
   firstNameInput: document.getElementById("studentFirstNameInput"),
   lastNameInput: document.getElementById("studentLastNameInput"),
   otherNamesInput: document.getElementById("studentOtherNameInput"),
@@ -21,6 +22,8 @@ const elements = {
   addStudentForm: document.getElementById("addStudentForm"),
   studentsTable: document.getElementById("studentsTable"),
   studentsClassSummaryTableBody: document.getElementById("studentsClassSummaryTableBody"),
+  viewStudentCloseX: document.getElementById("viewStudentCloseX"),
+  studentDetailsContent: document.getElementById("studentDetailsContent"),
 };
 
 // State
@@ -36,6 +39,7 @@ function initializeEventListeners() {
   elements.addStudentModalBtn.addEventListener("click", handleStudentSubmit);
   elements.searchStudentInput.addEventListener("input", filterStudentsTable);
   elements.studentClassFilter.addEventListener("change", filterStudentsTable);
+  elements.viewStudentCloseX?.addEventListener("click", handleViewModalClose);
 }
 
 // Modal Management
@@ -55,6 +59,17 @@ function handleAddStudentClick() {
 
 function handleModalClose() {
   hideModal();
+}
+
+function handleViewModalClose() {
+  hideViewModal();
+}
+
+function hideViewModal() {
+  if (elements.viewStudentModal) {
+    elements.viewStudentModal.classList.remove("active");
+    document.body.style.overflow = "auto";
+  }
 }
 
 // Student Operations
@@ -107,6 +122,184 @@ async function updateStudent(studentData) {
   return await window.api.updateStudent({
     ...studentData,
     id: editingStudentId,
+  });
+}
+
+// Student Details View
+async function viewStudentDetails(student) {
+  try {
+    const response = await window.api.getCompleteStudentRecord(student.student_id);
+
+    if (!response.success) {
+      showToast(`Error loading student details: ${response.message}`, "error");
+      return;
+    }
+
+    displayStudentDetailsModal(response.data);
+  } catch (error) {
+    showToast("An error occurred while loading student details", "error");
+    console.error("Error loading student details:", error);
+  }
+}
+
+function displayStudentDetailsModal(studentData) {
+  if (!elements.viewStudentModal || !elements.studentDetailsContent) {
+    showToast("Student details modal not found", "error");
+    return;
+  }
+
+  if (studentData.length === 0) {
+    elements.studentDetailsContent.innerHTML = "<p>No details found for this student.</p>";
+  } else {
+    elements.studentDetailsContent.innerHTML = generateStudentDetailsHTML(studentData);
+  }
+
+  elements.viewStudentModal.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function generateStudentDetailsHTML(studentData) {
+  const student = studentData[0]; // Get student basic info from first record
+
+  // Group data by bills
+  const billsMap = new Map();
+
+  studentData.forEach((record) => {
+    if (!billsMap.has(record.bill_id)) {
+      billsMap.set(record.bill_id, {
+        bill_id: record.bill_id,
+        bill_class: record.bill_class,
+        term: record.term,
+        bill_year: record.bill_year,
+        original_fee: record.original_fee,
+        discount_amount: record.discount_amount,
+        net_amount: record.net_amount,
+        bill_date: record.bill_date,
+        bill_total_paid: record.bill_total_paid,
+        bill_balance: record.bill_balance,
+        bill_status: record.bill_status,
+        payments: [],
+      });
+    }
+
+    // Add payment if it exists
+    if (record.payment_id) {
+      billsMap.get(record.bill_id).payments.push({
+        payment_id: record.payment_id,
+        payment_amount: record.payment_amount,
+        payment_mode: record.payment_mode,
+        date_paid: record.date_paid,
+        payment_details: record.payment_details,
+      });
+    }
+  });
+
+  const bills = Array.from(billsMap.values());
+
+  return `
+    <div class="student-details-container">
+      <div class="student-basic-info">
+        <h3>Student Information</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <strong>Name:</strong> ${student.student_name}
+          </div>
+          <div class="info-item">
+            <strong>Other Names:</strong> ${student.other_names || "N/A"}
+          </div>
+          <div class="info-item">
+            <strong>Registration Date:</strong> ${formatDate(student.registration_date)}
+          </div>
+          <div class="info-item">
+            <strong>Current Class:</strong> ${student.current_class || "Not Assigned"}
+          </div>
+          <div class="info-item">
+            <strong>Current Year:</strong> ${student.current_year || "N/A"}
+          </div>
+        </div>
+      </div>
+
+      <div class="student-billing-info">
+        <h3>Billing & Payment History</h3>
+        ${bills.length === 0 ? "<p>No billing records found.</p>" : generateBillsHTML(bills)}
+      </div>
+    </div>
+  `;
+}
+
+function generateBillsHTML(bills) {
+  return bills
+    .map(
+      (bill) => `
+    <div class="bill-card">
+      <div class="bill-header">
+        <h4>${bill.bill_class} - ${bill.term} Term (${bill.bill_year})</h4>
+        <span class="bill-status ${bill.bill_status.toLowerCase().replace(/\s+/g, "-")}">${
+        bill.bill_status
+      }</span>
+      </div>
+      
+      <div class="bill-details">
+        <div class="bill-amounts">
+          <div class="amount-item">
+            <strong>Original Fee:</strong> ₵${bill.original_fee.toFixed(2)}
+          </div>
+          <div class="amount-item">
+            <strong>Discount:</strong> ₵${bill.discount_amount.toFixed(2)}
+          </div>
+          <div class="amount-item">
+            <strong>Net Amount:</strong> ₵${bill.net_amount.toFixed(2)}
+          </div>
+          <div class="amount-item">
+            <strong>Total Paid:</strong> ₵${bill.bill_total_paid.toFixed(2)}
+          </div>
+          <div class="amount-item">
+            <strong>Balance:</strong> ₵${bill.bill_balance.toFixed(2)}
+          </div>
+        </div>
+
+        <div class="payments-section">
+          <h5>Payments</h5>
+          ${
+            bill.payments.length === 0
+              ? "<p>No payments recorded.</p>"
+              : generatePaymentsHTML(bill.payments)
+          }
+        </div>
+      </div>
+    </div>
+  `
+    )
+    .join("");
+}
+
+function generatePaymentsHTML(payments) {
+  return `
+    <div class="payments-list">
+      ${payments
+        .map(
+          (payment) => `
+        <div class="payment-item">
+          <div class="payment-details">
+            <strong>₵${payment.payment_amount.toFixed(2)}</strong>
+            <span class="payment-mode">${payment.payment_mode}</span>
+            <span class="payment-date">${formatDate(payment.date_paid)}</span>
+          </div>
+          <div class="payment-ref">${payment.payment_details}</div>
+        </div>
+      `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
 }
 
@@ -271,8 +464,11 @@ function setRowContent(row, student, index, className) {
     <td>${className}</td>
     <td> 
       <div style="display: flex; justify-content: center">
+        <button class="btn-view-student text-button" title="View Student">
+          <i class="fa-solid fa-eye color-green"></i> View |
+        </button>
         <button class="btn-edit-student text-button" title="Edit Student">
-          <i class="fa-solid fa-pen-to-square"></i> Edit
+          <i class="fa-solid fa-pen-to-square"></i> Edit |
         </button>
         <button class="btn-delete-student text-button" title="Delete Student" style="color:red">
           <i class="fa-solid fa-trash"></i> Delete
@@ -283,6 +479,10 @@ function setRowContent(row, student, index, className) {
 }
 
 function attachRowEventListeners(row, student) {
+  row.querySelector(".btn-view-student").addEventListener("click", () => {
+    viewStudentDetails(student);
+  });
+
   row.querySelector(".btn-edit-student").addEventListener("click", () => {
     editStudentRecord(student);
   });

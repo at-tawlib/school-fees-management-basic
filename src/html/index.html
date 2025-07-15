@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>School Fees Tracker</title>
     <link rel="stylesheet" href="../css/index.css" />
+    <link rel="stylesheet" href="../css/modal.css" />
 
     <!-- Fontawesome files -->
     <link href="../assets/fontawesome/css/fontawesome.css" rel="stylesheet" />
@@ -1369,6 +1370,31 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Student details modal -->
+    <div id="viewStudentModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Student details</h3>
+            <p class="modal-subtitle">Full records of student</p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="viewStudentCloseX">
+            &times;
+          </button>
+        </header>
+
+        <div class="modal-body">
+          <div id="studentDetailsContent">
+            <!-- Student details will be populated here -->
+          </div>
+        </div>
+
+        <div class="modal-actions">
+
+        </div>
       </div>
     </div>
 

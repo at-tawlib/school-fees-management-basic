@@ -699,6 +699,16 @@ ipcMain.handle("get-total-discount-given", async (_, data) => {
   }
 });
 
+// Get complete student records
+ipcMain.handle("get-complete-student-record", async (_, id) => {
+  try {
+    const result = await dbHandler.getCompleteStudentRecord(id);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
 // Handle confirmation dialog with custom message
 ipcMain.handle("show-confirmation-dialog", async (_, message) => {
   const result = await dialog.showMessageBox(mainWindow, {

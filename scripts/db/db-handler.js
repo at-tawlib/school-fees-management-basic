@@ -1279,6 +1279,19 @@ class DatabaseHandler {
     }
   }
 
+  getCompleteStudentRecord(id) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT * FROM completeStudentsRecordsView WHERE student_id = ? ORDER BY bill_year DESC, term, payment_id;
+        `);
+      const record = stmt.all(id);
+      return { success: true, data: record };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   // Close the database connection
   close() {
     this.db.close();
