@@ -82,7 +82,8 @@
 }
 
 #addStudentModal .modal,
-#loginModal .modal {
+#loginModal .modal,
+#updatePasswordModal .modal {
   width: 40rem;
 }
 
