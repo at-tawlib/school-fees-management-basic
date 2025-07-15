@@ -776,17 +776,7 @@ main {
   border-radius: 0.5rem;
   border: 1px solid #ddd;
 } */
-
-/* *************** LOGIN MODAL CSS *********************** */
-#loginModal {
-  display: "flex";
-}
-
-#loginModal .modal-container {
-  margin: auto;
-  padding: 1rem;
-  border: 1px solid #888;
-}
+ 
 
 /* *************** ABOUT MODAL CSS *********************** */
 #aboutModal {

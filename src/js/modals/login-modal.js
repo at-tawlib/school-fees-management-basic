@@ -23,23 +23,34 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 
   usernameField.value = "";
   passwordField.value = "";
-  modal.style.display = "none";
+  closeModal();
   await window.app.setSession("admin");
   window.app.reloadApp();
 });
 
+const openModal = () => {
+  modal.classList.add("active");
+  document.body.style.overflow = "hidden";
+};
+
+const closeModal = () => {
+  modal.classList.remove("active");
+  document.body.style.overflow = "auto";
+};
+
 document.getElementById("cancelBtn").addEventListener("click", () => {
   usernameField.value = "";
   passwordField.value = "";
-  modal.style.display = "none";
+  closeModal();
 });
 
 document.getElementById("closeLogin").addEventListener("click", () => {
   usernameField.value = "";
   passwordField.value = "";
-  modal.style.display = "none";
+  closeModal();
 });
 
 export const openLoginModal = () => {
-  modal.style.display = "flex";
+  openModal();
+  // modal.style.display = "flex";
 };

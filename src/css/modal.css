@@ -81,7 +81,8 @@
   padding: 0 2rem 2rem;
 }
 
-#addStudentModal .modal {
+#addStudentModal .modal,
+#loginModal .modal {
   width: 40rem;
 }
 
