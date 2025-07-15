@@ -81,6 +81,10 @@
   padding: 0 2rem 2rem;
 }
 
+#addStudentModal .modal {
+  width: 40rem;
+}
+
 /* **************************** STUDENT DETAILS MODAL *********************** */
 #viewStudentModal .modal {
   max-width: 70%;

@@ -44,12 +44,14 @@ function initializeEventListeners() {
 
 // Modal Management
 function showModal() {
-  elements.addStudentModal.style.display = "block";
+  elements.addStudentModal.classList.add("active");
+  document.body.style.overflow = "hidden";
   elements.addStudentForm.reset();
 }
 
 function hideModal() {
-  elements.addStudentModal.style.display = "none";
+  elements.addStudentModal.classList.remove("active");
+  document.body.style.overflow = "auto";
   editingStudentId = null;
 }
 
@@ -308,7 +310,9 @@ function editStudentRecord(student) {
   elements.lastNameInput.value = student.last_name;
   elements.otherNamesInput.value = student.other_names;
   editingStudentId = student.student_id;
-  elements.addStudentModal.style.display = "block";
+
+  elements.addStudentModal.classList.add("active");
+  document.body.style.overflow = "hidden";
 }
 
 async function deleteStudent(student) {
