@@ -76,7 +76,8 @@ const setupModalCloseButtons = () => {
 
   modalCloseButtons.forEach(({ selector, modal }) => {
     document.getElementById(selector.replace("#", "")).addEventListener("click", () => {
-      modal.style.display = "none";
+      modal.classList.remove("active");
+      document.body.style.overflow = "auto";
     });
   });
 };
@@ -158,7 +159,8 @@ const handleAddFeesClick = async () => {
     elements.addFeesModalYear.disabled = true;
     elements.addFeesModalTerm.disabled = true;
 
-    elements.addFeesModal.style.display = "block";
+    elements.addFeesModal.classList.add("active");
+    document.body.style.overflow = "hidden";
   } catch (error) {
     console.error("Error setting up add fees modal:", error);
     showToast("Failed to open add fees modal", "error");
@@ -199,7 +201,8 @@ const handleSetFees = async () => {
 
     // Reset form and close modal
     elements.feesAmount.value = "";
-    elements.addFeesModal.style.display = "none";
+    elements.addFeesModal.classList.remove("active");
+    document.body.style.overflow = "auto";
 
     await setUpFeesSection();
   } catch (error) {
