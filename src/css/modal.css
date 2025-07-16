@@ -84,7 +84,8 @@
 #addStudentModal .modal,
 #loginModal .modal,
 #updatePasswordModal .modal,
-#addFeesModal .modal {
+#addFeesModal .modal,
+#addStudentsToClassModal .modal {
   width: 40rem;
 }
 
