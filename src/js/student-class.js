@@ -26,7 +26,6 @@ const notBilledStudentClassTable = document.getElementById("notBilledStudentClas
 const notBilledStudentClassTableBody = document.getElementById("notBilledStudentClassTableBody");
 
 const searchStudentClassInput = document.getElementById("searchStudentClassInput");
-const paymentHistoryModal = document.getElementById("paymentHistoryModal");
 
 const addStudentsToClassModal = document.getElementById("addStudentsToClassModal");
 const studentsToAddTableBody = document.getElementById("studentsToAddTableBody");

@@ -964,52 +964,61 @@
     <div id="paymentHistoryModal" class="modal-overlay" role="dialog">
       <div class="modal">
         <header class="modal-header">
-          <h2>Payment History</h2>
-          <span id="paymentHistoryClassCloseXBtn" class="close-btn">&times;</span>
+          <div class="flex-column">
+            <h3 class="modal-title">Payment History</h3>
+            <p class="modal-subtitle">History of student fees payment</p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="paymentHistoryClassCloseXBtn">
+            &times;
+          </button>
         </header>
 
-        <br />
-        <h3 id="paymentHistoryStudentName" class="color-blue"></h3>
-        <br />
-        <h3 id="paymentHistoryFeesText" class="color-blue"></h3>
+        <div class="modal-body">
+          <br />
+          <h3 id="paymentHistoryStudentName" class="color-blue"></h3>
+          <br />
+          <h3 id="paymentHistoryFeesText" class="color-blue"></h3>
 
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Date</th>
-              <th>Paid Amount</th>
-              <th>Mode</th>
-              <th>Details</th>
-            </tr>
-          </thead>
-          <tbody id="paymentHistoryTableBody"></tbody>
-        </table>
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Paid Amount</th>
+                <th>Mode</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="paymentHistoryTableBody"></tbody>
+          </table>
 
-        <div class="flex-item">
-          <label class="bold-text">Total Fees: </label>
-          <span id="paymentHistoryModalFees" class="color-blue bold-text"></span>
+          <div class="flex-item">
+            <label class="bold-text">Total Fees: </label>
+            <span id="paymentHistoryModalFees" class="color-blue bold-text"></span>
+          </div>
+
+          <div id="paymentHistoryModalDiscountContainer" class="flex-item" style="display: none">
+            <label class="bold-text">Discount: </label>
+            <span id="paymentHistoryModalDiscount" class="color-green bold-text"></span>
+          </div>
+
+          <div class="flex-item">
+            <label class="bold-text">Total Paid: </label>
+            <span id="paymentModalTotalPaidText" class="color-green bold-text"></span>
+          </div>
+
+          <div class="flex-item">
+            <label class="bold-text">Balance: </label>
+            <span id="paymentModalBalanceText" class="color-red bold-text"></span>
+          </div>
         </div>
 
-        <div id="paymentHistoryModalDiscountContainer" class="flex-item" style="display: none">
-          <label class="bold-text">Discount: </label>
-          <span id="paymentHistoryModalDiscount" class="color-green bold-text"></span>
+        <hr style="margin: 0.5rem 0.2rem" />
+        <div class="modal-actions">
+          <button id="paymentHistoryOkModalBtn" type="button" title="Ok" class="outlined-button">
+            <i class="fa-regular fa-circle-check"></i> Ok
+          </button>
         </div>
-
-        <div class="flex-item">
-          <label class="bold-text">Total Paid: </label>
-          <span id="paymentModalTotalPaidText" class="color-green bold-text"></span>
-        </div>
-
-        <div class="flex-item">
-          <label class="bold-text">Balance: </label>
-          <span id="paymentModalBalanceText" class="color-red bold-text"></span>
-        </div>
-
-        <hr style="margin: 1rem 0rem" />
-        <button id="paymentHistoryOkModalBtn" type="button" title="Ok" class="outlined-button">
-          <i class="fa-regular fa-circle-check"></i> Ok
-        </button>
       </div>
     </div>
 
