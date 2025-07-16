@@ -863,11 +863,11 @@ export const submitBill = async () => {
 // **************** ADD DISCOUNT MODAL ************************
 document
   .getElementById("discountModalCloseXBtn")
-  .addEventListener("click", () => (applyDiscountModal.style.display = "none"));
+  .addEventListener("click", () => closeApplyDiscountModal());
 
 document
   .getElementById("cancelDiscountModalBtn")
-  .addEventListener("click", () => (applyDiscountModal.style.display = "none"));
+  .addEventListener("click", () => closeApplyDiscountModal());
 
 document.getElementById("submitDiscountModalBtn").addEventListener("click", async () => {
   const discountAmount = document.getElementById("discountAmountInput").value;
@@ -892,7 +892,7 @@ document.getElementById("submitDiscountModalBtn").addEventListener("click", asyn
   }
 
   showToast(response.message || "Discount applied successfully", "success");
-  applyDiscountModal.style.display = "none";
+  showApplyDiscountModal();
   await displayClassStudentsTable();
 });
 
@@ -929,8 +929,18 @@ async function openApplyDiscountModal(item, currentClass, classTerm) {
     document.getElementById("alreadyDiscountContainer").style.display = "none";
   }
 
-  applyDiscountModal.style.display = "block";
+  showApplyDiscountModal();
 }
+
+const showApplyDiscountModal = () => {
+  applyDiscountModal.classList.add("active");
+  document.body.style.overflow = "hidden";
+};
+
+const closeApplyDiscountModal = () => {
+  applyDiscountModal.classList.remove("active");
+  document.body.style.overflow = "auto";
+};
 
 // **************** ADD STUDENTS TO CLASS MODAL ************************
 document.getElementById("addStudentToClassBtn").addEventListener("click", async function () {

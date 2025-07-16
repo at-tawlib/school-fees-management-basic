@@ -87,7 +87,11 @@
 #addFeesModal .modal,
 #addStudentsToClassModal .modal,
 #paymentHistoryModal .modal,
-#editFeesModal .modal {
+#editFeesModal .modal,
+#makePaymentModal .modal,
+#updatePaymentModal .modal,
+#applyDiscountModal .modal,
+#aboutModal .modal {
   width: 40rem;
 }
 
