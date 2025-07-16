@@ -883,6 +883,55 @@
       </div>
     </div>
 
+    <!-- Edit Fees Modal -->
+    <div id="editFeesModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Edit Fees</h3>
+            <p class="modal-subtitle"></p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="editFeesCloseXBtn">
+            &times;
+          </button>
+        </header>
+
+        <div class="modal-body">
+          <form>
+            <input type="hidden" id="editFeesId" />
+            <div class="flex-item">
+              <label for="editFeesClass">Class:</label>
+              <input type="text" id="editFeesClass" disabled />
+            </div>
+
+            <div class="flex-item">
+              <label for="editFeesAcademicYear">Academic Year:</label>
+              <input type="text" id="editFeesAcademicYear" disabled />
+            </div>
+
+            <div class="flex-item">
+              <label for="editFeesTerm">Term:</label>
+              <input type="text" id="editFeesTerm" disabled />
+            </div>
+
+            <div class="flex-item">
+              <label for="editFeesAmount">Amount:</label>
+              <input type="number" id="editFeesAmount" />
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-actions">
+          <button id="saveEditFeesBtn" class="outlined-button" title="Save">
+            <i class="fa-regular fa-circle-check"></i> Save
+          </button>
+          <button id="cancelEditFeesModalBtn" class="bg-red">
+            <i class="fa-solid fa-xmark"></i> Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add Students to Class Modal -->
     <div id="addStudentsToClassModal" class="modal-overlay" role="dialog">
       <div class="modal">
@@ -1017,48 +1066,6 @@
         <div class="modal-actions">
           <button id="paymentHistoryOkModalBtn" type="button" title="Ok" class="outlined-button">
             <i class="fa-regular fa-circle-check"></i> Ok
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Edit Fees Modal -->
-    <div id="editFeesModal" class="modal-overlay" role="dialog">
-      <div class="modal">
-        <div class="modal-header">
-          <h2>Edit Fees</h2>
-          <span id="editFeesCloseXBtn" class="close-btn">&times;</span>
-        </div>
-
-        <form>
-          <input type="hidden" id="editFeesId" />
-          <div class="flex-item">
-            <label for="editFeesClass">Class:</label>
-            <input type="text" id="editFeesClass" disabled />
-          </div>
-
-          <div class="flex-item">
-            <label for="editFeesAcademicYear">Academic Year:</label>
-            <input type="text" id="editFeesAcademicYear" disabled />
-          </div>
-
-          <div class="flex-item">
-            <label for="editFeesTerm">Term:</label>
-            <input type="text" id="editFeesTerm" disabled />
-          </div>
-
-          <div class="flex-item">
-            <label for="editFeesAmount">Amount:</label>
-            <input type="number" id="editFeesAmount" />
-          </div>
-        </form>
-
-        <div class="flex-row">
-          <button id="saveEditFeesBtn" class="outlined-button" title="Save">
-            <i class="fa-regular fa-circle-check"></i> Save
-          </button>
-          <button id="cancelEditFeesModalBtn" class="bg-red">
-            <i class="fa-solid fa-xmark"></i> Cancel
           </button>
         </div>
       </div>

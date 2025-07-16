@@ -233,7 +233,8 @@ const handleSaveEditFees = async () => {
     }
 
     showToast(response.message, "success");
-    elements.editFeesModal.style.display = "none";
+    elements.editFeesModal.classList.remove("active");
+    document.body.style.overflow = "auto";
 
     await setUpFeesSection();
   } catch (error) {
@@ -372,7 +373,8 @@ const handleEditFee = (fee) => {
     return;
   }
 
-  elements.editFeesModal.style.display = "block";
+  elements.editFeesModal.classList.add("active");
+  document.body.style.overflow = "hidden";
   elements.editFeesId.value = fee.id;
   elements.editFeesClass.value = fee.class;
   elements.editFeesAcademicYear.value = fee.academic_year;
