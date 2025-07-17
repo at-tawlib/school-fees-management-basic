@@ -21,3 +21,11 @@ package-lock.json
 
 # Environment files
 .env
+
+/database
+/ipc
+/scripts/db/db-academic-years.js
+/scripts/db/db-bills.js
+/scripts/db/db.js
+/scripts/db/index.js
+/windows
