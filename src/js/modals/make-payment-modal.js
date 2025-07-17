@@ -16,13 +16,23 @@ let selectedFee = null;
 let selectedTerm = null;
 let arrears = null;
 
+const showModal = () => {
+  modal.classList.add("active");
+  document.body.style.overflow = "hidden";
+};
+
+const hideModal = () => {
+  modal.classList.remove("active");
+  document.body.style.overflow = "auto";
+};
+
 document.getElementById("cancelPaymentModalBtn").addEventListener("click", () => {
-  modal.style.display = "none";
+  hideModal();
   clearPaymentModalFields();
 });
 
 document.getElementById("paymentCloseXBtn").addEventListener("click", () => {
-  modal.style.display = "none";
+  hideModal();
   clearPaymentModalFields();
 });
 
@@ -72,7 +82,7 @@ document.getElementById("submitPayment").addEventListener("click", async () => {
   showToast(response.message, "success");
 
   clearPaymentModalFields();
-  modal.style.display = "none";
+  hideModal();
 
   displayClassStudentsTable(
     {
@@ -101,7 +111,7 @@ export function openStudentPaymentModal(details, currentFee, classTerm) {
     return;
   }
 
-  modal.style.display = "block";
+  showModal();
   document.getElementById("modalStudentName").textContent = details.student_name;
   document.getElementById(
     "modalStudentClass"

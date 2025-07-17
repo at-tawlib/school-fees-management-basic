@@ -32,9 +32,7 @@ navItems.forEach((item) => item.addEventListener("click", handleNavClick));
 
 document.getElementById("navRefreshBtn").addEventListener("click", () => window.app.reloadApp());
 
-document
-  .getElementById("navAbout")
-  .addEventListener("click", () => (document.getElementById("aboutModal").style.display = ""));
+document.getElementById("navAbout").addEventListener("click", () => showAboutModal());
 
 document.getElementById("navHome").addEventListener("click", () => {
   showHideFeesContainer(CONTAINERS.HOME);
@@ -98,9 +96,7 @@ document.getElementById("adminLogout").addEventListener("click", async () => {
   window.app.reloadApp();
 });
 
-document
-  .getElementById("aboutCloseXBtn")
-  .addEventListener("click", () => (document.getElementById("aboutModal").style.display = "none"));
+document.getElementById("aboutCloseXBtn").addEventListener("click", () => closeAboutModal());
 
 document.getElementById("goToStudentsBtn").addEventListener("click", () => {
   navItems[0].classList.remove("active");
@@ -147,6 +143,16 @@ const setUpAdminView = async () => {
     document.getElementById("adminTitle").style.display = "none";
     document.getElementById("appHeader").style.background = "";
   }
+};
+
+const showAboutModal = () => {
+  document.getElementById("aboutModal").classList.add("active");
+  document.body.style.overflow = "hidden";
+};
+
+const closeAboutModal = () => {
+  document.getElementById("aboutModal").classList.remove("active");
+  document.body.style.overflow = "auto";
 };
 
 window.onload = async function () {

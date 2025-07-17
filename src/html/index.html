@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>School Fees Tracker</title>
     <link rel="stylesheet" href="../css/index.css" />
+    <link rel="stylesheet" href="../css/modal.css" />
 
     <!-- Fontawesome files -->
     <link href="../assets/fontawesome/css/fontawesome.css" rel="stylesheet" />
@@ -743,140 +744,233 @@
     </div>
 
     <!-- Add Student Modal -->
-    <div id="addStudentModal" class="modal">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Add Student</h2>
-          <span id="addStudentCloseX" class="close-btn">&times;</span>
+    <div id="addStudentModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Add Student</h3>
+            <p class="modal-subtitle">Add/Edit student</p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="addStudentCloseX">
+            &times;
+          </button>
+        </header>
+
+        <div class="modal-body">
+          <form id="addStudentForm">
+            <div id="studentError" class="error"></div>
+
+            <div class="flex-item">
+              <label for="studentFirstNameInput">First Name</label>
+              <input
+                type="text"
+                id="studentFirstNameInput"
+                name="studentFirstNameInput"
+                placeholder="Enter firstName"
+                required
+              />
+            </div>
+
+            <div class="flex-item">
+              <label for="studentLastNameInput">Last Name</label>
+              <input
+                type="text"
+                id="studentLastNameInput"
+                name="studentLastNameInput"
+                placeholder="Enter lastName"
+                required
+              />
+            </div>
+
+            <div class="flex-item">
+              <label for="studentOtherNameInput">Other Names</label>
+              <input
+                type="text"
+                id="studentOtherNameInput"
+                name="studentOtherNameInput"
+                placeholder="Enter other name"
+                required
+              />
+            </div>
+
+            <div class="flex-row">
+              <button id="addStudentModalBtn" type="button" class="bg-green">
+                <i class="fa-solid fa-save"></i> Save
+              </button>
+              <button id="cancelStudentModalBtn" type="button" class="bg-red">
+                <i class="fa-solid fa-close"></i> Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student details modal -->
+    <div id="viewStudentModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Student details</h3>
+            <p class="modal-subtitle">Full records of student</p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="viewStudentCloseX">
+            &times;
+          </button>
+        </header>
+
+        <div class="modal-body">
+          <div id="studentDetailsContent">
+            <!-- Student details will be populated here -->
+          </div>
         </div>
 
-        <form id="addStudentForm">
-          <div id="studentError" class="error"></div>
-
-          <div class="flex-item">
-            <label for="studentFirstNameInput">First Name</label>
-            <input
-              type="text"
-              id="studentFirstNameInput"
-              name="studentFirstNameInput"
-              placeholder="Enter firstName"
-              required
-            />
-          </div>
-
-          <div class="flex-item">
-            <label for="studentLastNameInput">Last Name</label>
-            <input
-              type="text"
-              id="studentLastNameInput"
-              name="studentLastNameInput"
-              placeholder="Enter lastName"
-              required
-            />
-          </div>
-
-          <div class="flex-item">
-            <label for="studentOtherNameInput">Other Names</label>
-            <input
-              type="text"
-              id="studentOtherNameInput"
-              name="studentOtherNameInput"
-              placeholder="Enter other name"
-              required
-            />
-          </div>
-
-          <div class="flex-row">
-            <button id="addStudentModalBtn" type="button" class="bg-green">
-              <i class="fa-solid fa-save"></i> Save
-            </button>
-            <button id="cancelStudentModalBtn" type="button" class="bg-red">
-              <i class="fa-solid fa-close"></i> Cancel
-            </button>
-          </div>
-        </form>
+        <div class="modal-actions"></div>
       </div>
     </div>
 
     <!-- Add Fees Modal -->
-    <div id="addFeesModal" class="modal">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Add Fees</h2>
-          <span id="addFeesCloseXBtn" class="close-btn">&times;</span>
+    <div id="addFeesModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Add Fees</h3>
+            <p class="modal-subtitle"></p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="addFeesCloseXBtn">
+            &times;
+          </button>
+        </header>
+
+        <div class="modal-body">
+          <form>
+            <div class="flex-item">
+              <label for="feesClassSelect">Class</label>
+              <select id="feesClassSelect"></select>
+            </div>
+
+            <div class="flex-item">
+              <label for="feesAcademicYear">Academic Year</label>
+              <select id="feesAcademicYear"></select>
+            </div>
+
+            <div class="flex-item">
+              <label for="feesTerm">Term</label>
+              <select id="feesTerm"></select>
+            </div>
+
+            <div class="flex-item">
+              <label for="feesAmount">Fees</label>
+              <input
+                type="number"
+                id="feesAmount"
+                name="feesAmount"
+                placeholder="Enter amount"
+                required
+              />
+            </div>
+
+            <div class="flex-row">
+              <button id="setFeesBtn" type="button" title="Set Fees" class="outlined-button">
+                <i class="fa-regular fa-circle-check"></i> Set Fees
+              </button>
+              <button id="cancelFeesModalBtn" type="button" class="bg-red">
+                <i class="fa-solid fa-xmark"></i> Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Fees Modal -->
+    <div id="editFeesModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Edit Fees</h3>
+            <p class="modal-subtitle"></p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="editFeesCloseXBtn">
+            &times;
+          </button>
+        </header>
+
+        <div class="modal-body">
+          <form>
+            <input type="hidden" id="editFeesId" />
+            <div class="flex-item">
+              <label for="editFeesClass">Class:</label>
+              <input type="text" id="editFeesClass" disabled />
+            </div>
+
+            <div class="flex-item">
+              <label for="editFeesAcademicYear">Academic Year:</label>
+              <input type="text" id="editFeesAcademicYear" disabled />
+            </div>
+
+            <div class="flex-item">
+              <label for="editFeesTerm">Term:</label>
+              <input type="text" id="editFeesTerm" disabled />
+            </div>
+
+            <div class="flex-item">
+              <label for="editFeesAmount">Amount:</label>
+              <input type="number" id="editFeesAmount" />
+            </div>
+          </form>
         </div>
 
-        <form>
-          <div class="flex-item">
-            <label for="feesClassSelect">Class</label>
-            <select id="feesClassSelect"></select>
-          </div>
-
-          <div class="flex-item">
-            <label for="feesAcademicYear">Academic Year</label>
-            <select id="feesAcademicYear"></select>
-          </div>
-
-          <div class="flex-item">
-            <label for="feesTerm">Term</label>
-            <select id="feesTerm"></select>
-          </div>
-
-          <div class="flex-item">
-            <label for="feesAmount">Fees</label>
-            <input
-              type="number"
-              id="feesAmount"
-              name="feesAmount"
-              placeholder="Enter amount"
-              required
-            />
-          </div>
-
-          <div class="flex-row">
-            <button id="setFeesBtn" type="button" title="Set Fees" class="outlined-button">
-              <i class="fa-regular fa-circle-check"></i> Set Fees
-            </button>
-            <button id="cancelFeesModalBtn" type="button" class="bg-red">
-              <i class="fa-solid fa-xmark"></i> Cancel
-            </button>
-          </div>
-        </form>
+        <div class="modal-actions">
+          <button id="saveEditFeesBtn" class="outlined-button" title="Save">
+            <i class="fa-regular fa-circle-check"></i> Save
+          </button>
+          <button id="cancelEditFeesModalBtn" class="bg-red">
+            <i class="fa-solid fa-xmark"></i> Cancel
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- Add Students to Class Modal -->
-    <div id="addStudentsToClassModal" class="modal">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2 id="addStudentsToClassTitle">Add Students to Class</h2>
-          <span id="addStudentsToClassCloseX" class="close-btn">&times;</span>
-        </div>
+    <div id="addStudentsToClassModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Add Students</h3>
+            <p class="modal-subtitle" id="addStudentsToClassTitle">Add Students to the class</p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="addStudentsToClassCloseX">
+            &times;
+          </button>
+        </header>
 
-        <div class="flex-item">
-          <label for="studentToAddInput">Search Name</label>
-          <div class="flex-column full-width" style="position: relative">
-            <input
-              type="text"
-              id="studentToAddInput"
-              name="studentToAddInput"
-              placeholder="Enter name"
-              required
-            />
-            <ul class="students-to-add-suggestion-list" id="studentToAddSuggestionList"></ul>
+        <div class="modal-body">
+          <div class="flex-item">
+            <label for="studentToAddInput">Search Name</label>
+            <div class="flex-column full-width" style="position: relative">
+              <input
+                type="text"
+                id="studentToAddInput"
+                name="studentToAddInput"
+                placeholder="Enter name"
+                required
+              />
+              <ul class="students-to-add-suggestion-list" id="studentToAddSuggestionList"></ul>
+            </div>
+
+            <input type="hidden" name="studentToAddId" id="studentToAddId" />
+            <button class="outlined-button" id="addStudentToList">
+              <i class="fa-solid fa-add"></i>
+            </button>
           </div>
 
-          <input type="hidden" name="studentToAddId" id="studentToAddId" />
-          <button class="outlined-button" id="addStudentToList">
-            <i class="fa-solid fa-add"></i>
-          </button>
+          <table class="table-rounded">
+            <tbody id="studentsToAddTableBody"></tbody>
+          </table>
         </div>
 
-        <table class="table-rounded">
-          <tbody id="studentsToAddTableBody"></tbody>
-        </table>
-
-        <div class="flex-row">
+        <div class="modal-actions">
           <button id="addStudentsToClassModalBtn" type="button" class="bg-green">
             <i class="fa-solid fa-plus"></i> Add
           </button>
@@ -888,16 +982,23 @@
     </div>
 
     <!-- Bill Class Modal -->
-    <div id="billClassModal" class="modal">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Bill Class</h2>
-          <span id="billClassCloseXBtn" class="close-btn">&times;</span>
+    <div id="billClassModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Bill Class</h3>
+            <p class="modal-subtitle">Bill all students in this class</p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="billClassCloseXBtn">
+            &times;
+          </button>
+        </header>
+
+        <div class="modal-body">
+          <div id="billStudentsMessage"></div>
         </div>
 
-        <div id="billStudentsMessage"></div>
-
-        <div class="flex-row">
+        <div class="modal-actions">
           <button id="submitBillClassModalBtn" type="button" title="Ok" class="outlined-button">
             <i class="fa-regular fa-circle-check"></i> Ok
           </button>
@@ -909,229 +1010,215 @@
     </div>
 
     <!-- Payment History Modal -->
-    <div id="paymentHistoryModal" class="modal">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Payment History</h2>
-          <span id="paymentHistoryClassCloseXBtn" class="close-btn">&times;</span>
-        </div>
-
-        <br />
-        <h3 id="paymentHistoryStudentName" class="color-blue"></h3>
-        <br />
-        <h3 id="paymentHistoryFeesText" class="color-blue"></h3>
-
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Date</th>
-              <th>Paid Amount</th>
-              <th>Mode</th>
-              <th>Details</th>
-            </tr>
-          </thead>
-          <tbody id="paymentHistoryTableBody"></tbody>
-        </table>
-
-        <div class="flex-item">
-          <label class="bold-text">Total Fees: </label>
-          <span id="paymentHistoryModalFees" class="color-blue bold-text"></span>
-        </div>
-
-        <div id="paymentHistoryModalDiscountContainer" class="flex-item" style="display: none">
-          <label class="bold-text">Discount: </label>
-          <span id="paymentHistoryModalDiscount" class="color-green bold-text"></span>
-        </div>
-
-        <div class="flex-item">
-          <label class="bold-text">Total Paid: </label>
-          <span id="paymentModalTotalPaidText" class="color-green bold-text"></span>
-        </div>
-
-        <div class="flex-item">
-          <label class="bold-text">Balance: </label>
-          <span id="paymentModalBalanceText" class="color-red bold-text"></span>
-        </div>
-
-        <hr style="margin: 1rem 0rem" />
-        <button id="paymentHistoryOkModalBtn" type="button" title="Ok" class="outlined-button">
-          <i class="fa-regular fa-circle-check"></i> Ok
-        </button>
-      </div>
-    </div>
-
-    <!-- Edit Fees Modal -->
-    <div id="editFeesModal" class="modal">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Edit Fees</h2>
-          <span id="editFeesCloseXBtn" class="close-btn">&times;</span>
-        </div>
-
-        <form>
-          <input type="hidden" id="editFeesId" />
-          <div class="flex-item">
-            <label for="editFeesClass">Class:</label>
-            <input type="text" id="editFeesClass" disabled />
+    <div id="paymentHistoryModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Payment History</h3>
+            <p class="modal-subtitle">History of student fees payment</p>
           </div>
-
-          <div class="flex-item">
-            <label for="editFeesAcademicYear">Academic Year:</label>
-            <input type="text" id="editFeesAcademicYear" disabled />
-          </div>
-
-          <div class="flex-item">
-            <label for="editFeesTerm">Term:</label>
-            <input type="text" id="editFeesTerm" disabled />
-          </div>
-
-          <div class="flex-item">
-            <label for="editFeesAmount">Amount:</label>
-            <input type="number" id="editFeesAmount" />
-          </div>
-        </form>
-
-        <div class="flex-row">
-          <button id="saveEditFeesBtn" class="outlined-button" title="Save">
-            <i class="fa-regular fa-circle-check"></i> Save
+          <button class="modal-close" aria-label="Close modal" id="paymentHistoryClassCloseXBtn">
+            &times;
           </button>
-          <button id="cancelEditFeesModalBtn" class="bg-red">
-            <i class="fa-solid fa-xmark"></i> Cancel
+        </header>
+
+        <div class="modal-body">
+          <br />
+          <h3 id="paymentHistoryStudentName" class="color-blue"></h3>
+          <br />
+          <h3 id="paymentHistoryFeesText" class="color-blue"></h3>
+
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Paid Amount</th>
+                <th>Mode</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="paymentHistoryTableBody"></tbody>
+          </table>
+
+          <div class="flex-item">
+            <label class="bold-text">Total Fees: </label>
+            <span id="paymentHistoryModalFees" class="color-blue bold-text"></span>
+          </div>
+
+          <div id="paymentHistoryModalDiscountContainer" class="flex-item" style="display: none">
+            <label class="bold-text">Discount: </label>
+            <span id="paymentHistoryModalDiscount" class="color-green bold-text"></span>
+          </div>
+
+          <div class="flex-item">
+            <label class="bold-text">Total Paid: </label>
+            <span id="paymentModalTotalPaidText" class="color-green bold-text"></span>
+          </div>
+
+          <div class="flex-item">
+            <label class="bold-text">Balance: </label>
+            <span id="paymentModalBalanceText" class="color-red bold-text"></span>
+          </div>
+        </div>
+
+        <hr style="margin: 0.5rem 0.2rem" />
+        <div class="modal-actions">
+          <button id="paymentHistoryOkModalBtn" type="button" title="Ok" class="outlined-button">
+            <i class="fa-regular fa-circle-check"></i> Ok
           </button>
         </div>
       </div>
     </div>
 
     <!-- Make Payment Modal -->
-    <div id="makePaymentModal" class="modal">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2 id="modalStudentName"></h2>
+    <div id="makePaymentModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Make Payment</h3>
+            <p class="modal-subtitle"></p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="paymentCloseXBtn">
+            &times;
+          </button>
+        </header>
+
+        <div class="modal-body">
+          <div>
+            <h2 id="modalStudentName"></h2>
+            <br />
+            <h3 id="modalStudentClass"></h3>
+            <span id="modalStudentId" style="display: none"></span>
+            <span id="modalBillId" style="display: none"></span>
+          </div>
+
+          <div class="flex-item">
+            <label><h3>Fees:</h3></label>
+            <span id="makePaymentModalFees"></span>
+          </div>
+          <div class="flex-item">
+            <label>Paid</label>
+            <span id="makePaymentModalPaid"></span>
+          </div>
+          <div class="flex-item">
+            <label>Arrears</label>
+            <span id="makePaymentModalArrears"></span>
+          </div>
+          <h4 class="color-green" id="discountText"></h4>
+
           <br />
-          <h3 id="modalStudentClass"></h3>
-          <span id="modalStudentId" style="display: none"></span>
-          <span id="modalBillId" style="display: none"></span>
-          <span id="paymentCloseXBtn" class="close-btn">&times;</span>
+
+          <h3 class="color-blue" id="fullyPaidText" style="display: none">
+            Bill has been fully paid.
+          </h3>
+
+          <form id="makePaymentForm" class="modal-color-background" style="display: none">
+            <h3>Make payment</h3>
+
+            <div class="flex-item">
+              <label for="paymentMode">Payment mode</label>
+              <select id="paymentMode">
+                <option value="MOMO">MOMO</option>
+                <option value="bank">Bank Transaction</option>
+                <option value="cash">Cash</option>
+              </select>
+            </div>
+
+            <div class="flex-item">
+              <label for="paymentAmount">Payment Amount</label>
+              <input
+                type="number"
+                id="paymentAmount"
+                name="paymentAmount"
+                placeholder="Enter amount"
+                required
+              />
+            </div>
+
+            <div class="flex-item">
+              <label for="paymentDetails">Payment Details</label>
+              <input
+                type="text"
+                id="paymentDetails"
+                name="paymentDetails"
+                placeholder="Enter payment details"
+                required
+              />
+            </div>
+
+            <div class="flex-row">
+              <button id="submitPayment" type="button" title="Make Payment">
+                <i class="fa-solid fa-money-bill-wave"></i>
+                Make Payment
+              </button>
+              <button id="cancelPaymentModalBtn" type="button" class="bg-red">
+                <i class="fa-solid fa-close"></i>
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
-
-        <div class="flex-item">
-          <label><h3>Fees:</h3></label>
-          <span id="makePaymentModalFees"></span>
-        </div>
-        <div class="flex-item">
-          <label>Paid</label>
-          <span id="makePaymentModalPaid"></span>
-        </div>
-        <div class="flex-item">
-          <label>Arrears</label>
-          <span id="makePaymentModalArrears"></span>
-        </div>
-        <h4 class="color-green" id="discountText"></h4>
-
-        <br />
-
-        <h3 class="color-blue" id="fullyPaidText" style="display: none">
-          Bill has been fully paid.
-        </h3>
-
-        <form id="makePaymentForm" class="modal-color-background" style="display: none">
-          <h3>Make payment</h3>
-
-          <div class="flex-item">
-            <label for="paymentMode">Payment mode</label>
-            <select id="paymentMode">
-              <option value="MOMO">MOMO</option>
-              <option value="bank">Bank Transaction</option>
-              <option value="cash">Cash</option>
-            </select>
-          </div>
-
-          <div class="flex-item">
-            <label for="paymentAmount">Payment Amount</label>
-            <input
-              type="number"
-              id="paymentAmount"
-              name="paymentAmount"
-              placeholder="Enter amount"
-              required
-            />
-          </div>
-
-          <div class="flex-item">
-            <label for="paymentDetails">Payment Details</label>
-            <input
-              type="text"
-              id="paymentDetails"
-              name="paymentDetails"
-              placeholder="Enter payment details"
-              required
-            />
-          </div>
-
-          <div class="flex-row">
-            <button id="submitPayment" type="button" title="Make Payment">
-              <i class="fa-solid fa-money-bill-wave"></i>
-              Make Payment
-            </button>
-            <button id="cancelPaymentModalBtn" type="button" class="bg-red">
-              <i class="fa-solid fa-close"></i>
-              Cancel
-            </button>
-          </div>
-        </form>
       </div>
     </div>
 
     <!-- Update Payment Modal -->
-    <div id="updatePaymentModal" class="modal">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Update payment</h2>
+    <div id="updatePaymentModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Update Payment</h3>
+            <p class="modal-subtitle"></p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="updatePaymentModalCloseXBtn">
+            &times;
+          </button>
+        </header>
+
+        <div class="modal-body">
+          <div>
+            <h3 id="updatePaymentModalStudentName"></h3>
+            <h4 id="updatePaymentModalStudentClass"></h4>
+            <span id="updatePaymentModalStudentId" style="display: none"></span>
+            <span id="updatePaymentModalPaymentId" style="display: none"></span>
+          </div>
           <br />
-          <h3 id="updatePaymentModalStudentName"></h3>
-          <h3 id="updatePaymentModalStudentClass"></h3>
-          <span id="updatePaymentModalStudentId" style="display: none"></span>
-          <span id="updatePaymentModalPaymentId" style="display: none"></span>
-          <span id="updatePaymentModalCloseXBtn" class="close-btn">&times;</span>
+
+          <form class="modal-color-background">
+            <div class="flex-item">
+              <label for="updatePaymentMode">Payment mode</label>
+              <select id="updatePaymentMode">
+                <option value="MOMO">MOMO</option>
+                <option value="bank">Bank Transaction</option>
+                <option value="cash">Cash</option>
+              </select>
+            </div>
+
+            <div class="flex-item">
+              <label for="updatePaymentAmount">Payment Amount</label>
+              <input
+                type="number"
+                id="updatePaymentAmount"
+                name="updatePaymentAmount"
+                placeholder="Enter amount"
+                required
+              />
+            </div>
+
+            <div class="flex-item">
+              <label for="updatePaymentDetails">Payment Details</label>
+              <input
+                type="text"
+                id="updatePaymentDetails"
+                name="updatePaymentDetails"
+                placeholder="Enter payment details"
+                required
+              />
+            </div>
+          </form>
         </div>
-        <br />
 
-        <form class="modal-color-background">
-          <div class="flex-item">
-            <label for="updatePaymentMode">Payment mode</label>
-            <select id="updatePaymentMode">
-              <option value="MOMO">MOMO</option>
-              <option value="bank">Bank Transaction</option>
-              <option value="cash">Cash</option>
-            </select>
-          </div>
-
-          <div class="flex-item">
-            <label for="updatePaymentAmount">Payment Amount</label>
-            <input
-              type="number"
-              id="updatePaymentAmount"
-              name="updatePaymentAmount"
-              placeholder="Enter amount"
-              required
-            />
-          </div>
-
-          <div class="flex-item">
-            <label for="updatePaymentDetails">Payment Details</label>
-            <input
-              type="text"
-              id="updatePaymentDetails"
-              name="updatePaymentDetails"
-              placeholder="Enter payment details"
-              required
-            />
-          </div>
-        </form>
-        <br />
-
-        <div class="flex-row">
+        <div class="modal-actions">
           <button id="btnUpdatePayment" title="Update Payment">
             <i class="fa-solid fa-money-bill-wave"></i>
             Update Payment
@@ -1145,230 +1232,267 @@
     </div>
 
     <!-- Add Discount Modal -->
-    <div id="applyDiscountModal" class="modal">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2 id="applyDiscountStudentName"></h2>
-          <br />
-          <h3 id="modalDiscountClass"></h3>
-          <!-- <span id="modalDiscountStudentId" style="display: none"></span> -->
-          <span id="modalDiscountBillId" style="display: none"></span>
-          <span id="discountModalCloseXBtn" class="close-btn">&times;</span>
-        </div>
-
-        <div class="flex-item">
-          <label><h3>Fees:</h3></label>
-          <span id="applyDiscountModalFees"></span>
-          <span id="discountModalHiddenFeeAmount" style="display: none"></span>
-        </div>
-        <div class="flex-item">
-          <label>Paid</label>
-          <span id="applyDiscountModalPaid"></span>
-        </div>
-        <div class="flex-item">
-          <label>Arrears</label>
-          <span id="applyDiscountModalArrears"></span>
-        </div>
-        <br />
-
-        <div class="flex-row align-center" id="alreadyDiscountContainer">
-          <h3 class="color-green" id="alreadyDiscountText"></h3>
-          <button id="editDiscountBtn" class="text-button">
-            <i class="fa-solid fa-pen-to-square"></i> Edit
+    <div id="applyDiscountModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Apply Discount</h3>
+            <p class="modal-subtitle"></p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="discountModalCloseXBtn">
+            &times;
           </button>
-        </div>
+        </header>
 
-        <form id="applyDiscountForm" class="modal-color-background">
-          <h3>Apply Discount</h3>
+        <div class="modal-body">
+          <div>
+            <h2 id="applyDiscountStudentName"></h2>
+            <br />
+            <h3 id="modalDiscountClass"></h3>
+            <span id="modalDiscountBillId" style="display: none"></span>
+          </div>
+
           <div class="flex-item">
-            <label for="discountAmountInput">Discount Amount</label>
-            <input
-              type="number"
-              id="discountAmountInput"
-              name="discountAmountInput"
-              placeholder="Enter amount"
-              required
-            />
+            <label><h3>Fees:</h3></label>
+            <span id="applyDiscountModalFees"></span>
+            <span id="discountModalHiddenFeeAmount" style="display: none"></span>
+          </div>
+          <div class="flex-item">
+            <label>Paid</label>
+            <span id="applyDiscountModalPaid"></span>
+          </div>
+          <div class="flex-item">
+            <label>Arrears</label>
+            <span id="applyDiscountModalArrears"></span>
+          </div>
+          <br />
+
+          <div class="flex-row align-center" id="alreadyDiscountContainer">
+            <h3 class="color-green" id="alreadyDiscountText"></h3>
+            <button id="editDiscountBtn" class="text-button">
+              <i class="fa-solid fa-pen-to-square"></i> Edit
+            </button>
           </div>
 
-          <div class="flex-row">
-            <button id="submitDiscountModalBtn" type="button" title="Apply Discount">
-              <i class="fa-solid fa-money-bill-wave"></i>
-              Apply Discount
-            </button>
-            <button id="cancelDiscountModalBtn" type="button" class="bg-red">
-              <i class="fa-solid fa-close"></i>
-              Cancel
-            </button>
-          </div>
-        </form>
+          <form id="applyDiscountForm" class="modal-color-background">
+            <h3>Apply Discount</h3>
+            <div class="flex-item">
+              <label for="discountAmountInput">Discount Amount</label>
+              <input
+                type="number"
+                id="discountAmountInput"
+                name="discountAmountInput"
+                placeholder="Enter amount"
+                required
+              />
+            </div>
+
+            <div class="flex-row">
+              <button id="submitDiscountModalBtn" type="button" title="Apply Discount">
+                <i class="fa-solid fa-money-bill-wave"></i>
+                Apply Discount
+              </button>
+              <button id="cancelDiscountModalBtn" type="button" class="bg-red">
+                <i class="fa-solid fa-close"></i>
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
 
     <!-- About Modal -->
-    <div id="aboutModal" class="modal" style="display: none">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>About</h2>
-          <span id="aboutCloseXBtn" class="close-btn">&times;</span>
-        </div>
-        <br />
+    <div id="aboutModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">About</h3>
+            <p class="modal-subtitle"></p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="aboutCloseXBtn">&times;</button>
+        </header>
 
-        <div id="aboutApp">
+        <div class="modal-body">
           <h2>School Fees Tracker <span style="font-size: 0.8em; color: grey">v1.0.0</span></h2>
           <br />
 
-          <div class="flex-column" style="margin-bottom: 20px">
+          <div class="student-basic-info">
             <h3>Developer Information</h3>
-            <p><strong>Name:</strong> Abdul-Fatahu Hardi</p>
-            <p><strong>Role:</strong> Software Engineer</p>
-            <p>
-              <strong>Contact:</strong>
-              <a href="mailto:a.fatahu95@gmail.com">a.fatahu95@gmail.com</a>
-            </p>
-            <p><strong>Contact:</strong> <a href="tel:+233241788458">+233 24 178 8458</a></p>
-            <p>
-              <strong>GitHub:</strong>
-              <a href="https://github.com/at-tawlib" target="_blank">github.com/at-tawlib</a>
-            </p>
+            <div class="info-grid">
+              <div class="info-item"><strong>Name:</strong> Abdul-Fatahu Hardi</div>
+            </div>
+
+            <div class="info-grid">
+              <div class="info-item"><strong>Role:</strong> Software Engineer</div>
+            </div>
+
+            <div class="info-grid">
+              <div class="info-item">
+                <strong>Contact:</strong>
+                <a href="mailto:a.fatahu95@gmail.com">a.fatahu95@gmail.com</a>
+              </div>
+            </div>
+
+            <div class="info-grid">
+              <div class="info-item">
+                <strong>Contact:</strong> <a href="tel:+233241788458">+233 24 178 8458</a>
+              </div>
+            </div>
+
+            <div class="info-grid">
+              <div class="info-item">
+                <strong>GitHub:</strong>
+                <a href="https://github.com/at-tawlib" target="_blank">github.com/at-tawlib</a>
+              </div>
+            </div>
           </div>
 
-          <section style="margin-bottom: 20px">
-            <h3>App Description</h3>
-            <p>
-              School Fees Tracker is a desktop application designed to help schools manage student
-              fee payments efficiently. It allows tracking of billed fees, payments, arrears, and
-              provides a summary of financial activities for different academic years and terms.
-            </p>
-          </section>
+          <div class="student-basic-info">
+            <h4>App Description</h4>
+            <br />
 
-          <section style="margin-bottom: 20px">
-            <h3>Technologies Used</h3>
+            School Fees Tracker is a desktop application designed to help schools manage student fee
+            payments efficiently. It allows tracking of billed fees, payments, arrears, and provides
+            a summary of financial activities for different academic years and terms.
+          </div>
+
+          <div class="student-basic-info">
+            <h4>Technologies Used</h4>
+            <br />
             <ul>
               <li>Electron</li>
               <li>JavaScript (ES6+)</li>
               <li>SQLite</li>
               <li>HTML & CSS</li>
             </ul>
-          </section>
+          </div>
 
-          <section style="margin-bottom: 20px">
-            <h3>License</h3>
-            <p>
-              This application is for personal use only and not intended for public distribution.
-            </p>
-          </section>
+          <div class="student-basic-info">
+            <h4>License</h4>
+            <br />
+            This application is for personal use only and not intended for public distribution.
+          </div>
 
-          <section>
-            <h3>Acknowledgements</h3>
-            <p>
-              Thanks to all open-source contributors and the Electron community for providing
-              invaluable tools and resources.
-            </p>
-          </section>
+          <div class="student-basic-info">
+            <h4>Acknowledgements</h4>
+            <br />
+            Thanks to all open-source contributors and the Electron community for providing
+            invaluable tools and resources.
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2 style="text-align: center">Admin Login</h2>
-          <span id="closeLogin" class="close-btn">&times;</span>
+    <div id="loginModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Add Login</h3>
+            <p class="modal-subtitle">Login as admin</p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="closeLogin">&times;</button>
+        </header>
+
+        <div class="modal-body">
+          <form id="loginForm">
+            <div id="loginError" class="error"></div>
+
+            <div class="flex-item">
+              <label for="usernameField">Username</label>
+              <input
+                type="text"
+                id="usernameField"
+                name="usernameField"
+                placeholder="Username"
+                required
+              />
+            </div>
+
+            <div class="flex-item">
+              <label for="passwordField">Password</label>
+              <input
+                type="password"
+                id="passwordField"
+                name="passwordField"
+                placeholder="password"
+                required
+              />
+            </div>
+
+            <div class="flex-row">
+              <button id="loginBtn" type="button" class="bg-green">
+                <i class="fa-solid fa-save"></i> Login
+              </button>
+              <button id="cancelBtn" type="button" class="bg-red">
+                <i class="fa-solid fa-close"></i> Cancel
+              </button>
+            </div>
+          </form>
         </div>
-        <br />
-
-        <form id="loginForm">
-          <div id="loginError" class="error"></div>
-
-          <div class="flex-item">
-            <label for="usernameField">Username</label>
-            <input
-              type="text"
-              id="usernameField"
-              name="usernameField"
-              placeholder="Username"
-              required
-            />
-          </div>
-
-          <div class="flex-item">
-            <label for="passwordField">Password</label>
-            <input
-              type="password"
-              id="passwordField"
-              name="passwordField"
-              placeholder="password"
-              required
-            />
-          </div>
-
-          <div class="flex-row">
-            <button id="loginBtn" type="button" class="bg-green">
-              <i class="fa-solid fa-save"></i> Login
-            </button>
-            <button id="cancelBtn" type="button" class="bg-red">
-              <i class="fa-solid fa-close"></i> Cancel
-            </button>
-          </div>
-        </form>
       </div>
     </div>
 
     <!-- Update password Modal -->
-    <div id="updatePasswordModal" class="modal">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2 style="text-align: center">Update Password</h2>
-          <span id="closeUpdatePassword" class="close-btn">&times;</span>
+    <div id="updatePasswordModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Update Password</h3>
+            <p class="modal-subtitle"></p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="closeUpdatePassword">
+            &times;
+          </button>
+        </header>
+
+        <div class="modal-body">
+          <form id="updatePasswordForm">
+            <div class="flex-item">
+              <label for="oldPassword">Old Password</label>
+              <input
+                type="password"
+                id="oldPassword"
+                name="oldPassword"
+                placeholder="password"
+                required
+              />
+            </div>
+            <br />
+
+            <div class="flex-item">
+              <label for="newPassword">New Password</label>
+              <input
+                type="password"
+                id="newPassword"
+                name="newPassword"
+                placeholder="password"
+                required
+              />
+            </div>
+
+            <div class="flex-item">
+              <label for="confirmPassword">Confirm Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="password"
+                required
+              />
+            </div>
+
+            <div class="flex-row">
+              <button id="updatePasswordBtn" type="button" class="bg-green">
+                <i class="fa-solid fa-save"></i> Update
+              </button>
+              <button id="cancelPasswordUpdate" type="button" class="bg-red">
+                <i class="fa-solid fa-close"></i> Cancel
+              </button>
+            </div>
+          </form>
         </div>
-        <br />
-
-        <form id="updatePasswordForm">
-          <div class="flex-item">
-            <label for="oldPassword">Old Password</label>
-            <input
-              type="password"
-              id="oldPassword"
-              name="oldPassword"
-              placeholder="password"
-              required
-            />
-          </div>
-          <br />
-
-          <div class="flex-item">
-            <label for="newPassword">New Password</label>
-            <input
-              type="password"
-              id="newPassword"
-              name="newPassword"
-              placeholder="password"
-              required
-            />
-          </div>
-
-          <div class="flex-item">
-            <label for="confirmPassword">Confirm Password</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              placeholder="password"
-              required
-            />
-          </div>
-
-          <div class="flex-row">
-            <button id="updatePasswordBtn" type="button" class="bg-green">
-              <i class="fa-solid fa-save"></i> Update
-            </button>
-            <button id="cancelPasswordUpdate" type="button" class="bg-red">
-              <i class="fa-solid fa-close"></i> Cancel
-            </button>
-          </div>
-        </form>
       </div>
     </div>
 

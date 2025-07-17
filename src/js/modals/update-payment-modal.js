@@ -8,8 +8,18 @@ const paymentModeSelect = document.getElementById("updatePaymentMode");
 const paymentAmountInput = document.getElementById("updatePaymentAmount");
 const paymentDetailsInput = document.getElementById("updatePaymentDetails");
 
+const showModal = () => {
+  modal.classList.add("active");
+  document.body.style.overflow = "hidden";
+};
+
+const hideModal = () => {
+  modal.classList.remove("active");
+  document.body.style.overflow = "auto";
+};
+
 export function openUpdatePaymentModal(payment) {
-  modal.style.display = "block";
+  showModal();
   document.getElementById("updatePaymentModalStudentName").textContent = payment.student_name;
   document.getElementById(
     "updatePaymentModalStudentClass"
@@ -23,15 +33,14 @@ export function openUpdatePaymentModal(payment) {
 }
 
 document.getElementById("updatePaymentModalCloseXBtn").addEventListener("click", () => {
-  modal.style.display = "none";
+  hideModal();
 });
 
 document.getElementById("btnCancelUpdatePayment").addEventListener("click", () => {
-  modal.style.display = "none";
+  hideModal();
 });
 
 document.getElementById("btnUpdatePayment").addEventListener("click", async () => {
-  
   const studentId = studentIdElement.textContent;
   const paymentId = paymentIdElement.textContent;
   const paymentAmount = paymentAmountInput.value;
@@ -60,13 +69,13 @@ document.getElementById("btnUpdatePayment").addEventListener("click", async () =
     paymentMode,
     paymentDetails,
   });
-  
+
   if (!response.success) {
     showToast(response.message || "Payment update failed", "error");
     return;
   }
-  
+
   showToast(response.message, "success");
-  modal.style.display = "none";
+  hideModal();
   setUpPaymentsSection();
 });

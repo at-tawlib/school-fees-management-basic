@@ -26,7 +26,6 @@ const notBilledStudentClassTable = document.getElementById("notBilledStudentClas
 const notBilledStudentClassTableBody = document.getElementById("notBilledStudentClassTableBody");
 
 const searchStudentClassInput = document.getElementById("searchStudentClassInput");
-const paymentHistoryModal = document.getElementById("paymentHistoryModal");
 
 const addStudentsToClassModal = document.getElementById("addStudentsToClassModal");
 const studentsToAddTableBody = document.getElementById("studentsToAddTableBody");
@@ -266,6 +265,16 @@ document.getElementById("clearAddStudentsForm").addEventListener("click", () => 
 document
   .getElementById("cancelAddStudentsForm")
   .addEventListener("click", async () => await setupStudentsClassSection());
+
+function openAddStudentsToClassModal() {
+  addStudentsToClassModal.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function closeAddStudentsToClassModal() {
+  addStudentsToClassModal.classList.remove("active");
+  document.body.style.overflow = "auto";
+}
 
 function addClassRowToForm(rowCount) {
   for (let i = 0; i < rowCount; i++) {
@@ -854,11 +863,11 @@ export const submitBill = async () => {
 // **************** ADD DISCOUNT MODAL ************************
 document
   .getElementById("discountModalCloseXBtn")
-  .addEventListener("click", () => (applyDiscountModal.style.display = "none"));
+  .addEventListener("click", () => closeApplyDiscountModal());
 
 document
   .getElementById("cancelDiscountModalBtn")
-  .addEventListener("click", () => (applyDiscountModal.style.display = "none"));
+  .addEventListener("click", () => closeApplyDiscountModal());
 
 document.getElementById("submitDiscountModalBtn").addEventListener("click", async () => {
   const discountAmount = document.getElementById("discountAmountInput").value;
@@ -883,7 +892,7 @@ document.getElementById("submitDiscountModalBtn").addEventListener("click", asyn
   }
 
   showToast(response.message || "Discount applied successfully", "success");
-  applyDiscountModal.style.display = "none";
+  showApplyDiscountModal();
   await displayClassStudentsTable();
 });
 
@@ -920,12 +929,22 @@ async function openApplyDiscountModal(item, currentClass, classTerm) {
     document.getElementById("alreadyDiscountContainer").style.display = "none";
   }
 
-  applyDiscountModal.style.display = "block";
+  showApplyDiscountModal();
 }
+
+const showApplyDiscountModal = () => {
+  applyDiscountModal.classList.add("active");
+  document.body.style.overflow = "hidden";
+};
+
+const closeApplyDiscountModal = () => {
+  applyDiscountModal.classList.remove("active");
+  document.body.style.overflow = "auto";
+};
 
 // **************** ADD STUDENTS TO CLASS MODAL ************************
 document.getElementById("addStudentToClassBtn").addEventListener("click", async function () {
-  addStudentsToClassModal.style.display = "block";
+  openAddStudentsToClassModal();
   document.getElementById(
     "addStudentsToClassTitle"
   ).textContent = `Add Students to ${currentClass.className}`;
@@ -946,12 +965,12 @@ document.getElementById("addStudentToClassBtn").addEventListener("click", async 
 
 document.getElementById("addStudentsToClassCloseX").addEventListener("click", () => {
   resetStudentToAddModal();
-  addStudentsToClassModal.style.display = "none";
+  closeAddStudentsToClassModal();
 });
 
 document.getElementById("cancelAddStudentToClassModalBtn").addEventListener("click", () => {
   resetStudentToAddModal();
-  addStudentsToClassModal.style.display = "none";
+  closeAddStudentsToClassModal();
 });
 
 document.getElementById("addStudentToList").addEventListener("click", () => {
@@ -1018,7 +1037,7 @@ document.getElementById("addStudentsToClassModalBtn").addEventListener("click", 
     return;
   }
 
-  addStudentsToClassModal.style.display = "none";
+  closeAddStudentsToClassModal();
   resetStudentToAddModal();
   showToast("Records saved successfully", "success");
   await displayClassStudentsTable();

@@ -10,7 +10,7 @@ export function showToast(message, type = "success") {
     toastContainer.style.display = "none";
   };
 
-  toastContainer.classList.remove("toast-success", "toast-error");
+  toastContainer.classList.remove("toast-success", "toast-error", "toast-info", "toast-default");
   toastContainer.classList.add(`toast-${type}`);
 
   // Remove toast after 3 seconds

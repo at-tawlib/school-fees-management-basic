@@ -6,6 +6,16 @@ const oldPassword = document.getElementById("oldPassword");
 const newPassword = document.getElementById("newPassword");
 const confirmPassword = document.getElementById("confirmPassword");
 
+const showModal = () => {
+  modal.classList.add("active");
+  document.body.style.overflow = "hidden";
+};
+
+const hideModal = () => {
+  modal.classList.remove("active");
+  document.body.style.overflow = "auto";
+};
+
 document.getElementById("updatePasswordBtn").addEventListener("click", async () => {
   oldPassword.style.border = "";
   newPassword.style.border = "";
@@ -50,23 +60,21 @@ document.getElementById("updatePasswordBtn").addEventListener("click", async () 
   oldPassword.value = "";
   newPassword.value = "";
   confirmPassword.value = "";
-  modal.style.display = "none";
+  hideModal();
 });
 
 document.getElementById("closeUpdatePassword").addEventListener("click", () => {
   oldPassword.value = "";
   newPassword.value = "";
   confirmPassword.value = "";
-  modal.style.display = "none";
+  hideModal();
 });
 
 document.getElementById("cancelPasswordUpdate").addEventListener("click", () => {
   oldPassword.value = "";
   newPassword.value = "";
   confirmPassword.value = "";
-  modal.style.display = "none";
+  hideModal();
 });
 
-export const openUpdatePassword = () => {
-  modal.style.display = "flex";
-};
+export const openUpdatePassword = () => showModal();
