@@ -70,6 +70,7 @@ export const displayArrearsTable = async () => {
     }
 
     cachedArrearsData = response.data;
+    console.log(response.data);
     renderArrearsTable(cachedArrearsData);
     setupArrearsSidebar(cachedArrearsData);
   } catch (error) {
