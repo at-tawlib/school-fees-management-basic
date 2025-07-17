@@ -24,11 +24,27 @@ const elements = {
   studentsClassSummaryTableBody: document.getElementById("studentsClassSummaryTableBody"),
   viewStudentCloseX: document.getElementById("viewStudentCloseX"),
   studentDetailsContent: document.getElementById("studentDetailsContent"),
+  // Pagination elements
+  paginationContainer: document.getElementById("paginationContainer"),
+  pageInfo: document.getElementById("pageInfo"),
+  pageSizeSelect: document.getElementById("pageSizeSelect"),
+  prevPageBtn: document.getElementById("prevPageBtn"),
+  nextPageBtn: document.getElementById("nextPageBtn"),
+  firstPageBtn: document.getElementById("firstPageBtn"),
+  lastPageBtn: document.getElementById("lastPageBtn"),
 };
 
 // State
 let editingStudentId = null;
 let userSession;
+
+// Pagination State
+let currentPage = 1;
+let pageSize = 10;
+let totalStudents = 0;
+let totalPages = 0;
+let allStudents = []; // Store all students for filtering
+let filteredStudents = []; // Store filtered students
 
 // Event Listeners
 function initializeEventListeners() {
@@ -37,9 +53,107 @@ function initializeEventListeners() {
   elements.addStudentCloseX.addEventListener("click", handleModalClose);
   elements.cancelStudentModalBtn.addEventListener("click", handleModalClose);
   elements.addStudentModalBtn.addEventListener("click", handleStudentSubmit);
-  elements.searchStudentInput.addEventListener("input", filterStudentsTable);
-  elements.studentClassFilter.addEventListener("change", filterStudentsTable);
+  elements.searchStudentInput.addEventListener("input", handleSearchAndFilter);
+  elements.studentClassFilter.addEventListener("change", handleSearchAndFilter);
   elements.viewStudentCloseX?.addEventListener("click", handleViewModalClose);
+
+  // Pagination event listeners
+  elements.prevPageBtn?.addEventListener("click", () => goToPage(currentPage - 1));
+  elements.nextPageBtn?.addEventListener("click", () => goToPage(currentPage + 1));
+  elements.firstPageBtn?.addEventListener("click", () => goToPage(1));
+  elements.lastPageBtn?.addEventListener("click", () => goToPage(totalPages));
+  elements.pageSizeSelect?.addEventListener("change", handlePageSizeChange);
+}
+
+// Pagination Functions
+function handlePageSizeChange() {
+  pageSize = parseInt(elements.pageSizeSelect.value);
+  currentPage = 1; // Reset to first page when changing page size
+  displayCurrentPage();
+}
+
+function goToPage(page) {
+  if (page >= 1 && page <= totalPages) {
+    currentPage = page;
+    displayCurrentPage();
+  }
+}
+
+function calculatePagination() {
+  totalStudents = filteredStudents.length;
+  totalPages = Math.ceil(totalStudents / pageSize);
+
+  // Ensure current page is valid
+  if (currentPage > totalPages && totalPages > 0) {
+    currentPage = totalPages;
+  } else if (currentPage < 1) {
+    currentPage = 1;
+  }
+}
+
+function displayCurrentPage() {
+  calculatePagination();
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const currentStudents = filteredStudents.slice(startIndex, endIndex);
+
+  renderStudentRows(currentStudents, startIndex);
+  updatePaginationControls();
+  updateStudentCount();
+}
+
+function updatePaginationControls() {
+  if (!elements.paginationContainer) return;
+
+  // Update page info
+  const startRecord = totalStudents > 0 ? (currentPage - 1) * pageSize + 1 : 0;
+  const endRecord = Math.min(currentPage * pageSize, totalStudents);
+
+  if (elements.pageInfo) {
+    elements.pageInfo.textContent = `Showing ${startRecord}-${endRecord} of ${totalStudents} students`;
+  }
+
+  // Update button states
+  if (elements.prevPageBtn) {
+    elements.prevPageBtn.disabled = currentPage <= 1;
+  }
+  if (elements.nextPageBtn) {
+    elements.nextPageBtn.disabled = currentPage >= totalPages;
+  }
+  if (elements.firstPageBtn) {
+    elements.firstPageBtn.disabled = currentPage <= 1;
+  }
+  if (elements.lastPageBtn) {
+    elements.lastPageBtn.disabled = currentPage >= totalPages;
+  }
+
+  // Show/hide pagination if needed
+  if (totalPages <= 1) {
+    elements.paginationContainer.style.display = "none";
+  } else {
+    elements.paginationContainer.style.display = "flex";
+  }
+}
+
+function handleSearchAndFilter() {
+  const searchValue = elements.searchStudentInput.value.toLowerCase();
+  const selectedClassText = getSelectedClassText();
+
+  filteredStudents = allStudents.filter((student) => {
+    const studentName = `${student.first_name} ${student.last_name} ${
+      student.other_names || ""
+    }`.toLowerCase();
+    const className = (student.class_name || "No Class").toLowerCase();
+
+    const classMatch = selectedClassText === "all" || className.includes(selectedClassText);
+    const nameMatch = studentName.includes(searchValue);
+
+    return classMatch && nameMatch;
+  });
+
+  currentPage = 1; // Reset to first page when filtering
+  displayCurrentPage();
 }
 
 // Modal Management
@@ -207,7 +321,7 @@ function generateStudentDetailsHTML(studentData) {
             <strong>Name:</strong> ${student.student_name}
           </div>
           <div class="info-item">
-            <strong>Other Names:</strong> ${student.other_names || "N/A"}
+            <strong>Other Names:</strong> ${student.other_names || ""}
           </div>
           <div class="info-item">
             <strong>Registration Date:</strong> ${formatDate(student.registration_date)}
@@ -358,7 +472,7 @@ async function handlePrintStudents() {
 
   try {
     const academicYearSetting = await getDefaultYearSetting();
-    const processedTable = prepareTableForPrint(elements.studentsTable);
+    const processedTable = prepareTableForPrint(elements.studentsTable, filteredStudents);
     const heading = createPrintHeading(academicYearSetting);
 
     printPage(heading, processedTable);
@@ -368,15 +482,34 @@ async function handlePrintStudents() {
   }
 }
 
-function prepareTableForPrint(table) {
+function prepareTableForPrint(table, studentsToPrint) {
   const tableClone = table.cloneNode(true);
+  const tbody = tableClone.querySelector("tbody");
 
-  // Remove action column (last column)
-  tableClone.querySelectorAll("tr").forEach((row) => {
-    if (row.cells[5]) {
-      row.removeChild(row.cells[5]);
-    }
+  // Clear existing rows
+  tbody.innerHTML = "";
+
+  // Add all filtered students to print table
+  studentsToPrint.forEach((student, index) => {
+    const row = document.createElement("tr");
+    const className = student?.class_name || "No Class";
+
+    row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${student.first_name}</td>
+      <td>${student.last_name}</td>
+      <td>${student.other_names || "-"}</td>
+      <td>${className}</td>
+    `;
+
+    tbody.appendChild(row);
   });
+
+  // Remove action column header
+  const headerRow = tableClone.querySelector("thead tr");
+  if (headerRow.cells[5]) {
+    headerRow.removeChild(headerRow.cells[5]);
+  }
 
   // Remove background colors for print
   tableClone.querySelectorAll("tr, td, th").forEach((el) => {
@@ -388,7 +521,18 @@ function prepareTableForPrint(table) {
 
 function createPrintHeading(academicYearSetting) {
   const yearText = academicYearSetting?.setting_text || "";
-  return `<h2 style="text-align: center; margin-bottom: 10px;">Students for ${yearText} Academic Year</h2>`;
+  const totalFiltered = filteredStudents.length;
+  const totalAll = allStudents.length;
+
+  let subtitle = "";
+  if (totalFiltered !== totalAll) {
+    subtitle = `<p style="text-align: center; margin: 5px 0;">Showing ${totalFiltered} of ${totalAll} students</p>`;
+  }
+
+  return `
+    <h2 style="text-align: center; margin-bottom: 10px;">Students for ${yearText} Academic Year</h2>
+    ${subtitle}
+  `;
 }
 
 // Display Functions
@@ -408,8 +552,12 @@ async function displayStudents(yearId) {
       return;
     }
 
-    updateStudentCount(response.data.length);
-    renderStudentRows(response.data);
+    // Store all students and initialize pagination
+    allStudents = response.data;
+    filteredStudents = [...allStudents];
+    currentPage = 1;
+
+    displayCurrentPage();
     await displayClassStats(response.data);
   } catch (error) {
     showToast("An error occurred while loading students", "error");
@@ -420,15 +568,23 @@ async function displayStudents(yearId) {
 function clearStudentDisplay() {
   elements.searchStudentInput.value = "";
   elements.studentsTableBody.innerHTML = "";
+  allStudents = [];
+  filteredStudents = [];
+  currentPage = 1;
 }
 
-function updateStudentCount(count) {
-  elements.totalStudentsNumber.textContent = `Total Number Of Students: ${count}`;
+function updateStudentCount() {
+  const totalAll = allStudents.length;
+  let countText = `Total Number Of Students: ${totalAll}`;
+
+  elements.totalStudentsNumber.textContent = countText;
 }
 
-function renderStudentRows(students) {
+function renderStudentRows(students, startIndex = 0) {
+  elements.studentsTableBody.innerHTML = "";
+
   students.forEach((student, index) => {
-    const row = createStudentRow(student, index);
+    const row = createStudentRow(student, startIndex + index);
     elements.studentsTableBody.appendChild(row);
   });
 }
@@ -493,23 +649,6 @@ function attachRowEventListeners(row, student) {
 
   row.querySelector(".btn-delete-student").addEventListener("click", () => {
     deleteStudent(student);
-  });
-}
-
-// Filtering
-function filterStudentsTable() {
-  const searchValue = elements.searchStudentInput.value.toLowerCase();
-  const selectedClassText = getSelectedClassText();
-  const tableRows = elements.studentsTableBody.querySelectorAll("tr");
-
-  tableRows.forEach((row) => {
-    const rowName = row.getAttribute("data-name").toLowerCase();
-    const rowClass = row.getAttribute("data-class").toLowerCase();
-
-    const classMatch = selectedClassText === "all" || rowClass.includes(selectedClassText);
-    const nameMatch = rowName.includes(searchValue);
-
-    row.style.display = classMatch && nameMatch ? "" : "none";
   });
 }
 

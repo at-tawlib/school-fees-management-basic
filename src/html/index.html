@@ -312,9 +312,46 @@
                     </tr>
                   </thead>
                   <tbody id="studentsTableBody">
-                    <!-- Load data from the css -->
+                    <!-- Load data from the js -->
                   </tbody>
                 </table>
+              </div>
+
+              <!-- Pagination Controls Top -->
+              <div
+                id="paginationContainer"
+                class="pagination-container"
+                style="
+                  margin: 15px 0;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+              >
+                <div class="pagination-info">
+                  <span id="pageInfo">Showing 1-10 of 51 students</span>
+                  <select id="pageSizeSelect" style="margin-left: 10px">
+                    <option value="10">10 per page</option>
+                    <option value="25">25 per page</option>
+                    <option value="50">50 per page</option>
+                    <option value="100">100 per page</option>
+                  </select>
+                </div>
+
+                <div class="pagination-controls">
+                  <button id="firstPageBtn" class="pagination-btn" title="First Page">
+                    <i class="fa-solid fa-angles-left"></i>
+                  </button>
+                  <button id="prevPageBtn" class="pagination-btn" title="Previous Page">
+                    <i class="fa-solid fa-angle-left"></i>
+                  </button>
+                  <button id="nextPageBtn" class="pagination-btn" title="Next Page">
+                    <i class="fa-solid fa-angle-right"></i>
+                  </button>
+                  <button id="lastPageBtn" class="pagination-btn" title="Last Page">
+                    <i class="fa-solid fa-angles-right"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

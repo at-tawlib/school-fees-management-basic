@@ -356,7 +356,7 @@ function attachAutoSuggestEventListeners(input, hiddenInput, suggestionList, dat
 
       // Filter data based on the query
       const matches = data.filter((student) => {
-        const fullName = `${student.first_name} ${student.other_names} ${student.last_name}`;
+        const fullName = `${student.first_name} ${student.other_names ?? ""} ${student.last_name}`;
         return fullName.toLowerCase().includes(query);
       });
 
@@ -365,7 +365,7 @@ function attachAutoSuggestEventListeners(input, hiddenInput, suggestionList, dat
       if (matches.length > 0) {
         matches.forEach((match) => {
           const li = document.createElement("li");
-          const fullName = `${match.first_name} ${match.other_names} ${match.last_name}`;
+          const fullName = `${match.first_name} ${match.other_names ?? ""} ${match.last_name}`;
           li.textContent = fullName;
           li.style.padding = "5px";
           li.style.cursor = "pointer";
@@ -415,7 +415,7 @@ async function setupNoClassStudentsTable() {
     const row = document.createElement("tr");
     row.setAttribute("data-student-id", student.id);
     row.innerHTML = `
-      <td>${student.first_name} ${student.other_names} ${student.last_name}</td>
+      <td>${student.first_name} ${student.other_names ?? ""} ${student.last_name}</td>
     `;
     tableBody.appendChild(row);
   });
