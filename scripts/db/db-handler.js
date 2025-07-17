@@ -884,7 +884,7 @@ class DatabaseHandler {
 
   getAllOutstandingBalances() {
     try {
-      const stmt = this.db.prepare(`SELECT * FROM vw_Outstanding_balances;`);
+      const stmt = this.db.prepare(`SELECT * FROM outstandingBalancesView;`);
       const records = stmt.all();
       return { success: true, data: records };
     } catch (error) {
