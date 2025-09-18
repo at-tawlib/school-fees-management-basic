@@ -326,7 +326,7 @@
               </table>
             </div>
 
-            <!-- Pagination Controls Top -->
+            <!-- Pagination Controls -->
             <div
               id="paginationContainer"
               class="pagination-container"
@@ -628,6 +628,39 @@
                 <!-- Load data from the css -->
               </tbody>
             </table>
+
+            <!-- Pagination Controls -->
+            <div id="arrearsPaginationContainer" class="pagination-container">
+              <div class="pagination-info">
+                <span id="arrearsPageInfo">Showing 0-0 of 0 arrears</span>
+                <div style="width: 10px;"></div>
+                <div class="right-controls">
+                  <label for="arrearsPageSizeSelect">Show:</label>
+                  <select id="arrearsPageSizeSelect" class="page-size-select">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                  <span>entries</span>
+                </div>
+              </div>
+
+              <div class="pagination-controls">
+                <button id="arrearsFirstPageBtn" class="pagination-btn" disabled>
+                  <i class="fa-solid fa-angles-left"></i>
+                </button>
+                <button id="arrearsPrevPageBtn" class="pagination-btn" disabled>
+                  <i class="fa-solid fa-angle-left"></i>
+                </button>
+                <button id="arrearsNextPageBtn" class="pagination-btn">
+                  <i class="fa-solid fa-angle-right"></i>
+                </button>
+                <button id="arrearsLastPageBtn" class="pagination-btn">
+                  <i class="fa-solid fa-angles-right"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </section>
 
