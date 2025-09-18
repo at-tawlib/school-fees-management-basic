@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../css/index.css" />
     <link rel="stylesheet" href="../css/modal.css" />
     <link rel="stylesheet" href="../css/student.css" />
+    <link rel="stylesheet" href="../css/view-fees.css" />
 
     <!-- Fontawesome files -->
     <link href="../assets/fontawesome/css/fontawesome.css" rel="stylesheet" />
@@ -270,7 +271,7 @@
               <i class="fa-solid fa-bars"></i>
             </button>
           </div>
-          
+
           <div id="studentsSidebar">
             <h3 id="totalStudentsNumber"></h3>
 
@@ -365,45 +366,49 @@
 
         <!-- -------------- VIEW FEES ----------------------- -->
         <section id="viewFeesSection" style="display: none">
-          <div class="grid-container">
-            <div class="elevated-container">
-              <h3>Filter Fees</h3>
-              <div class="flex-item">
-                <label for="filterFeesByAcademicYear">Year:</label>
-                <select id="filterFeesByAcademicYear"></select>
-              </div>
+          <div id="viewFeesSidebarMin" class="sidebarMin">
+            <button title="Toggle Sidebar" id="viewFeesToggleSidebar">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+          </div>
 
-              <div class="flex-item">
-                <label for="filterFeesByTerm">Term:</label>
-                <select id="filterFeesByTerm"></select>
-              </div>
-              <hr style="margin: 1rem 0rem" />
-              <br />
-              <button id="printFeesBtn" class="full-width bg-yellow">
-                <i class="fa-solid fa-print"></i> Print
-              </button>
-              <br />
-              <button id="btnAddFees" class="full-width">
-                <i class="fa-solid fa-plus"></i> Add fees
-              </button>
+          <div id="viewFeesSidebar">
+            <h3>Filter Fees</h3>
+            <div class="flex-item">
+              <label for="filterFeesByAcademicYear">Year:</label>
+              <select id="filterFeesByAcademicYear"></select>
             </div>
 
-            <div>
-              <table id="feesTable" class="table-rounded">
-                <thead id="feesTableHead">
-                  <tr>
-                    <th>#</th>
-                    <th>Class</th>
-                    <th>Academic year</th>
-                    <th>Term</th>
-                    <th>Fees</th>
-                    <th># billed</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="feesTableBody"></tbody>
-              </table>
+            <div class="flex-item">
+              <label for="filterFeesByTerm">Term:</label>
+              <select id="filterFeesByTerm"></select>
             </div>
+            <hr style="margin: 1rem 0rem" />
+            <br />
+            <button id="printFeesBtn" class="full-width bg-yellow">
+              <i class="fa-solid fa-print"></i> Print
+            </button>
+            <br />
+            <button id="btnAddFees" class="full-width">
+              <i class="fa-solid fa-plus"></i> Add fees
+            </button>
+          </div>
+
+          <div id="viewFeesContent">
+            <table id="feesTable" class="table-rounded">
+              <thead id="feesTableHead">
+                <tr>
+                  <th>#</th>
+                  <th>Class</th>
+                  <th>Academic year</th>
+                  <th>Term</th>
+                  <th>Fees</th>
+                  <th># billed</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="feesTableBody"></tbody>
+            </table>
           </div>
         </section>
 

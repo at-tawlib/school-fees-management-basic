@@ -10,6 +10,7 @@ import { showToast } from "./utils/toast.js";
 
 // DOM elements
 const elements = {
+  toggleSidebar: document.getElementById("viewFeesToggleSidebar"),
   // Tables
   feesTable: document.getElementById("feesTable"),
   feesTableBody: document.getElementById("feesTableBody"),
@@ -44,6 +45,7 @@ const elements = {
 
 // Event listeners setup
 const setupEventListeners = () => {
+  elements.toggleSidebar.addEventListener("click", handleToggleSidebar);
   // Print functionality
   elements.printFeesBtn.addEventListener("click", handlePrintFees);
 
@@ -135,6 +137,19 @@ const validateCurrentTermAndYear = async (academicYear, term) => {
     return false;
   }
 };
+
+function handleToggleSidebar() {
+  const sidebar = document.getElementById("viewFeesSidebar");
+  const studentContent = document.getElementById("viewFeesContent");
+
+  if (window.innerWidth <= 768) {
+    sidebar.classList.toggle("show");
+  } else {
+    sidebar.classList.toggle("hidden");
+  }
+
+  studentContent.classList.toggle("expanded");
+}
 
 // Handle add fees button click
 const handleAddFeesClick = async () => {
