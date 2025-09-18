@@ -667,8 +667,8 @@
 
         <!-------------- PAYMENTS  SECTION ----------------------->
         <section id="paymentsSection" style="display: none">
-          <h1 style="text-align: center;">Payments</h1>
-          <br/>
+          <h1 style="text-align: center">Payments</h1>
+          <br />
           <div class="flex-row align-center">
             <label for="paymentAcademicYear"><h3>Year:</h3></label>
             <select name="paymentAcademicYear" id="paymentAcademicYear" required></select>
@@ -744,6 +744,39 @@
               <!-- Load data from the css -->
             </tbody>
           </table>
+
+          <!-- Pagination  -->
+          <div id="paymentsPaginationContainer" class="pagination-container">
+            <div class="pagination-info">
+              <span id="paymentsPageInfo">Showing 0-0 of 0 payments</span>
+              <div style="width: 10px"></div>
+              <div class="right-controls">
+                <label for="paymentsPageSizeSelect">Show:</label>
+                <select id="paymentsPageSizeSelect" class="page-size-select">
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                <span>entries</span>
+              </div>
+            </div>
+
+            <div class="pagination-controls">
+              <button id="paymentsFirstPageBtn" class="pagination-btn" disabled>
+                <i class="fa-solid fa-angles-left"></i>
+              </button>
+              <button id="paymentsPrevPageBtn" class="pagination-btn" disabled>
+                <i class="fa-solid fa-angle-left"></i>
+              </button>
+              <button id="paymentsNextPageBtn" class="pagination-btn">
+                <i class="fa-solid fa-angle-right"></i>
+              </button>
+              <button id="paymentsLastPageBtn" class="pagination-btn">
+                <i class="fa-solid fa-angles-right"></i>
+              </button>
+            </div>
+          </div>
         </section>
 
         <!-- ------------ SETTINGS PAGE --------------------- -->
