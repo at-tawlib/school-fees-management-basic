@@ -127,13 +127,6 @@ function updatePaginationControls() {
   if (elements.lastPageBtn) {
     elements.lastPageBtn.disabled = currentPage >= totalPages;
   }
-
-  // Show/hide pagination if needed
-  if (totalPages <= 1) {
-    elements.paginationContainer.style.display = "none";
-  } else {
-    elements.paginationContainer.style.display = "flex";
-  }
 }
 
 function handleSearchAndFilter() {
