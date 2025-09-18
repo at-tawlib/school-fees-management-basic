@@ -6,6 +6,7 @@
     <title>School Fees Tracker</title>
     <link rel="stylesheet" href="../css/index.css" />
     <link rel="stylesheet" href="../css/modal.css" />
+    <link rel="stylesheet" href="../css/student.css" />
 
     <!-- Fontawesome files -->
     <link href="../assets/fontawesome/css/fontawesome.css" rel="stylesheet" />
@@ -264,94 +265,99 @@
 
         <!-------------- STUDENTS  SECTION ----------------------->
         <section id="studentsView" style="display: none">
-          <div class="grid-container">
-            <div>
-              <h3 id="totalStudentsNumber"></h3>
-              <table class="table-rounded">
-                <thead>
-                  <tr>
-                    <th>Class</th>
-                    <th>Students</th>
-                  </tr>
-                </thead>
-                <tbody id="studentsClassSummaryTableBody"></tbody>
-              </table>
-              <br />
-              <button id="addStudentBtn" class="full-width">
-                <i class="fa-solid fa-plus"></i> Add Student
-              </button>
-              <br />
-              <button id="printStudentsBtn" class="full-width bg-yellow">
-                <i class="fa-solid fa-print"></i> Print
-              </button>
+          <div id="studentsSidebarMin" class="sidebarMin">
+            <button title="Toggle Sidebar" id="studentToggleSidebar">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+          </div>
+          
+          <div id="studentsSidebar">
+            <h3 id="totalStudentsNumber"></h3>
+
+            <table class="table-rounded">
+              <thead>
+                <tr>
+                  <th>Class</th>
+                  <th>Students</th>
+                </tr>
+              </thead>
+              <tbody id="studentsClassSummaryTableBody"></tbody>
+            </table>
+            <br />
+            <button id="addStudentBtn" class="full-width">
+              <i class="fa-solid fa-plus"></i> Add Student
+            </button>
+            <br />
+            <button id="printStudentsBtn" class="full-width bg-yellow">
+              <i class="fa-solid fa-print"></i> Print
+            </button>
+          </div>
+
+          <div id="studentContent">
+            <div class="flex-row align-center">
+              <input
+                type="text"
+                id="searchStudentInput"
+                class="full-width"
+                placeholder="Search by name..."
+              />
+
+              <label for="studentClassFilter"><h3>Class:</h3></label>
+              <select name="studentClassFilter" id="studentClassFilter" required></select>
             </div>
 
             <div>
-              <div class="flex-row align-center">
-                <input
-                  type="text"
-                  id="searchStudentInput"
-                  class="full-width"
-                  placeholder="Search by name..."
-                />
+              <table id="studentsTable" class="table-rounded">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Other Names</th>
+                    <th>Class</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="studentsTableBody">
+                  <!-- Load data from the js -->
+                </tbody>
+              </table>
+            </div>
 
-                <label for="studentClassFilter"><h3>Class:</h3></label>
-                <select name="studentClassFilter" id="studentClassFilter" required></select>
+            <!-- Pagination Controls Top -->
+            <div
+              id="paginationContainer"
+              class="pagination-container"
+              style="
+                margin: 15px 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <div class="pagination-info">
+                <span id="pageInfo">Showing 1-10 of 51 students</span>
+                <select id="pageSizeSelect" style="margin-left: 10px">
+                  <option value="10">10 per page</option>
+                  <option value="25">25 per page</option>
+                  <option value="50">50 per page</option>
+                  <option value="100">100 per page</option>
+                </select>
               </div>
 
-              <div>
-                <table id="studentsTable" class="table-rounded">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>First Name</th>
-                      <th>Last Name</th>
-                      <th>Other Names</th>
-                      <th>Class</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="studentsTableBody">
-                    <!-- Load data from the js -->
-                  </tbody>
-                </table>
-              </div>
-
-              <!-- Pagination Controls Top -->
-              <div
-                id="paginationContainer"
-                class="pagination-container"
-                style="
-                  margin: 15px 0;
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                "
-              >
-                <div class="pagination-info">
-                  <span id="pageInfo">Showing 1-10 of 51 students</span>
-                  <select id="pageSizeSelect" style="margin-left: 10px">
-                    <option value="10">10 per page</option>
-                    <option value="25">25 per page</option>
-                    <option value="50">50 per page</option>
-                    <option value="100">100 per page</option>
-                  </select>
-                </div>
-
-                <div class="pagination-controls">
-                  <button id="firstPageBtn" class="pagination-btn" title="First Page">
-                    <i class="fa-solid fa-angles-left"></i>
-                  </button>
-                  <button id="prevPageBtn" class="pagination-btn" title="Previous Page">
-                    <i class="fa-solid fa-angle-left"></i>
-                  </button>
-                  <button id="nextPageBtn" class="pagination-btn" title="Next Page">
-                    <i class="fa-solid fa-angle-right"></i>
-                  </button>
-                  <button id="lastPageBtn" class="pagination-btn" title="Last Page">
-                    <i class="fa-solid fa-angles-right"></i>
-                  </button>
-                </div>
+              <div class="pagination-controls">
+                <button id="firstPageBtn" class="pagination-btn" title="First Page">
+                  <i class="fa-solid fa-angles-left"></i>
+                </button>
+                <button id="prevPageBtn" class="pagination-btn" title="Previous Page">
+                  <i class="fa-solid fa-angle-left"></i>
+                </button>
+                <button id="nextPageBtn" class="pagination-btn" title="Next Page">
+                  <i class="fa-solid fa-angle-right"></i>
+                </button>
+                <button id="lastPageBtn" class="pagination-btn" title="Last Page">
+                  <i class="fa-solid fa-angles-right"></i>
+                </button>
               </div>
             </div>
           </div>

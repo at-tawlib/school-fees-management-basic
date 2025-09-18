@@ -5,6 +5,7 @@ import { showToast } from "./utils/toast.js";
 
 // DOM Elements
 const elements = {
+  toggleSidebar: document.getElementById("studentToggleSidebar"),
   addStudentModal: document.getElementById("addStudentModal"),
   viewStudentModal: document.getElementById("viewStudentModal"),
   firstNameInput: document.getElementById("studentFirstNameInput"),
@@ -48,6 +49,7 @@ let filteredStudents = []; // Store filtered students
 
 // Event Listeners
 function initializeEventListeners() {
+  elements.toggleSidebar.addEventListener("click", handleToggleSidebar);
   elements.addStudentBtn.addEventListener("click", handleAddStudentClick);
   elements.printStudentsBtn.addEventListener("click", handlePrintStudents);
   elements.addStudentCloseX.addEventListener("click", handleModalClose);
@@ -147,6 +149,19 @@ function handleSearchAndFilter() {
 
   currentPage = 1; // Reset to first page when filtering
   displayCurrentPage();
+}
+
+function handleToggleSidebar() {
+  const sidebarContent = document.getElementById("studentsSidebar");
+  const studentContent = document.getElementById("studentContent");
+
+  if (window.innerWidth <= 768) {
+    sidebarContent.classList.toggle("show");
+  } else {
+    sidebarContent.classList.toggle("hidden");
+  }
+
+  studentContent.classList.toggle("expanded");
 }
 
 // Modal Management
@@ -618,13 +633,13 @@ function setRowContent(row, student, index, className) {
     <td> 
       <div style="display: flex; justify-content: center">
         <button class="btn-view-student text-button" title="View Student">
-          <i class="fa-solid fa-eye color-green"></i> View |
+          <i class="fa-solid fa-eye color-green"></i>
         </button>
         <button class="btn-edit-student text-button" title="Edit Student">
-          <i class="fa-solid fa-pen-to-square"></i> Edit |
+          <i class="fa-solid fa-pen-to-square"></i>
         </button>
         <button class="btn-delete-student text-button" title="Delete Student" style="color:red">
-          <i class="fa-solid fa-trash"></i> Delete
+          <i class="fa-solid fa-trash"></i>
         </button>
       </div>
     </td>
