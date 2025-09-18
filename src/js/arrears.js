@@ -10,6 +10,7 @@ let cachedArrearsData = [];
 
 // DOM elements
 const elements = {
+  toggleSidebar: document.getElementById("arrearsToggleSidebar"),
   yearSelect: document.getElementById("arrearsYear"),
   classSelect: document.getElementById("arrearsClass"),
   searchInput: document.getElementById("searchArrearsInput"),
@@ -21,6 +22,7 @@ const elements = {
 
 // Event listeners setup
 const setupEventListeners = () => {
+  elements.toggleSidebar.addEventListener("click", handleToggleSidebar);
   elements.classSelect.addEventListener("change", filterArrearsTable);
   elements.searchInput.addEventListener("input", filterArrearsTable);
   elements.printBtn.addEventListener("click", handlePrintArrears);
@@ -161,6 +163,19 @@ const setupArrearsSidebar = (data) => {
     elements.classesList.appendChild(option);
   });
 };
+
+function handleToggleSidebar() {
+  const sidebar = document.getElementById("arrearsSidebar");
+  const studentContent = document.getElementById("arrearsContent");
+
+  if (window.innerWidth <= 768) {
+    sidebar.classList.toggle("show");
+  } else {
+    sidebar.classList.toggle("hidden");
+  }
+
+  studentContent.classList.toggle("expanded");
+}
 
 // Handle print functionality
 const handlePrintArrears = async () => {

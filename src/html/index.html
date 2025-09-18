@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../css/modal.css" />
     <link rel="stylesheet" href="../css/student.css" />
     <link rel="stylesheet" href="../css/view-fees.css" />
+    <link rel="stylesheet" href="../css/arreas.css" />
 
     <!-- Fontawesome files -->
     <link href="../assets/fontawesome/css/fontawesome.css" rel="stylesheet" />
@@ -579,50 +580,54 @@
 
         <!-------------- ARREARS  SECTION ----------------------->
         <section id="arrearsSection" style="display: none">
-          <div class="grid-container">
-            <div class="elevated-container">
-              <h4>Arrears Statistics</h4>
-              <br />
+          <div class="sidebarMin">
+            <button title="Toggle Sidebar" id="arrearsToggleSidebar">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+          </div>
 
-              <div id="arrearsClassList"></div>
+          <div id="arrearsSidebar">
+            <h4>Arrears Statistics</h4>
+            <br />
+
+            <div id="arrearsClassList"></div>
+          </div>
+
+          <div id="arrearsContent">
+            <div class="flex-row align-center">
+              <label for="arrearsYear"><h3>Year:</h3></label>
+              <select name="arrearsYear" id="arrearsYear" required></select>
+
+              <label for="arrearsClass"><h3>Class:</h3></label>
+              <select name="arrearsClass" id="arrearsClass" required></select>
+
+              <input
+                type="text"
+                id="searchArrearsInput"
+                class="full-width"
+                placeholder="Search by name..."
+              />
+
+              <button id="printArrearsBtn" class="full-width bg-yellow" style="width: 10rem">
+                <i class="fa-solid fa-print"></i> Print
+              </button>
             </div>
+            <br />
 
-            <div>
-              <div class="flex-row align-center">
-                <label for="arrearsYear"><h3>Year:</h3></label>
-                <select name="arrearsYear" id="arrearsYear" required></select>
-
-                <label for="arrearsClass"><h3>Class:</h3></label>
-                <select name="arrearsClass" id="arrearsClass" required></select>
-
-                <input
-                  type="text"
-                  id="searchArrearsInput"
-                  class="full-width"
-                  placeholder="Search by name..."
-                />
-
-                <button id="printArrearsBtn" class="full-width bg-yellow" style="width: 10rem">
-                  <i class="fa-solid fa-print"></i> Print
-                </button>
-              </div>
-              <br />
-
-              <table id="arrearsTable" class="table-rounded">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Class</th>
-                    <th>Arrears</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="arrearsTableBody">
-                  <!-- Load data from the css -->
-                </tbody>
-              </table>
-            </div>
+            <table id="arrearsTable" class="table-rounded">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Class</th>
+                  <th>Arrears</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="arrearsTableBody">
+                <!-- Load data from the css -->
+              </tbody>
+            </table>
           </div>
         </section>
 
