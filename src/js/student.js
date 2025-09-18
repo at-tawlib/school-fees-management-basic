@@ -259,14 +259,14 @@ async function viewStudentDetails(student) {
       return;
     }
 
-    displayStudentDetailsModal(response.data);
+    displayStudentDetailsModal(response.data, student);
   } catch (error) {
     showToast("An error occurred while loading student details", "error");
     console.error("Error loading student details:", error);
   }
 }
 
-function displayStudentDetailsModal(studentData) {
+function displayStudentDetailsModal(studentData, studentInfo) {
   if (!elements.viewStudentModal || !elements.studentDetailsContent) {
     showToast("Student details modal not found", "error");
     return;
@@ -275,19 +275,18 @@ function displayStudentDetailsModal(studentData) {
   if (studentData.length === 0) {
     elements.studentDetailsContent.innerHTML = "<p>No details found for this student.</p>";
   } else {
-    elements.studentDetailsContent.innerHTML = generateStudentDetailsHTML(studentData);
+    elements.studentDetailsContent.innerHTML = generateStudentDetailsHTML(studentData, studentInfo);
   }
 
   elements.viewStudentModal.classList.add("active");
   document.body.style.overflow = "hidden";
 }
 
-function generateStudentDetailsHTML(studentData) {
+function generateStudentDetailsHTML(studentData, studentInfo) {
   const student = studentData[0]; // Get student basic info from first record
 
   // Group data by bills
   const billsMap = new Map();
-
   studentData.forEach((record) => {
     if (!billsMap.has(record.bill_id)) {
       billsMap.set(record.bill_id, {
@@ -326,19 +325,19 @@ function generateStudentDetailsHTML(studentData) {
         <h3>Student Information</h3>
         <div class="info-grid">
           <div class="info-item">
-            <strong>Name:</strong> ${student.student_name}
+            <strong>Name:</strong> ${studentInfo.first_name} ${studentInfo.last_name} 
           </div>
           <div class="info-item">
-            <strong>Other Names:</strong> ${student.other_names || ""}
+            <strong>Other Names:</strong> ${studentInfo.other_names || ""}
           </div>
           <div class="info-item">
             <strong>Registration Date:</strong> ${formatDate(student.registration_date)}
           </div>
           <div class="info-item">
-            <strong>Current Class:</strong> ${student.current_class || "Not Assigned"}
+            <strong>Current Class:</strong> ${studentInfo.class_name || "Not Assigned"}
           </div>
           <div class="info-item">
-            <strong>Current Year:</strong> ${student.current_year || "N/A"}
+            <strong>Current Year:</strong> ${studentInfo.academic_year || "N/A"}
           </div>
         </div>
       </div>
