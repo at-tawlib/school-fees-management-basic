@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="../css/arreas.css" />
     <link rel="stylesheet" href="../css/payment.css" />
     <link rel="stylesheet" href="../css/bills.css" />
+    <link rel="stylesheet" href="../css/dashboard.css" />
+    <link rel="stylesheet" href="../css/settings.css" />
 
     <!-- Fontawesome files -->
     <link href="../assets/fontawesome/css/fontawesome.css" rel="stylesheet" />
@@ -298,6 +300,8 @@
           </div>
 
           <div id="studentContent">
+            <h1 style="text-align: left">Students</h1>
+            <hr style="margin: 1rem 0rem" />
             <div class="flex-row align-center">
               <input
                 type="text"
@@ -398,6 +402,8 @@
           </div>
 
           <div id="viewFeesContent">
+            <h1 style="text-align: left">Fees</h1>
+            <hr style="margin: 1rem 0rem" />
             <table id="feesTable" class="table-rounded">
               <thead id="feesTableHead">
                 <tr>
@@ -596,6 +602,8 @@
           </div>
 
           <div id="arrearsContent">
+            <h1 style="text-align: left">Arrears</h1>
+            <hr style="margin: 1rem 0rem" />
             <div class="flex-row align-center">
               <label for="arrearsYear"><h3>Year:</h3></label>
               <select name="arrearsYear" id="arrearsYear" required></select>
@@ -668,8 +676,8 @@
 
         <!-------------- PAYMENTS  SECTION ----------------------->
         <section id="paymentsSection" style="display: none">
-          <h1 style="text-align: center">Payments</h1>
-          <br />
+          <h1 style="text-align: left">Payments</h1>
+          <hr style="margin: 1rem 0rem" />
           <div class="flex-row align-center">
             <label for="paymentAcademicYear"><h3>Year:</h3></label>
             <select name="paymentAcademicYear" id="paymentAcademicYear" required></select>

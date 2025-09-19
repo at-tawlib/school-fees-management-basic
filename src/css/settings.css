@@ -1,0 +1,12 @@
+#settingsSection {
+  /* display: flex;
+  flex-direction: column; */
+  height: 100vh;
+  margin: 1rem;
+  padding: 1rem;
+}
+
+#settingsClassTableBody td:nth-child(3),
+#settingsYearTableBody td:nth-child(3) {
+  text-align: right;
+}
