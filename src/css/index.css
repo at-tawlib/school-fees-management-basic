@@ -39,6 +39,7 @@ html {
   overflow: hidden;
   scroll-behavior: smooth;
   list-style-type: none;
+  font-size: 14px;
 }
 
 button,
@@ -320,12 +321,12 @@ header .navbar ul li span:hover {
 /* ****************** MAIN CONTENT *************************** */
 main {
   width: 100%;
-  margin-top: 5.4rem;
-  margin-left: 1rem;
+  margin-top: 3.6rem;
+  /* margin-left: 1rem;
   margin-right: 2rem;
   margin-bottom: 1rem;
   border-radius: 1rem;
-  padding: 20px;
+  padding: 20px; */
   overflow-y: auto;
   scrollbar-width: none;
   height: calc(100vh - 3.75rem); /* Adjust height to avoid overlap with the header */
