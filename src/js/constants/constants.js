@@ -2,7 +2,7 @@ export const CONTAINERS = {
   HOME: "home",
   STUDENTS_VIEW: "studentsView",
   VIEW_FEES: "viewFeesSection",
-  STUDENT_CLASS: "studentClass",
+  BILLS: "billsSection",
   PAYMENTS: "payments",
   DASHBOARD: "dashboard",
   ARREARS: "arrears",

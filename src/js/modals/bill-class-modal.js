@@ -1,4 +1,4 @@
-import { displayClassStudentsTable, resetCurrentFees, submitBill } from "../student-class.js";
+import { displayClassStudentsTable, resetCurrentFees, submitBill } from "../bills.js";
 
 const billClassModal = document.getElementById("billClassModal");
 const billStudentsMessage = document.getElementById("billStudentsMessage");

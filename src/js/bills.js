@@ -18,12 +18,12 @@ const addClassForm = document.getElementById("addClassForm");
 const studentClassTitle = document.getElementById("studentClassTitle");
 const filterStudentsByAcademicYear = document.getElementById("filterStudentsByAcademicYear");
 
-const studentClassTableContainer = document.getElementById("studentClassContainer");
-const studentClassTable = document.getElementById("studentClassTable");
-const studentClassTableBody = document.getElementById("studentClassTableBody");
-const studentClassTableFoot = document.getElementById("studentClassTableFoot");
-const notBilledStudentClassTable = document.getElementById("notBilledStudentClassTable");
-const notBilledStudentClassTableBody = document.getElementById("notBilledStudentClassTableBody");
+const billsTablesContainer = document.getElementById("billsTablesContainer");
+const billedClassTable = document.getElementById("billedClassTable");
+const billedClassTableBody = document.getElementById("billedClassTableBody");
+const billedClassTableFoot = document.getElementById("billedClassTableFoot");
+const notBilledClassTable = document.getElementById("notBilledClassTable");
+const notBilledClassTableBody = document.getElementById("notBilledClassTableBody");
 
 const searchStudentClassInput = document.getElementById("searchStudentClassInput");
 
@@ -42,7 +42,7 @@ let defaultTerm;
 let defaultYear;
 let userSession;
 
-export async function setupStudentsClassSection() {
+export async function setupBillsSection() {
   defaultYear = await getDefaultYearSetting();
   defaultTerm = await getDefaultTermSetting();
   classTerm = { text: defaultTerm.setting_text, value: defaultTerm.setting_value };
@@ -50,7 +50,7 @@ export async function setupStudentsClassSection() {
   userSession = await window.app.getSession();
 
   addClassForm.style.display = "none";
-  studentClassTableContainer.style.display = "none";
+  billsTablesContainer.style.display = "none";
   await setUpAcademicYearsSelect(filterStudentsByAcademicYear);
   filterStudentsByAcademicYear.value = defaultYear.setting_value;
   await setupClassesSidebar(defaultYear.setting_value);
@@ -105,7 +105,7 @@ async function setupClassesSidebar(year) {
 filterStudentsByAcademicYear.addEventListener("change", async function () {
   await setupClassesSidebar(this.value);
   addClassForm.style.display = "none";
-  studentClassTableContainer.style.display = "none";
+  billsTablesContainer.style.display = "none";
 });
 
 paidStatusSelect.addEventListener("change", async function () {
@@ -114,7 +114,7 @@ paidStatusSelect.addEventListener("change", async function () {
     return;
   }
 
-  const rows = studentClassTableBody.getElementsByTagName("tr");
+  const rows = billedClassTableBody.getElementsByTagName("tr");
   for (let row of rows) {
     const arrears = Number(row.getAttribute("data-arrears"));
     if (this.value === "withArrears" && arrears > 0) {
@@ -128,13 +128,13 @@ paidStatusSelect.addEventListener("change", async function () {
 });
 
 document.getElementById("printBillBtn").addEventListener("click", () => {
-  if (!studentClassTable) {
+  if (!billedClassTable) {
     alert("No table found to print!");
     return;
   }
 
   // Clone the table to modify it without affecting the original
-  const tableClone = studentClassTable.cloneNode(true);
+  const tableClone = billedClassTable.cloneNode(true);
 
   // Remove the last two column (status and actions column)
   const columnsToRemove = [6, 5];
@@ -252,7 +252,7 @@ document.getElementById("addStudentsSaveBtn").addEventListener("click", async fu
   }
 
   showToast("Records saved successfully", "success");
-  setupStudentsClassSection();
+  setupBillsSection();
 });
 
 document.getElementById("clearAddStudentsForm").addEventListener("click", () => {
@@ -262,7 +262,7 @@ document.getElementById("clearAddStudentsForm").addEventListener("click", () => 
 
 document
   .getElementById("cancelAddStudentsForm")
-  .addEventListener("click", async () => await setupStudentsClassSection());
+  .addEventListener("click", async () => await setupBillsSection());
 
 function openAddStudentsToClassModal() {
   addStudentsToClassModal.classList.add("active");
@@ -421,7 +421,7 @@ async function setupNoClassStudentsTable() {
 
 function resetAddStudentForm() {
   addClassForm.style.display = "block";
-  studentClassTableContainer.style.display = "none";
+  billsTablesContainer.style.display = "none";
 
   setUpClassSelect(addClassFormClass);
   addClassFormClass.disabled = false;
@@ -437,10 +437,10 @@ searchStudentClassInput.addEventListener("input", filterStudentsClassTable);
 
 export async function displayClassStudentsTable() {
   addClassForm.style.display = "none";
-  studentClassTableContainer.style.display = "block";
-  studentClassTableBody.innerHTML = "";
-  studentClassTableFoot.innerHTML = "";
-  notBilledStudentClassTableBody.innerHTML = "";
+  billsTablesContainer.style.display = "block";
+  billedClassTableBody.innerHTML = "";
+  billedClassTableFoot.innerHTML = "";
+  notBilledClassTableBody.innerHTML = "";
   studentClassTitle.textContent = "";
   studentClassTitle.textContent = `${currentClass.className} (${currentClass.academicYear}) - ${classTerm.text} term`;
 
@@ -473,15 +473,15 @@ export async function displayClassStudentsTable() {
     }
 
     if (studentsResp.data.length === 0) {
-      studentClassTable.style.display = "none";
-      notBilledStudentClassTable.style.display = "none";
+      billedClassTable.style.display = "none";
+      notBilledClassTable.style.display = "none";
       studentClassTitle.textContent = `No students found for ${currentClass.className} for ${currentClass.academicYear} academic year.`;
       showToast("No students found for this class", "error");
       return;
     }
 
-    studentClassTable.style.display = "none";
-    notBilledStudentClassTable.style.display = "";
+    billedClassTable.style.display = "none";
+    notBilledClassTable.style.display = "";
     studentsResp.data.forEach((item, index) => {
       const row = document.createElement("tr");
       row.setAttribute("data-student-id", item.student_id);
@@ -500,7 +500,7 @@ export async function displayClassStudentsTable() {
         .querySelector("#btnRemoveStudent")
         .addEventListener("click", () => removeStudentFromClass(item));
 
-      notBilledStudentClassTableBody.appendChild(row);
+      notBilledClassTableBody.appendChild(row);
     });
     return;
   }
@@ -579,7 +579,7 @@ export async function displayClassStudentsTable() {
 
       if (item.discount_amount > 0) row.style.background = "rgba(0, 255, 0, 0.1)";
 
-      studentClassTableBody.appendChild(row);
+      billedClassTableBody.appendChild(row);
       billedCount += 1;
     } else {
       row.setAttribute("data-student-id", item.student_id);
@@ -606,7 +606,7 @@ export async function displayClassStudentsTable() {
         .querySelector("#btnRemoveStudent")
         .addEventListener("click", () => removeStudentFromClass(item));
 
-      notBilledStudentClassTableBody.appendChild(row);
+      notBilledClassTableBody.appendChild(row);
       notBilledCount += 1;
     }
   });
@@ -625,7 +625,7 @@ export async function displayClassStudentsTable() {
     { totalFeeAmount: 0, totalPayments: 0, totalBalance: 0 }
   );
 
-  studentClassTableFoot.innerHTML = `
+  billedClassTableFoot.innerHTML = `
     <tr>
       <th colspan="2" class="bold-text">Totals</th>
       <th class="color-blue bold-text">${fCurrency(totals.totalFeeAmount)}</th>
@@ -636,11 +636,11 @@ export async function displayClassStudentsTable() {
     </tr>
   `;
 
-  if (billedCount > 0) studentClassTable.style.display = "";
-  else studentClassTable.style.display = "none";
+  if (billedCount > 0) billedClassTable.style.display = "";
+  else billedClassTable.style.display = "none";
 
-  if (notBilledCount <= 0) notBilledStudentClassTable.style.display = "none";
-  else notBilledStudentClassTable.style.display = "";
+  if (notBilledCount <= 0) notBilledClassTable.style.display = "none";
+  else notBilledClassTable.style.display = "";
 }
 
 async function createTermButtons(activeTermId) {
@@ -671,7 +671,7 @@ async function createTermButtons(activeTermId) {
 
 function filterStudentsClassTable() {
   const searchValue = searchStudentClassInput.value.toLowerCase();
-  const tableRows = studentClassTableBody.getElementsByTagName("tr");
+  const tableRows = billedClassTableBody.getElementsByTagName("tr");
 
   for (let row of tableRows) {
     const cells = row.getElementsByTagName("td");
@@ -808,7 +808,7 @@ document.getElementById("billClassBtn").addEventListener("click", async function
   }
 
   if (checkBilled.exists) {
-    const rows = notBilledStudentClassTableBody.getElementsByTagName("tr");
+    const rows = notBilledClassTableBody.getElementsByTagName("tr");
     if (rows.length === 0) {
       showToast("All students in this class have been billed", "error");
       return;
@@ -845,7 +845,7 @@ document.getElementById("billClassBtn").addEventListener("click", async function
 
 export const submitBill = async () => {
   // get student ids from the table
-  const rows = notBilledStudentClassTableBody.getElementsByTagName("tr");
+  const rows = notBilledClassTableBody.getElementsByTagName("tr");
   const idsArray = Array.from(rows).map((row) => row.getAttribute("data-student-id"));
 
   const response = await window.api.billClassStudents(idsArray, currentFees.id);
@@ -958,6 +958,20 @@ document.getElementById("addStudentsToClassModalBtn").addEventListener("click", 
   showToast("Records saved successfully", "success");
   await displayClassStudentsTable();
 });
+
+document.getElementById("billsToggleSidebar").addEventListener("click", handleToggleSidebar);
+function handleToggleSidebar() {
+  const sidebar = document.getElementById("billsSidebar");
+  const studentContent = document.getElementById("billsContent");
+
+  if (window.innerWidth <= 768) {
+    sidebar.classList.toggle("show");
+  } else {
+    sidebar.classList.toggle("hidden");
+  }
+
+  studentContent.classList.toggle("expanded");
+}
 
 function resetStudentToAddModal() {
   studentToAddId.value = "";

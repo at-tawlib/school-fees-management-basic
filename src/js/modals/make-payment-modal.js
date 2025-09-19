@@ -1,4 +1,4 @@
-import { displayClassStudentsTable } from "../student-class.js";
+import { displayClassStudentsTable } from "../bills.js";
 import { fCurrency } from "../utils/format-currency.js";
 import { showToast } from "../utils/toast.js";
 

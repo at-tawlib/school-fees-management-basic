@@ -1,4 +1,4 @@
-import { setupStudentsClassSection } from "./student-class.js";
+import { setupBillsSection } from "./bills.js";
 import { CONTAINERS } from "./constants/constants.js";
 import { setUpPaymentsSection } from "./payments.js";
 import { initStudentsSection } from "./student.js";
@@ -55,8 +55,8 @@ document.getElementById("navFees").addEventListener("click", async () => {
 });
 
 document.getElementById("navClasses").addEventListener("click", () => {
-  showHideFeesContainer(CONTAINERS.STUDENT_CLASS);
-  setupStudentsClassSection();
+  showHideFeesContainer(CONTAINERS.BILLS);
+  setupBillsSection();
 });
 
 document.getElementById("navArrears").addEventListener("click", () => {
@@ -115,8 +115,8 @@ document.getElementById("goToFeesBtn").addEventListener("click", () => {
 document.getElementById("goToBillsBtn").addEventListener("click", () => {
   navItems[0].classList.remove("active");
   navItems[3].classList.add("active");
-  showHideFeesContainer(CONTAINERS.STUDENT_CLASS);
-  setupStudentsClassSection();
+  showHideFeesContainer(CONTAINERS.BILLS);
+  setupBillsSection();
 });
 
 document.getElementById("goToPaymentsBtn").addEventListener("click", () => {

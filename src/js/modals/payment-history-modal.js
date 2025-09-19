@@ -1,4 +1,4 @@
-import { classTerm, currentClass } from "../student-class.js";
+import { classTerm, currentClass } from "../bills.js";
 import { fCurrency } from "../utils/format-currency.js";
 import { formatDate } from "../utils/format-date.js";
 
