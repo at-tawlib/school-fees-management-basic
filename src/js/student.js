@@ -283,8 +283,6 @@ function displayStudentDetailsModal(studentData, studentInfo) {
 }
 
 function generateStudentDetailsHTML(studentData, studentInfo) {
-  const student = studentData[0]; // Get student basic info from first record
-
   // Group data by bills
   const billsMap = new Map();
   studentData.forEach((record) => {
@@ -320,101 +318,205 @@ function generateStudentDetailsHTML(studentData, studentInfo) {
   const bills = Array.from(billsMap.values());
 
   return `
-    <div class="student-details-container">
-      <div class="student-basic-info">
-        <h3>Student Information</h3>
-        <div class="info-grid">
-          <div class="info-item">
-            <strong>Name:</strong> ${studentInfo.first_name} ${studentInfo.last_name} 
-          </div>
-          <div class="info-item">
-            <strong>Other Names:</strong> ${studentInfo.other_names || ""}
-          </div>
-          <div class="info-item">
-            <strong>Registration Date:</strong> ${formatDate(student.registration_date)}
-          </div>
-          <div class="info-item">
-            <strong>Current Class:</strong> ${studentInfo.class_name || "Not Assigned"}
-          </div>
-          <div class="info-item">
-            <strong>Current Year:</strong> ${studentInfo.academic_year || "N/A"}
+      <div class="details-container">
+        <!-- Student Information Section -->
+        <div class="section">
+          <h4 class="section-title">
+            <i class="fa-solid fa-user"></i>
+            Student Information
+          </h4>
+
+          <div class="details-grid">
+            <div class="detail-item">
+              <span class="detail-label">STUDENT NAME</span>
+              <span class="detail-value">${studentInfo.first_name} ${studentInfo.last_name}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">OTHER NAMES</span>
+              <span class="detail-value">${studentInfo.other_names || "-"}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">CURRENT CLASS</span>
+              <span class="detail-value">${studentInfo.class_name || "Not Assigned"}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">CURRENT YEAR</span>
+              <span class="detail-value">${studentInfo.academic_year || "N/A"}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="student-billing-info">
-        <h3>Billing & Payment History</h3>
-        ${bills.length === 0 ? "<p>No billing records found.</p>" : generateBillsHTML(bills)}
+        <!-- Billing History Section -->
+        <h4 class="section-title">
+          <i class="fa-solid fa-receipt"></i>
+          Billing History
+        </h4>
+
+      <div class="details-section">
+        ${
+          bills.length === 0
+            ? '<div class="no-data">No billing records found.</div>'
+            : generateMinimalBillsHTML(bills)
+        }
       </div>
-    </div>
+      </div>
+      <style>
+        .section {
+          margin-bottom: 32px;
+        }
+
+        .section:last-child {
+          margin-bottom: 0;
+        }
+
+        .section-title {
+          font-size: 14px;
+          font-weight: 600;
+          color: #2d3748;
+          margin-bottom: 16px;
+          padding-bottom: 8px;
+          border-bottom: 1px solid #718096;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .section-icon {
+          width: 12px;
+          height: 12px;
+          opacity: 0.7;
+        }
+
+        .details-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          gap: 12px;
+        }
+
+        .detail-item {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .detail-label {
+          font-size: 12px;
+          font-weight: 600;
+          text-transform: uppercase;
+          color: #718096;
+          letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+          font-size: 14px;
+          color: #2d3748;
+          font-weight: 500;
+        }
+
+        .detail-value.highlight {
+          color: #667eea;
+          font-weight: 600;
+        }
+      </style>
   `;
 }
 
-function generateBillsHTML(bills) {
+function generateMinimalBillsHTML(bills) {
   return bills
-    .map(
-      (bill) => `
-    <div class="bill-card">
-      <div class="bill-header">
-        <h4>${bill.bill_class} - ${bill.term} Term (${bill.bill_year})</h4>
-        <span class="bill-status ${bill.bill_status.toLowerCase().replace(/\s+/g, "-")}">${
-        bill.bill_status
-      }</span>
-      </div>
-      
-      <div class="bill-details">
-        <div class="bill-amounts">
-          <div class="amount-item">
-            <strong>Original Fee:</strong> ₵${bill.original_fee.toFixed(2)}
-          </div>
-          <div class="amount-item">
-            <strong>Discount:</strong> ₵${bill.discount_amount.toFixed(2)}
-          </div>
-          <div class="amount-item">
-            <strong>Net Amount:</strong> ₵${bill.net_amount.toFixed(2)}
-          </div>
-          <div class="amount-item">
-            <strong>Total Paid:</strong> ₵${bill.bill_total_paid.toFixed(2)}
-          </div>
-          <div class="amount-item">
-            <strong>Balance:</strong> ₵${bill.bill_balance.toFixed(2)}
-          </div>
-        </div>
+    .map((bill) => {
+      const statusClass = bill.bill_status.toLowerCase().replace(/\s+/g, "-");
+      const statusColor = getStatusColor(bill.bill_status);
 
-        <div class="payments-section">
-          <h5>Payments</h5>
-          ${
-            bill.payments.length === 0
-              ? "<p>No payments recorded.</p>"
-              : generatePaymentsHTML(bill.payments)
-          }
-        </div>
-      </div>
-    </div>
-  `
-    )
+      return `
+          <div class="section bill-section" style="background-color: ${statusColor}">
+            <h4 class="section-title">
+              ${bill.bill_class} - ${bill.term} Term (${bill.bill_year})
+              <span class="status-badge" style="background-color: ${statusColor}">
+                ${bill.bill_status.toUpperCase()}
+              </span>
+            </h4>
+
+            <div class="details-grid">
+              <div class="detail-item">
+                <span class="detail-label">ORIGINAL FEE</span>
+                <span class="detail-value">₵${bill.original_fee.toFixed(2)}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">DISCOUNT</span>
+                <span class="detail-value">₵${bill.discount_amount.toFixed(2)}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">NET AMOUNT</span>
+                <span class="detail-value">₵${bill.net_amount.toFixed(2)}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">TOTAL PAID</span>
+                <span class="detail-value">₵${bill.bill_total_paid.toFixed(2)}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">BALANCE</span>
+                <span class="detail-value">₵${bill.bill_balance.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <!-- Payments Subsection -->
+            <div>
+              <br />
+              <h4>
+                <i class="fa-solid fa-credit-card"></i>
+                Payments
+              </h4>
+              ${
+                bill.payments.length === 0
+                  ? '<div class="no-payments">No payments recorded.</div>'
+                  : generateMinimalPaymentsHTML(bill.payments)
+              }
+            </div>
+          </div>
+          <style>
+            .bill-section {
+              margin-bottom: 30px;
+              padding: 20px;
+              background-color: #f8f9fa;
+              border-radius: 8px;
+              border-left: 4px solid #007bff;
+            }
+          </style>
+      `;
+    })
     .join("");
 }
 
-function generatePaymentsHTML(payments) {
-  return `
-    <div class="payments-list">
-      ${payments
-        .map(
-          (payment) => `
-        <div class="payment-item">
-          <div class="payment-details">
-            <strong>₵${payment.payment_amount.toFixed(2)}</strong>
-            <span class="payment-mode">${payment.payment_mode}</span>
-            <span class="payment-date">${formatDate(payment.date_paid)}</span>
-          </div>
-          <div class="payment-ref">${payment.payment_details}</div>
+function generateMinimalPaymentsHTML(payments) {
+  return payments
+    .map((payment) => {
+      return `
+        <div class="payment-row">
+          <span>${formatDate(payment.date_paid)}</span>
+          <span>₵${payment.payment_amount.toFixed(2)}</span>
+          <span> ${payment.payment_mode.toUpperCase()} </span>
         </div>
-      `
-        )
-        .join("")}
-    </div>
-  `;
+        <style>
+          .payment-row {
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            padding: 0.2rem 0;
+          }
+        </style>
+      `;
+    })
+    .join("");
+}
+
+function getStatusColor(status) {
+  const statusColors = {
+    "fully paid": "#d1fae5",
+    "partially paid": "#fef3c7",
+    unpaid: "#fee2e2",
+    overdue: "#fecaca",
+  };
+  return statusColors[status.toLowerCase()] || "#f3f4f6";
 }
 
 function formatDate(dateString) {

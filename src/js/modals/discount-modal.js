@@ -1,5 +1,6 @@
 import { displayClassStudentsTable } from "../bills.js";
 import { fCurrency } from "../utils/format-currency.js";
+import { showToast } from "../utils/toast.js";
 
 document
   .getElementById("discountModalCloseXBtn")
