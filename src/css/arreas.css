@@ -5,21 +5,7 @@
   padding: 0;
 }
 
-#arrearsSidebar {
-  width: 20rem;
-  padding: 1rem;
-  margin-left: 2rem;
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  transition: width 0.3s ease-in-out;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
 
-#arrearsSidebar.hidden {
-  display: none;
-}
 
 #arrearsContent {
   width: 100%;
@@ -32,22 +18,6 @@
 }
 
 @media (max-width: 768px) {
-  #arrearsSidebar {
-    display: none;
-    position: fixed;
-    top: 3.5rem;
-    left: 0;
-    height: 100%;
-    z-index: 1000;
-    background: white;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  }
-
-  #arrearsSidebar.show {
-    display: block;
-    margin-left: 2rem;
-  }
-
   #arrearsContent {
     margin-left: 2rem;
   }
