@@ -17,6 +17,18 @@ const elements = {
   viewStudentModal: document.getElementById("viewStudentModal"),
   studentDetailsContent: document.getElementById("studentDetailsContent"),
   viewStudentCloseX: document.getElementById("viewStudentCloseX"),
+  // Payment modal elements
+  paymentModal: document.getElementById("arrearsPaymentModal"),
+  paymentModalContent: document.getElementById("paymentModalContent"),
+  paymentModalClose: document.getElementById("paymentModalClose"),
+  paymentForm: document.getElementById("paymentForm"),
+  paymentStudentName: document.getElementById("paymentStudentName"),
+  unpaidBillsContainer: document.getElementById("unpaidBillsContainer"),
+  totalPaymentAmount: document.getElementById("totalPaymentAmount"),
+  paymentModeSelect: document.getElementById("paymentModeSelect"),
+  paymentDetailsInput: document.getElementById("paymentDetailsInput"),
+  submitPaymentBtn: document.getElementById("submitPaymentBtn"),
+  cancelPaymentBtn: document.getElementById("cancelPaymentBtn"),
   // Pagination elements
   paginationContainer: document.getElementById("arrearsPaginationContainer"),
   pageInfo: document.getElementById("arrearsPageInfo"),
@@ -30,6 +42,8 @@ const elements = {
 // State
 let userSession;
 let cachedArrearsData = [];
+let selectedStudentForPayment = null;
+let unpaidBills = [];
 
 // Pagination State
 let currentPage = 1;
@@ -46,12 +60,369 @@ function initializeEventListeners() {
   elements.printBtn.addEventListener("click", handlePrintArrears);
   elements.viewStudentCloseX?.addEventListener("click", handleViewModalClose);
 
+  // Payment modal event listeners
+  elements.paymentModalClose?.addEventListener("click", handlePaymentModalClose);
+  elements.cancelPaymentBtn?.addEventListener("click", handlePaymentModalClose);
+  elements.submitPaymentBtn?.addEventListener("click", handlePaymentSubmit);
+
   // Pagination event listeners
   elements.prevPageBtn?.addEventListener("click", () => goToPage(currentPage - 1));
   elements.nextPageBtn?.addEventListener("click", () => goToPage(currentPage + 1));
   elements.firstPageBtn?.addEventListener("click", () => goToPage(1));
   elements.lastPageBtn?.addEventListener("click", () => goToPage(totalPages));
   elements.pageSizeSelect?.addEventListener("change", handlePageSizeChange);
+
+  // Close modals when clicking outside
+  window.addEventListener("click", (event) => {
+    if (event.target === elements.viewStudentModal) {
+      hideViewModal();
+    }
+    if (event.target === elements.paymentModal) {
+      hidePaymentModal();
+    }
+  });
+}
+
+// Payment Modal Functions
+async function handlePaymentClick(studentId) {
+  try {
+    selectedStudentForPayment = studentId;
+
+    // Get complete student record to find unpaid bills
+    const response = await window.api.getCompleteStudentRecord(studentId);
+
+    if (!response.success) {
+      showToast(`Error loading student bills: ${response.message}`, "error");
+      return;
+    }
+
+    // Process the data to find unpaid bills
+    const studentData = response.data;
+    const billsMap = new Map();
+
+    // Group by bill_id and find unpaid bills
+    studentData.forEach((record) => {
+      if (!billsMap.has(record.bill_id)) {
+        billsMap.set(record.bill_id, {
+          bill_id: record.bill_id,
+          bill_class: record.bill_class,
+          term: record.term,
+          bill_year: record.bill_year,
+          original_fee: record.original_fee,
+          discount_amount: record.discount_amount,
+          net_amount: record.net_amount,
+          bill_date: record.bill_date,
+          bill_total_paid: record.bill_total_paid,
+          bill_balance: record.bill_balance,
+          bill_status: record.bill_status,
+          student_name: record.student_name,
+        });
+      }
+    });
+
+    const allBills = Array.from(billsMap.values());
+    unpaidBills = allBills.filter(
+      (bill) => bill.bill_status !== "FULLY PAID" && bill.bill_balance > 0
+    );
+
+    if (unpaidBills.length === 0) {
+      showToast("This student has no outstanding fees to pay", "info");
+      return;
+    }
+
+    showPaymentModal();
+  } catch (error) {
+    showToast("An error occurred while loading payment details", "error");
+    console.error("Error loading payment details:", error);
+  }
+}
+
+function showPaymentModal() {
+  if (!elements.paymentModal || unpaidBills.length === 0) return;
+
+  // Set student name
+  if (elements.paymentStudentName && unpaidBills[0]) {
+    elements.paymentStudentName.textContent = unpaidBills[0].student_name;
+  }
+
+  // Generate unpaid bills HTML
+  generateUnpaidBillsHTML();
+
+  // Reset form
+  resetPaymentForm();
+
+  // Show modal
+  elements.paymentModal.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function generateUnpaidBillsHTML() {
+  if (!elements.unpaidBillsContainer) return;
+
+  const billsHTML = unpaidBills
+    .map(
+      (bill) => `
+    <div class="bill-item">
+      <div class="bill-header">
+        <label class="bill-checkbox-label">
+          <input 
+            type="checkbox" 
+            class="bill-checkbox" 
+            data-bill-id="${bill.bill_id}"
+            data-amount="${bill.bill_balance}"
+          >
+          <div class="bill-info">
+            <div class="bill-title">
+              ${bill.bill_class} - ${bill.term} Term (${bill.bill_year})
+            </div>
+            <div class="bill-details">
+              <span class="bill-amount">Balance: ${fCurrency(bill.bill_balance)}</span>
+              <span class="bill-status status-${bill.bill_status
+                .toLowerCase()
+                .replace(/\s+/g, "-")}">
+                ${bill.bill_status}
+              </span>
+            </div>
+          </div>
+        </label>
+      </div>
+      
+      <div class="custom-amount-section" style="display: none;">
+        <label class="custom-amount-label">
+          Custom Amount (Max: ${fCurrency(bill.bill_balance)}):
+          <input 
+            type="number" 
+            class="custom-amount-input"
+            data-bill-id="${bill.bill_id}"
+            min="0.01"
+            max="${bill.bill_balance}"
+            step="0.01"
+            placeholder="Enter amount"
+          >
+        </label>
+        <small class="custom-amount-note">Leave empty to pay full balance</small>
+      </div>
+    </div>
+  `
+    )
+    .join("");
+
+  elements.unpaidBillsContainer.innerHTML = billsHTML;
+
+  // Add event listeners to checkboxes
+  const checkboxes = elements.unpaidBillsContainer.querySelectorAll(".bill-checkbox");
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", handleBillCheckboxChange);
+  });
+
+  // Add event listeners to custom amount inputs
+  const customInputs = elements.unpaidBillsContainer.querySelectorAll(".custom-amount-input");
+  customInputs.forEach((input) => {
+    input.addEventListener("input", updateTotalPaymentAmount);
+  });
+}
+
+function handleBillCheckboxChange(event) {
+  const checkbox = event.target;
+  const billItem = checkbox.closest(".bill-item");
+  const customAmountSection = billItem.querySelector(".custom-amount-section");
+
+  if (checkbox.checked) {
+    customAmountSection.style.display = "block";
+  } else {
+    customAmountSection.style.display = "none";
+    const customInput = customAmountSection.querySelector(".custom-amount-input");
+    customInput.value = "";
+  }
+
+  updateTotalPaymentAmount();
+}
+
+function updateTotalPaymentAmount() {
+  let total = 0;
+  const checkboxes = elements.unpaidBillsContainer.querySelectorAll(".bill-checkbox:checked");
+
+  checkboxes.forEach((checkbox) => {
+    const billId = checkbox.dataset.billId;
+    const maxAmount = parseFloat(checkbox.dataset.amount);
+    const customInput = elements.unpaidBillsContainer.querySelector(
+      `.custom-amount-input[data-bill-id="${billId}"]`
+    );
+
+    if (customInput && customInput.value) {
+      const customAmount = parseFloat(customInput.value);
+      total += Math.min(customAmount, maxAmount);
+    } else {
+      total += maxAmount;
+    }
+  });
+
+  if (elements.totalPaymentAmount) {
+    elements.totalPaymentAmount.textContent = fCurrency(total);
+  }
+
+  // Enable/disable submit button based on selection
+  if (elements.submitPaymentBtn) {
+    elements.submitPaymentBtn.disabled = total === 0;
+  }
+}
+
+function resetPaymentForm() {
+  if (elements.paymentForm) {
+    elements.paymentForm.reset();
+  }
+
+  if (elements.totalPaymentAmount) {
+    elements.totalPaymentAmount.textContent = fCurrency(0);
+  }
+
+  if (elements.submitPaymentBtn) {
+    elements.submitPaymentBtn.disabled = true;
+  }
+
+  // Uncheck all bills and hide custom amount sections
+  const checkboxes = elements.unpaidBillsContainer?.querySelectorAll(".bill-checkbox");
+  checkboxes?.forEach((checkbox) => {
+    checkbox.checked = false;
+    const billItem = checkbox.closest(".bill-item");
+    const customAmountSection = billItem.querySelector(".custom-amount-section");
+    customAmountSection.style.display = "none";
+  });
+}
+
+function handlePaymentModalClose() {
+  hidePaymentModal();
+}
+
+function hidePaymentModal() {
+  if (elements.paymentModal) {
+    elements.paymentModal.classList.remove("active");
+    document.body.style.overflow = "auto";
+    selectedStudentForPayment = null;
+    unpaidBills = [];
+  }
+}
+
+async function handlePaymentSubmit(event) {
+  event.preventDefault();
+
+  // Disable submit button to prevent double submission
+  if (elements.submitPaymentBtn) {
+    elements.submitPaymentBtn.disabled = true;
+    elements.submitPaymentBtn.innerHTML =
+      '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+  }
+
+  try {
+    // Collect selected bills and amounts
+    const selectedPayments = [];
+    const checkboxes = elements.unpaidBillsContainer.querySelectorAll(".bill-checkbox:checked");
+
+    checkboxes.forEach((checkbox) => {
+      const billId = parseInt(checkbox.dataset.billId);
+      const maxAmount = parseFloat(checkbox.dataset.amount);
+      const customInput = elements.unpaidBillsContainer.querySelector(
+        `.custom-amount-input[data-bill-id="${billId}"]`
+      );
+
+      let amount = maxAmount;
+      if (customInput && customInput.value) {
+        const customAmount = parseFloat(customInput.value);
+
+        // Validate custom amount
+        if (isNaN(customAmount) || customAmount <= 0) {
+          throw new Error(`Invalid amount entered for bill ID ${billId}`);
+        }
+
+        if (customAmount > maxAmount) {
+          throw new Error(`Amount for bill ID ${billId} cannot exceed ${fCurrency(maxAmount)}`);
+        }
+
+        amount = customAmount;
+      }
+
+      selectedPayments.push({
+        bill_id: billId,
+        amount: amount,
+      });
+    });
+
+    if (selectedPayments.length === 0) {
+      showToast("Please select at least one bill to pay", "error");
+      return;
+    }
+
+    // Validate payment mode
+    const paymentMode = elements.paymentModeSelect?.value;
+    if (!paymentMode) {
+      showToast("Please select a payment mode", "error");
+      return;
+    }
+
+    const paymentData = {
+      studentId: selectedStudentForPayment,
+      payments: selectedPayments,
+      paymentMode: paymentMode,
+      paymentDetails: elements.paymentDetailsInput?.value || "",
+    };
+
+    // Process each payment
+    let successCount = 0;
+    let failureCount = 0;
+    const failedPayments = [];
+
+    for (const payment of selectedPayments) {
+      try {
+        const response = await window.api.makePayment({
+          studentId: paymentData.studentId,
+          billId: payment.bill_id,
+          amount: payment.amount,
+          paymentMode: paymentData.paymentMode,
+          paymentDetails: paymentData.paymentDetails,
+        });
+
+        if (response.success) {
+          successCount++;
+        } else {
+          failureCount++;
+          failedPayments.push({
+            billId: payment.bill_id,
+            error: response.message || "Unknown error",
+          });
+        }
+      } catch (error) {
+        failureCount++;
+        failedPayments.push({
+          billId: payment.bill_id,
+          error: error.message || "Network error",
+        });
+      }
+    }
+
+    // Show appropriate message based on results
+    if (successCount > 0 && failureCount === 0) {
+      showToast(`Successfully processed ${successCount} payment(s)`, "success");
+      hidePaymentModal();
+      // Refresh the arrears display
+      await displayArrears();
+    } else if (successCount > 0 && failureCount > 0) {
+      showToast(`${successCount} payment(s) successful, ${failureCount} failed`, "warning");
+      console.error("Failed payments:", failedPayments);
+      // Don't close modal so user can retry failed payments
+    } else {
+      showToast(`All payments failed. Please try again.`, "error");
+      console.error("All failed payments:", failedPayments);
+    }
+  } catch (error) {
+    showToast(error.message || "An error occurred while processing payments", "error");
+    console.error("Payment processing error:", error);
+  } finally {
+    // Re-enable submit button
+    if (elements.submitPaymentBtn) {
+      elements.submitPaymentBtn.disabled = false;
+      elements.submitPaymentBtn.innerHTML = '<i class="fa-solid fa-check"></i> Process Payment';
+    }
+  }
 }
 
 // Pagination Functions
@@ -157,6 +528,7 @@ async function viewStudentDetails(studentId) {
       return;
     }
 
+    console.log(response.data);
     // Find student info from arrears data
     const studentInfo = findStudentInfoById(studentId);
     displayStudentDetailsModal(response.data, studentInfo);
@@ -594,9 +966,12 @@ function setRowContent(row, arrear, index) {
     <td>${arrear.classes.join(", ")}</td>
     <td>${fCurrency(arrear.total_outstanding_balance)}</td>
     <td>
-      <div style="display: flex; justify-content: center">
+      <div style="display: flex; justify-content: center; gap: 8px">
         <button class="btn-view-arrears text-button" title="View Student Details">
           <i class="fa-solid fa-eye color-green"></i> View
+        </button>
+        <button class="btn-pay-arrears text-button" title="Make Payment">
+          <i class="fa-solid fa-credit-card color-blue"></i> Pay
         </button>
       </div>
     </td>
@@ -606,6 +981,10 @@ function setRowContent(row, arrear, index) {
 function attachRowEventListeners(row, arrear) {
   row.querySelector(".btn-view-arrears").addEventListener("click", () => {
     viewStudentDetails(arrear.student_id);
+  });
+
+  row.querySelector(".btn-pay-arrears").addEventListener("click", () => {
+    handlePaymentClick(arrear.student_id);
   });
 }
 

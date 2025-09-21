@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="../css/bills.css" />
     <link rel="stylesheet" href="../css/dashboard.css" />
     <link rel="stylesheet" href="../css/settings.css" />
+    <link rel="stylesheet" href="../css/arreas-payment-modal.css" />
 
     <!-- Fontawesome files -->
     <link href="../assets/fontawesome/css/fontawesome.css" rel="stylesheet" />
@@ -1413,6 +1414,102 @@
             </div>
           </form>
         </div>
+      </div>
+    </div>
+
+    <!-- Arrears Payment Modal -->
+    <div id="arrearsPaymentModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title"><i class="fa-solid fa-credit-card"></i> Make Payment</h3>
+            <p class="modal-subtitle"></p>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="paymentModalClose">
+            &times;
+          </button>
+        </header>
+
+        <div class="payment-modal-content modal-body">
+          <div class="payment-student-info">
+            <h4>Payment for: <span id="paymentStudentName" class="student-name"></span></h4>
+          </div>
+
+          <form id="paymentForm" class="payment-form">
+            <!-- Outstanding Bills Section -->
+            <div class="payment-section">
+              <h4 class="payment-section-title">
+                <i class="fa-solid fa-receipt"></i>
+                Select Bills to Pay
+              </h4>
+              <div id="unpaidBillsContainer" class="unpaid-bills-container">
+                <!-- Bills will be populated dynamically -->
+              </div>
+            </div>
+
+            <!-- Payment Details Section -->
+            <div class="payment-section">
+              <h4 class="payment-section-title">
+                <i class="fa-solid fa-money-bill"></i>
+                Payment Details
+              </h4>
+
+              <div class="payment-details-grid">
+                <div class="form-group">
+                  <label for="paymentModeSelect" class="form-label">Payment Mode *</label>
+                  <select id="paymentModeSelect" class="form-control" required>
+                    <option value="cash">Cash</option>
+                    <option value="bank">Bank Transfer</option>
+                    <option value="cheque">Cheque</option>
+                    <option value="mobile_money">Mobile Money</option>
+                    <option value="card">Card</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="paymentDetailsInput" class="form-label">Payment Details</label>
+                  <input
+                    type="text"
+                    id="paymentDetailsInput"
+                    class="form-control"
+                    placeholder="Reference number, bank name, etc."
+                  />
+                  <small class="form-help">Optional: Enter any additional payment details</small>
+                </div>
+              </div>
+
+              <div class="payment-total">
+                <div class="total-amount-display">
+                  <span class="total-label">Total Payment Amount:</span>
+                  <span id="totalPaymentAmount" class="total-amount">₵0.00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+              <button type="button" id="cancelPaymentBtn" class="btn btn-secondary">
+                <i class="fa-solid fa-times"></i>
+                Cancel
+              </button>
+              <button type="submit" id="submitPaymentBtn" class="btn btn-primary" disabled>
+                <i class="fa-solid fa-check"></i>
+                Process Payment
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- <div class="modal-actions">
+          <button type="button" id="cancelPaymentBtn" class="btn btn-secondary">
+            <i class="fa-solid fa-times"></i>
+            Cancel
+          </button>
+          <button type="submit" id="submitPaymentBtn" class="btn btn-primary" disabled>
+            <i class="fa-solid fa-check"></i>
+            Process Payment
+          </button>
+        </div> -->
       </div>
     </div>
 
