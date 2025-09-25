@@ -2,14 +2,10 @@ export const CONTAINERS = {
   HOME: "home",
   STUDENTS_VIEW: "studentsView",
   VIEW_FEES: "viewFeesSection",
-  STUDENT_CLASS: "studentClass",
+  BILLS: "billsSection",
   PAYMENTS: "payments",
   DASHBOARD: "dashboard",
-  SETTINGS: "settings",
-};
-
-export const ADMIN_CONTAINERS = {
-  DASHBOARD: "dashboard",
+  ARREARS: "arrears",
   SETTINGS: "settings",
 };
 

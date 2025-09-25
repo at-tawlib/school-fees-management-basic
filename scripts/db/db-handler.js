@@ -882,6 +882,17 @@ class DatabaseHandler {
     }
   }
 
+  getAllOutstandingBalances() {
+    try {
+      const stmt = this.db.prepare(`SELECT * FROM outstandingBalancesView;`);
+      const records = stmt.all();
+      return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error in getAllOutStandingBalances: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   makePayment(data) {
     try {
       const stmt = this.db.prepare(`
@@ -1262,6 +1273,19 @@ class DatabaseHandler {
         `);
       const records = stmt.all(filter.academicYearId, filter.termId, filter.academicYearId);
       return { success: true, data: records };
+    } catch (error) {
+      console.error("Database Error: ", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  getCompleteStudentRecord(id) {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT * FROM completeStudentsRecordsView WHERE student_id = ? ORDER BY bill_year DESC, term, payment_id;
+        `);
+      const record = stmt.all(id);
+      return { success: true, data: record };
     } catch (error) {
       console.error("Database Error: ", error);
       return { success: false, message: error.message };

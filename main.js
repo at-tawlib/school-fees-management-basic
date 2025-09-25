@@ -462,6 +462,16 @@ ipcMain.handle("get-single-bill-details", async (_, data) => {
   }
 });
 
+// Get All Outstanding balances
+ipcMain.handle("get-all-outstanding-balances", async (_, data) => {
+  try {
+    const result = await dbHandler.getAllOutstandingBalances(data);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 // get all student fees
 ipcMain.handle("get-all-fees", async () => {
   try {
@@ -689,6 +699,16 @@ ipcMain.handle("get-total-discount-given", async (_, data) => {
   }
 });
 
+// Get complete student records
+ipcMain.handle("get-complete-student-record", async (_, id) => {
+  try {
+    const result = await dbHandler.getCompleteStudentRecord(id);
+    return result;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+});
 // Handle confirmation dialog with custom message
 ipcMain.handle("show-confirmation-dialog", async (_, message) => {
   const result = await dialog.showMessageBox(mainWindow, {

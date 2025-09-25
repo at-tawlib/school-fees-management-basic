@@ -45,6 +45,8 @@ contextBridge.exposeInMainWorld("api", {
   getTotalDiscountGiven: (data) => ipcRenderer.invoke("get-total-discount-given", data),
   deletePayment: (data) => ipcRenderer.invoke("delete-payment", data),
   getSingleBillDetails: (data) => ipcRenderer.invoke("get-single-bill-details", data),
+  getAllOutstandingBalances: () => ipcRenderer.invoke("get-all-outstanding-balances"),
+  getCompleteStudentRecord: (id) => ipcRenderer.invoke("get-complete-student-record", id),
 });
 
 contextBridge.exposeInMainWorld("user", {

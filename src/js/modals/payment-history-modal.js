@@ -1,11 +1,10 @@
-import { classTerm, currentClass } from "../student-class.js";
+import { classTerm, currentClass } from "../bills.js";
 import { fCurrency } from "../utils/format-currency.js";
 import { formatDate } from "../utils/format-date.js";
 
 const paymentHistoryModal = document.getElementById("paymentHistoryModal");
 
 export const showPaymentHistoryModal = async (data, classDetails = null) => {
-  console.log("payment history modal: ", classDetails);
   const discountContainer = document.getElementById("paymentHistoryModalDiscountContainer");
   const discountText = document.getElementById("paymentHistoryModalDiscount");
   const classYearText = document.getElementById("paymentHistoryFeesText");
@@ -19,7 +18,7 @@ export const showPaymentHistoryModal = async (data, classDetails = null) => {
     return;
   }
 
-  paymentHistoryModal.style.display = "block";
+  openModal();
   document.getElementById("paymentHistoryStudentName").textContent = data.student_name;
 
   const tableBody = document.getElementById("paymentHistoryTableBody");
@@ -81,13 +80,21 @@ export const showPaymentHistoryModal = async (data, classDetails = null) => {
     balanceText.textContent = fCurrency(data.balance);
   }
 
-  paymentHistoryModal.style.display = "block";
+  openModal();
+};
+
+const openModal = () => {
+  paymentHistoryModal.classList.add("active");
+  document.body.style.overflow = "hidden";
+};
+
+const closeModal = () => {
+  paymentHistoryModal.classList.remove("active");
+  document.body.style.overflow = "auto";
 };
 
 document
   .getElementById("paymentHistoryClassCloseXBtn")
-  .addEventListener("click", () => (paymentHistoryModal.style.display = "none"));
+  .addEventListener("click", () => closeModal());
 
-document
-  .getElementById("paymentHistoryOkModalBtn")
-  .addEventListener("click", () => (paymentHistoryModal.style.display = "none"));
+document.getElementById("paymentHistoryOkModalBtn").addEventListener("click", () => closeModal());

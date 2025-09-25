@@ -1,0 +1,7 @@
+#paymentsSection {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: 1rem;
+  padding: 1rem;
+}

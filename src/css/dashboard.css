@@ -1,4 +1,11 @@
-/* ********************** DASHBOARD CSS ********************** */
+#dashboardSection {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: 1rem;
+  padding: 1rem;
+}
+
 .metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
@@ -58,6 +65,18 @@
   font-size: 1rem;
 }
 
-#updatePasswordModal {
-  align-items: center;
+#dashboardClassSummaryTableBody td:nth-child(4) {
+  color: var(--color-blue);
+  font-weight: 700;
+}
+
+#dashboardClassSummaryTableBody td:nth-child(6) {
+  color: var(--color-green);
+  font-weight: 700;
+}
+
+#dashboardClassSummaryTableBody td:nth-child(7) {
+  color: var(--color-red);
+  font-weight: 700;
+  text-align: start;
 }

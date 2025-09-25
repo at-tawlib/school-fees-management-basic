@@ -12,112 +12,245 @@ import {
 } from "./utils/setup-select-inputs.js";
 import { showToast } from "./utils/toast.js";
 
+// State management
 let userSession;
-const tableBody = document.getElementById("paymentsTableBody");
-const paymentTable = document.getElementById("paymentsTable");
-const classSelect = document.getElementById("paymentClass");
-const termSelect = document.getElementById("paymentTerm");
-const yearSelect = document.getElementById("paymentAcademicYear");
+
+// Pagination State
+let currentPage = 1;
+let pageSize = 10;
+let totalPayments = 0;
+let totalPages = 0;
+let allPaymentsData = []; // Store all payments data
+let filteredPaymentsData = []; // Store filtered payments data
+
+// DOM Elements
+const elements = {
+  tableBody: document.getElementById("paymentsTableBody"),
+  paymentTable: document.getElementById("paymentsTable"),
+  classSelect: document.getElementById("paymentClass"),
+  termSelect: document.getElementById("paymentTerm"),
+  yearSelect: document.getElementById("paymentAcademicYear"),
+  searchPaymentsInput: document.getElementById("searchPaymentsInput"),
+  // Pagination elements
+  paginationContainer: document.getElementById("paymentsPaginationContainer"),
+  pageInfo: document.getElementById("paymentsPageInfo"),
+  pageSizeSelect: document.getElementById("paymentsPageSizeSelect"),
+  prevPageBtn: document.getElementById("paymentsPrevPageBtn"),
+  nextPageBtn: document.getElementById("paymentsNextPageBtn"),
+  firstPageBtn: document.getElementById("paymentsFirstPageBtn"),
+  lastPageBtn: document.getElementById("paymentsLastPageBtn"),
+  totalPaymentsNumber: document.getElementById("totalPaymentsNumber"),
+};
+
 const columnCheckboxes = document.querySelectorAll(".toggle-column");
 
-const searchPaymentsInput = document.getElementById("searchPaymentsInput");
+// Event Listeners Setup
+const setupEventListeners = () => {
+  elements.classSelect.addEventListener("change", () => handleSearchAndFilter());
+  elements.termSelect.addEventListener("change", () => displayPaymentsTable());
+  elements.yearSelect.addEventListener("change", () => displayPaymentsTable());
+  elements.searchPaymentsInput.addEventListener("input", () => handleSearchAndFilter());
 
-classSelect.addEventListener("change", () => filterPaymentsTable());
-termSelect.addEventListener("change", () => displayPaymentsTable());
-yearSelect.addEventListener("change", () => displayPaymentsTable());
-searchPaymentsInput.addEventListener("input", () => filterPaymentsTable());
+  // Pagination event listeners
+  elements.prevPageBtn?.addEventListener("click", () => goToPage(currentPage - 1));
+  elements.nextPageBtn?.addEventListener("click", () => goToPage(currentPage + 1));
+  elements.firstPageBtn?.addEventListener("click", () => goToPage(1));
+  elements.lastPageBtn?.addEventListener("click", () => goToPage(totalPages));
+  elements.pageSizeSelect?.addEventListener("change", handlePageSizeChange);
 
-export const setUpPaymentsSection = async () => {
-  userSession = await window.app.getSession();
-  const defaultYear = await getDefaultYearSetting();
-  const defaultTerm = await getDefaultTermSetting();
-  await setUpAcademicYearsSelect(paymentAcademicYear, false);
-  await setUpClassSelect(paymentClass, true);
-  await setUpTermsSelect(paymentTerm, false);
+  // Column visibility checkboxes
+  columnCheckboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", function () {
+      updateTable();
+      saveCheckboxState();
+    });
+  });
 
-  paymentAcademicYear.value = defaultYear.setting_value;
-  paymentTerm.value = defaultTerm.setting_value;
-
-  await displayPaymentsTable();
+  // Print button
+  document.getElementById("printPaymentsBtn").addEventListener("click", handlePrintPayments);
 };
 
-const filterPaymentsTable = () => {
-  const searchValue = searchPaymentsInput.value.toLowerCase();
-  const selectedClass = classSelect.value;
-  const selectedTerm = termSelect.value;
-  const selectedYear = yearSelect.value;
+// Pagination Functions
+function handlePageSizeChange() {
+  pageSize = parseInt(elements.pageSizeSelect.value);
+  currentPage = 1; // Reset to first page when changing page size
+  displayCurrentPage();
+}
 
-  const tableRows = tableBody.querySelectorAll("tr");
-  tableRows.forEach((row) => {
-    const rowName = row.getAttribute("data-name").toLowerCase();
-    const rowClass = row.getAttribute("data-class-id");
-    const rowTerm = row.getAttribute("data-term-id");
-    const rowYear = row.getAttribute("data-year-id");
+function goToPage(page) {
+  if (page >= 1 && page <= totalPages) {
+    currentPage = page;
+    displayCurrentPage();
+  }
+}
 
-    const classMatch = selectedClass === "all" || rowClass.includes(selectedClass);
-    const termMatch = selectedTerm === "all" || rowTerm.includes(selectedTerm);
-    const yearMatch = selectedYear === "all" || rowYear.includes(selectedYear);
+function calculatePagination() {
+  totalPayments = filteredPaymentsData.length;
+  totalPages = Math.ceil(totalPayments / pageSize);
 
-    // Show or hide row based on filter match
-    if (classMatch && termMatch && yearMatch && rowName.includes(searchValue)) {
-      row.style.display = "";
-    } else {
-      row.style.display = "none";
-    }
-  });
-};
+  // Ensure current page is valid
+  if (currentPage > totalPages && totalPages > 0) {
+    currentPage = totalPages;
+  } else if (currentPage < 1) {
+    currentPage = 1;
+  }
+}
 
-export const displayPaymentsTable = async () => {
-  // TODO: get payments for year and term getYearTermPayments
-  // const response = await window.api.getAllPayments();
-  const response = await window.api.getYearTermPayments({
-    academicYearId: yearSelect.value,
-    termId: termSelect.value,
-  });
-  if (!response.success) {
-    showToast(response.message || "An error occurred", "error");
-    return;
+function displayCurrentPage() {
+  calculatePagination();
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const currentPayments = filteredPaymentsData.slice(startIndex, endIndex);
+
+  renderPaymentsTable(currentPayments, startIndex);
+  updatePaginationControls();
+  updatePaymentsCount();
+}
+
+function updatePaginationControls() {
+  if (!elements.paginationContainer) return;
+
+  // Update page info
+  const startRecord = totalPayments > 0 ? (currentPage - 1) * pageSize + 1 : 0;
+  const endRecord = Math.min(currentPage * pageSize, totalPayments);
+
+  if (elements.pageInfo) {
+    elements.pageInfo.textContent = `Showing ${startRecord}-${endRecord} of ${totalPayments} payments`;
   }
 
-  const data = response.data;
-  tableBody.innerHTML = "";
-  data.forEach((payment, index) => {
-    const row = tableBody.insertRow(index);
+  // Update button states
+  if (elements.prevPageBtn) {
+    elements.prevPageBtn.disabled = currentPage <= 1;
+  }
+  if (elements.nextPageBtn) {
+    elements.nextPageBtn.disabled = currentPage >= totalPages;
+  }
+  if (elements.firstPageBtn) {
+    elements.firstPageBtn.disabled = currentPage <= 1;
+  }
+  if (elements.lastPageBtn) {
+    elements.lastPageBtn.disabled = currentPage >= totalPages;
+  }
+}
 
-    // Add data-* attributes for filtering
+function updatePaymentsCount() {
+  const totalAll = allPaymentsData.length;
+  let countText = `Total Payments: ${totalAll}`;
+
+  if (elements.totalPaymentsNumber) {
+    elements.totalPaymentsNumber.textContent = countText;
+  }
+}
+
+// Filter payments based on search and selections
+const handleSearchAndFilter = () => {
+  const searchValue = elements.searchPaymentsInput.value.toLowerCase();
+  const selectedClass = elements.classSelect.value;
+
+  filteredPaymentsData = allPaymentsData.filter((payment) => {
+    const studentName = payment.student_name.toLowerCase();
+    const classId = payment.class_id.toString();
+
+    const classMatch = selectedClass === "all" || classId === selectedClass;
+    const searchMatch = !searchValue || studentName.includes(searchValue);
+
+    return classMatch && searchMatch;
+  });
+
+  currentPage = 1; // Reset to first page when filtering
+  displayCurrentPage();
+};
+
+// Main setup function
+export const setUpPaymentsSection = async () => {
+  try {
+    userSession = await window.app.getSession();
+    const defaultYear = await getDefaultYearSetting();
+    const defaultTerm = await getDefaultTermSetting();
+
+    await setUpAcademicYearsSelect(elements.yearSelect, false);
+    await setUpClassSelect(elements.classSelect, true);
+    await setUpTermsSelect(elements.termSelect, false);
+
+    elements.yearSelect.value = defaultYear.setting_value;
+    elements.termSelect.value = defaultTerm.setting_value;
+
+    setupEventListeners();
+    await displayPaymentsTable();
+  } catch (error) {
+    console.error("Error setting up payments section:", error);
+    showToast("Failed to initialize payments section", "error");
+  }
+};
+
+// Display payments table - Updated for pagination
+export const displayPaymentsTable = async () => {
+  try {
+    const response = await window.api.getYearTermPayments({
+      academicYearId: elements.yearSelect.value,
+      termId: elements.termSelect.value,
+    });
+
+    if (!response.success) {
+      showToast(response.message || "An error occurred", "error");
+      return;
+    }
+
+    // Store all payments data and initialize pagination
+    allPaymentsData = response.data;
+    filteredPaymentsData = [...allPaymentsData];
+    currentPage = 1;
+
+    displayCurrentPage();
+    await loadCheckboxState();
+    updateTable();
+  } catch (error) {
+    console.error("Error loading payments data:", error);
+    showToast("An error occurred while loading payments", "error");
+  }
+};
+
+// Render payments table with pagination
+const renderPaymentsTable = (data, startIndex = 0) => {
+  elements.tableBody.innerHTML = "";
+
+  data.forEach((payment, index) => {
+    const row = elements.tableBody.insertRow();
+
+    // Add data-* attributes for filtering (keeping for compatibility)
     row.setAttribute("data-class-id", payment.class_id);
     row.setAttribute("data-year-id", payment.year_id);
     row.setAttribute("data-term-id", payment.term_id);
     row.setAttribute("data-name", payment.student_name);
 
     row.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${payment.student_name}</td>
-        <td>${payment.class_name}</td>
-        <td>${payment.academic_year}</td>
-        <td>${payment.term}</td>
-        <td class="color-blue bold-text">${fCurrency(payment.fee_amount)}</td>
-        <td class="color-green bold-text">${fCurrency(payment.payment_amount)}</td>
-        <td>${payment.payment_mode}</td>
-        <td>${payment.payment_details}</td>
-        <td>${formatDate(payment.date_paid)}</td>
-        <td>
-         <div style="display: flex; justify-content: center">
-            <button id="btnPaymentView"  class="text-button" title="View Payment">
-              <i class="fa-solid fa-eye color-green"></i>
-            </button>
+      <td>${startIndex + index + 1}</td>
+      <td>${payment.student_name}</td>
+      <td>${payment.class_name}</td>
+      <td>${payment.academic_year}</td>
+      <td>${payment.term}</td>
+      <td class="color-blue bold-text">${fCurrency(payment.fee_amount)}</td>
+      <td class="color-green bold-text">${fCurrency(payment.payment_amount)}</td>
+      <td>${payment.payment_mode}</td>
+      <td>${payment.payment_details}</td>
+      <td>${formatDate(payment.date_paid)}</td>
+      <td>
+       <div style="display: flex; justify-content: center">
+          <button id="btnPaymentView"  class="text-button" title="View Payment">
+            <i class="fa-solid fa-eye color-green"></i>
+          </button>
+          <button id="btnPaymentEdit"  class="text-button" title="Edit Payment">
+            <i class="fa-solid fa-edit"></i>
+          </button>
+          <button id="bntPaymentDelete"  class="text-button" title="Delete Payment">
+            <i class="fa-solid fa-trash color-red"></i>
+          </button>
+        </div>
+      </td>
+    `;
 
-            <button id="btnPaymentEdit"  class="text-button" title="Edit Payment">
-              <i class="fa-solid fa-edit"></i>
-            </button>
-
-            <button id="bntPaymentDelete"  class="text-button" title="Delete Payment">
-              <i class="fa-solid fa-trash color-red"></i>
-            </button>
-          </div>
-        </td>
-      `;
-
+    // Add event listeners for action buttons
     row.querySelector("#btnPaymentView").addEventListener("click", async () => {
       const classDetails = {
         className: payment.class_name,
@@ -135,11 +268,9 @@ export const displayPaymentsTable = async () => {
       await handleDeletePayment(payment.payment_id);
     });
   });
-
-  await loadCheckboxState();
-  updateTable();
 };
 
+// Payment operations
 const handleEditPayment = (payment) => {
   openUpdatePaymentModal(payment);
 };
@@ -155,22 +286,28 @@ const handleDeletePayment = async (paymentId) => {
   );
 
   if (confirmed) {
-    const response = await window.api.deletePayment(paymentId);
-    if (!response.success) {
-      showToast(response.message || "An error occurred", "error");
-      return;
+    try {
+      const response = await window.api.deletePayment(paymentId);
+      if (!response.success) {
+        showToast(response.message || "An error occurred", "error");
+        return;
+      }
+      showToast(response.message || "Payment deleted successfully", "success");
+      await displayPaymentsTable();
+    } catch (error) {
+      console.error("Error deleting payment:", error);
+      showToast("An error occurred while deleting payment", "error");
     }
-    showToast(response.message || "Payment deleted successfully", "success");
-    await displayPaymentsTable();
   }
 };
 
+// Column visibility functions
 const updateTable = () => {
   columnCheckboxes.forEach((checkbox) => {
     const columnIndex = parseInt(checkbox.dataset.column);
     const isChecked = checkbox.checked;
 
-    paymentTable
+    elements.paymentTable
       .querySelectorAll(`td:nth-child(${columnIndex}), th:nth-child(${columnIndex})`)
       .forEach((cell) => {
         cell.style.display = isChecked ? "" : "none";
@@ -188,51 +325,101 @@ const saveCheckboxState = () => {
 };
 
 const loadCheckboxState = async () => {
-  const savedState = await window.app.getPaymentsColumnVisibility();
+  try {
+    const savedState = await window.app.getPaymentsColumnVisibility();
 
-  if (savedState) {
-    columnCheckboxes.forEach((checkbox) => {
-      const columnIndex = checkbox.getAttribute("data-column");
-      checkbox.checked = savedState[columnIndex] !== undefined ? savedState[columnIndex] : true;
-    });
-  } else {
-    // If no saved data, check all by default
+    if (savedState) {
+      columnCheckboxes.forEach((checkbox) => {
+        const columnIndex = checkbox.getAttribute("data-column");
+        checkbox.checked = savedState[columnIndex] !== undefined ? savedState[columnIndex] : true;
+      });
+    } else {
+      // If no saved data, check all by default
+      columnCheckboxes.forEach((checkbox) => (checkbox.checked = true));
+    }
+  } catch (error) {
+    console.error("Error loading checkbox state:", error);
+    // Default to all checked if error
     columnCheckboxes.forEach((checkbox) => (checkbox.checked = true));
   }
 };
 
-columnCheckboxes.forEach((checkbox) => {
-  checkbox.addEventListener("change", function () {
-    updateTable();
-    saveCheckboxState();
-  });
-});
-
-document.getElementById("printPaymentsBtn").addEventListener("click", async () => {
-  const paymentsTable = document.getElementById("paymentsTable");
-
-  if (!paymentsTable) {
+const handlePrintPayments = async () => {
+  if (!elements.paymentTable) {
     showToast("No table found to print", "error");
     return;
   }
 
-  const academicYearSetting = await getDefaultYearSetting();
+  try {
+    const academicYearSetting = await getDefaultYearSetting();
+    const processedTable = preparePaymentsTableForPrint(
+      elements.paymentTable,
+      filteredPaymentsData
+    );
+    const heading = createPaymentsPrintHeading(academicYearSetting);
 
-  // Clone the table to modify it without affecting the original
-  const tableClone = paymentsTable.cloneNode(true);
-  tableClone.querySelectorAll("tr").forEach((row, index) => {
-    if (row.cells[10]) row.removeChild(row.cells[10]);
+    printPage(heading, processedTable);
+  } catch (error) {
+    console.error("Error printing payments:", error);
+    showToast("An error occurred while printing", "error");
+  }
+};
+
+function preparePaymentsTableForPrint(table, paymentsToPrint) {
+  const tableClone = table.cloneNode(true);
+  const tbody = tableClone.querySelector("tbody");
+
+  // Clear existing rows
+  tbody.innerHTML = "";
+
+  // Add all filtered payments to print table
+  paymentsToPrint.forEach((payment, index) => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${payment.student_name}</td>
+      <td>${payment.class_name}</td>
+      <td>${payment.academic_year}</td>
+      <td>${payment.term}</td>
+      <td class="color-blue bold-text">${fCurrency(payment.fee_amount)}</td>
+      <td class="color-green bold-text">${fCurrency(payment.payment_amount)}</td>
+      <td>${payment.payment_mode}</td>
+      <td>${payment.payment_details}</td>
+      <td>${formatDate(payment.date_paid)}</td>
+    `;
+
+    tbody.appendChild(row);
   });
 
-  // Remove background colors
+  // Remove action column header (last column)
+  const headerRow = tableClone.querySelector("thead tr");
+  if (headerRow.cells[10]) {
+    headerRow.removeChild(headerRow.cells[10]);
+  }
+
+  // Remove background colors for print
   tableClone.querySelectorAll("tr, td, th").forEach((el) => {
     el.style.backgroundColor = "white";
   });
 
-  // Add a heading above the table
-  const heading = `<h2 style="text-align: center; margin-bottom: 10px;">Payments for ${
-    academicYearSetting?.setting_text || ""
-  } Academic Year</h2>`;
+  return tableClone.outerHTML;
+}
 
-  printPage(heading, tableClone.outerHTML);
-});
+function createPaymentsPrintHeading(academicYearSetting) {
+  const yearText = academicYearSetting?.setting_text || "Academic Year";
+  const totalFiltered = filteredPaymentsData.length;
+  const totalAll = allPaymentsData.length;
+
+  let subtitle = "";
+  if (totalFiltered !== totalAll) {
+    subtitle = `<p style="text-align: center; margin: 5px 0;">Showing ${totalFiltered} of ${totalAll} payments</p>`;
+  }
+
+  return `
+    <h2 style="text-align: center; margin-bottom: 10px;">
+      Payments for ${yearText}
+    </h2>
+    ${subtitle}
+  `;
+}

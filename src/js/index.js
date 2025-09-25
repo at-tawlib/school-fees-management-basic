@@ -1,4 +1,4 @@
-import { setupStudentsClassSection } from "./student-class.js";
+import { setupBillsSection } from "./bills.js";
 import { CONTAINERS } from "./constants/constants.js";
 import { setUpPaymentsSection } from "./payments.js";
 import { initStudentsSection } from "./student.js";
@@ -9,6 +9,7 @@ import { openLoginModal } from "./modals/login-modal.js";
 import { initDashboard } from "./dashboard.js";
 import { initSettings } from "./settings.js";
 import { openUpdatePassword } from "./modals/update-password-modal.js";
+import { setUpArrearsSection } from "./arrears.js";
 
 const navItems = document.querySelectorAll(".navbar ul li span");
 
@@ -31,9 +32,7 @@ navItems.forEach((item) => item.addEventListener("click", handleNavClick));
 
 document.getElementById("navRefreshBtn").addEventListener("click", () => window.app.reloadApp());
 
-document
-  .getElementById("navAbout")
-  .addEventListener("click", () => (document.getElementById("aboutModal").style.display = ""));
+document.getElementById("navAbout").addEventListener("click", () => showAboutModal());
 
 document.getElementById("navHome").addEventListener("click", () => {
   showHideFeesContainer(CONTAINERS.HOME);
@@ -56,8 +55,13 @@ document.getElementById("navFees").addEventListener("click", async () => {
 });
 
 document.getElementById("navClasses").addEventListener("click", () => {
-  showHideFeesContainer(CONTAINERS.STUDENT_CLASS);
-  setupStudentsClassSection();
+  showHideFeesContainer(CONTAINERS.BILLS);
+  setupBillsSection();
+});
+
+document.getElementById("navArrears").addEventListener("click", () => {
+  showHideFeesContainer(CONTAINERS.ARREARS);
+  setUpArrearsSection();
 });
 
 document.getElementById("navPayments").addEventListener("click", () => {
@@ -92,9 +96,7 @@ document.getElementById("adminLogout").addEventListener("click", async () => {
   window.app.reloadApp();
 });
 
-document
-  .getElementById("aboutCloseXBtn")
-  .addEventListener("click", () => (document.getElementById("aboutModal").style.display = "none"));
+document.getElementById("aboutCloseXBtn").addEventListener("click", () => closeAboutModal());
 
 document.getElementById("goToStudentsBtn").addEventListener("click", () => {
   navItems[0].classList.remove("active");
@@ -113,8 +115,8 @@ document.getElementById("goToFeesBtn").addEventListener("click", () => {
 document.getElementById("goToBillsBtn").addEventListener("click", () => {
   navItems[0].classList.remove("active");
   navItems[3].classList.add("active");
-  showHideFeesContainer(CONTAINERS.STUDENT_CLASS);
-  setupStudentsClassSection();
+  showHideFeesContainer(CONTAINERS.BILLS);
+  setupBillsSection();
 });
 
 document.getElementById("goToPaymentsBtn").addEventListener("click", () => {
@@ -141,6 +143,16 @@ const setUpAdminView = async () => {
     document.getElementById("adminTitle").style.display = "none";
     document.getElementById("appHeader").style.background = "";
   }
+};
+
+const showAboutModal = () => {
+  document.getElementById("aboutModal").classList.add("active");
+  document.body.style.overflow = "hidden";
+};
+
+const closeAboutModal = () => {
+  document.getElementById("aboutModal").classList.remove("active");
+  document.body.style.overflow = "auto";
 };
 
 window.onload = async function () {
