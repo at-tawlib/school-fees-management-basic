@@ -22,7 +22,7 @@ package-lock.json
 # Environment files
 .env
 
-/database
+# /database
 /ipc
 /scripts/db/db-academic-years.js
 /scripts/db/db-bills.js
