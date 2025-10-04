@@ -5,10 +5,9 @@
 The **School Fees Management System** is a desktop application built with **Electron.js** and **SQLite**. It allows school administrators to manage student records, track fee payments, handle billing, and manage arrears efficiently.
 
 ## Screenshots
-![Homepage](https://github.com/at-tawlib/school-fees-management-basic/blob/main/assets/screenshots/01_homepage.png)
-![Dashboard](https://github.com/at-tawlib/school-fees-management-basic/blob/main/assets/screenshots/16_dashboard.png)
-![Bills](https://github.com/at-tawlib/school-fees-management-basic/blob/main/assets/screenshots/09_bills.png)
-
+![Homepage](assets/screenshots/01_homepage.png)
+![Dashboard](assets/screenshots/16_dashboard.png)
+![Bills](assets/screenshots/09_bills.png)
 
 [View more screenshots](https://github.com/at-tawlib/school-fees-management-basic/tree/main/assets/screenshots)
 
