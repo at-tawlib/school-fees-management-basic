@@ -1,7 +1,6 @@
 import { setupBillsSection } from "./bills.js";
 import { CONTAINERS } from "./constants/constants.js";
 import { setUpPaymentsSection } from "./payments.js";
-import { initStudentsSection } from "./student.js";
 import { showHideFeesContainer } from "./utils/show-hide-container.js";
 import { setUpFeesSection } from "./fees.js";
 import { initHomeSection } from "./home.js";
@@ -10,6 +9,7 @@ import { initDashboard } from "./dashboard.js";
 import { initSettings } from "./settings.js";
 import { openUpdatePassword } from "./modals/update-password-modal.js";
 import { setUpArrearsSection } from "./arrears.js";
+import { initStudentsSection } from "./student-manager.js";
 
 const navItems = document.querySelectorAll(".navbar ul li span");
 
