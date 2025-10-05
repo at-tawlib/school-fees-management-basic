@@ -3,6 +3,49 @@
   width: 50%;
 }
 
+.details-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #718096;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #718096;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: 14px;
+  color: #2d3748;
+  font-weight: 500;
+}
+
+.detail-value.highlight {
+  color: #667eea;
+  font-weight: 600;
+}
+
 .student-basic-info {
   margin-bottom: 30px;
   padding: 20px;
@@ -41,6 +84,14 @@
   color: #333;
   border-bottom: 2px solid #28a745;
   padding-bottom: 10px;
+}
+
+.bill-section {
+  margin-top: 2rem;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
 }
 
 .bill-card {
@@ -109,6 +160,13 @@
 
 .amount-item strong {
   color: #495057;
+}
+
+.payment-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  padding: 0.2rem 0;
 }
 
 .payments-section h5 {
