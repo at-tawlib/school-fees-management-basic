@@ -280,6 +280,12 @@ function displayStudentDetailsModal(studentData, studentInfo) {
 
   elements.viewStudentModal.classList.add("active");
   document.body.style.overflow = "hidden";
+
+  // Reset scroll position to top
+  const scrollContainer = elements.viewStudentModal.querySelector(".modal");
+  if (scrollContainer) {
+    scrollContainer.scrollTop = 0;
+  }
 }
 
 function generateStudentDetailsHTML(studentData, studentInfo) {
