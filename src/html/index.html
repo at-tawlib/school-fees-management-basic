@@ -40,6 +40,7 @@
           <li><span id="navArrears">Arrears</span></li>
           <li><span id="navPayments">Payments</span></li>
           <li><span id="navSettings">Settings</span></li>
+          <li><span id="navBackup">Backup</span></li>
         </ul>
       </nav>
 
@@ -857,6 +858,33 @@
           </div>
         </section>
       </main>
+    </div>
+
+    <!-- Backup Data Modal -->
+    <div id="backupModal" class="modal-overlay" role="dialog">
+      <div class="modal">
+        <header class="modal-header">
+          <div class="flex-column">
+            <h3 class="modal-title">Backup Data</h3>
+          </div>
+          <button class="modal-close" aria-label="Close modal" id="backupCloseX">&times;</button>
+        </header>
+
+        <div class="modal-body">
+          <progress id="progress-bar" value="0" max="100" style="display: none"></progress>
+          <p id="status-message"></p>
+          <p>Click the button below to back up your data.</p>
+          <p>Make sure you are connected to the internet before proceeding</p>
+        </div>
+        <div class="modal-actions">
+          <button id="backupDataBtn" type="button" class="bg-green">
+            <i class="fa-solid fa-database"></i> Backup Now
+          </button>
+          <button id="cancelBackupModalBtn" type="button" class="bg-red">
+            <i class="fa-solid fa-close"></i> Cancel
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Add Student Modal -->

@@ -10,6 +10,7 @@ import { initSettings } from "./settings.js";
 import { openUpdatePassword } from "./modals/update-password-modal.js";
 import { setUpArrearsSection } from "./arrears.js";
 import { initStudentsSection } from "./student-manager.js";
+import { BackupModal } from "./modals/backup-modal.js";
 
 const navItems = document.querySelectorAll(".navbar ul li span");
 
@@ -74,6 +75,11 @@ document.getElementById("navSettings").addEventListener("click", () => {
   initSettings();
 });
 
+document.getElementById("navBackup").addEventListener("click", async () => {
+  const backupModal = new BackupModal();
+  backupModal.show();
+});
+
 document.getElementById("navAdminBtn").addEventListener("click", async () => {
   const userSession = await window.app.getSession();
   if (userSession !== "admin") openLoginModal();
@@ -133,6 +139,7 @@ const setUpAdminView = async () => {
     document.getElementById("navAdminMenu").style.display = "";
     document.getElementById("navDashboard").style.display = "";
     document.getElementById("navSettings").style.display = "";
+    document.getElementById("navBackup").style.display = "";
     document.getElementById("adminTitle").style.display = "";
     document.getElementById("appHeader").style.background = "#000";
   } else {
@@ -140,6 +147,7 @@ const setUpAdminView = async () => {
     document.getElementById("navAdminMenu").style.display = "none";
     document.getElementById("navDashboard").style.display = "none";
     document.getElementById("navSettings").style.display = "none";
+    document.getElementById("navBackup").style.display = "none";
     document.getElementById("adminTitle").style.display = "none";
     document.getElementById("appHeader").style.background = "";
   }
