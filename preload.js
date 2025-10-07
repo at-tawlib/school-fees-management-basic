@@ -100,3 +100,8 @@ contextBridge.exposeInMainWorld("dialog", {
     return await ipcRenderer.invoke("show-confirmation-dialog", message);
   },
 });
+
+contextBridge.exposeInMainWorld('backup', {
+  start: () => ipcRenderer.invoke('backup:start'),
+  onProgress: (callback) => ipcRenderer.on('backup:progress', (event, percentage) => callback(percentage))
+});

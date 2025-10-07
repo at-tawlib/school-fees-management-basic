@@ -1,10 +1,12 @@
 const { app, BrowserWindow, dialog, ipcMain } = require("electron");
 const path = require("path");
 const DatabaseHandler = require("./scripts/db/db-handler");
+const BackupManager = require("./scripts/backup");
 
 let mainWindow;
 let adminWindow;
 let dbHandler;
+let backupManager;
 
 let store; // Declare `store` at the top for global access
 
@@ -722,10 +724,24 @@ ipcMain.handle("show-confirmation-dialog", async (_, message) => {
   return result.response === 1; // Returns true if "Yes" is clicked, otherwise false
 });
 
+// Handle backup
+ipcMain.handle("backup:start", async (event) => {
+  try {
+    const result = await backupManager.backup((percentage) => {
+      event.sender.send("backup:progress", percentage);
+    });
+    return { success: true, data: result };
+  } catch (error) {
+    console.log(error);
+    return { success: false, error: error.message };
+  }
+});
+
 // app.whenReady().then(createWindow);
 app.whenReady().then(async () => {
   try {
     dbHandler = new DatabaseHandler();
+    backupManager = new BackupManager();
     await loadInitialData();
     createWindow();
   } catch (error) {
